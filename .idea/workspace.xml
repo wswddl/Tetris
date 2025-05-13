@@ -8,9 +8,9 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tetris/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/Controller.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tetris/block/Block.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/block/Block.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/block/Mino.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/block/Mino.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tetris/block/MinoL.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/block/MinoL.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tetris/util/TetrisConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/util/TetrisConstants.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/view/Tetris.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/Tetris.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,7 +77,7 @@
     "project.structure.last.edited": "Libraries",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.42068964",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+    "settings.editor.selected.configurable": "editing.templates"
   }
 }]]></component>
   <component name="RecentsManager">

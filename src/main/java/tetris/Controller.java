@@ -33,6 +33,10 @@ public class Controller {
     private int autoDropCounter;
     private int gameCounter;
     private final int GAME_DURATION = 2 * 60 * FPS; // 2 minutes gameplay
+    
+    // =================================================
+    // Initialze the controller
+    // =================================================
 
     /**
      * Is called by loader.load()
@@ -42,6 +46,7 @@ public class Controller {
         this.inactiveBlocksArray = new Block[NUM_OF_ROW][NUM_OF_COL];
 
         this.currentMino = new MinoL();
+        this.nextMino = new MinoL(); // TODO: implement pcikMino
 
         this.autoDropCounter = 0;
         this.gameCounter = 0;
@@ -54,7 +59,11 @@ public class Controller {
             playingField.getChildren().add(block.getRectangle());
         }
     }
-
+    
+    // =================================================
+    // Update the game
+    // =================================================
+    
     /**
      * Gets invoke by {@Code Tetris} gameLoop every time interval.
      * Updates the Minos and other UI components every time interval.
@@ -64,50 +73,62 @@ public class Controller {
         if (currentMino.isActive()) {
             updateWhenMinoIsActiveOnly();
         }
-        if (gameCounter % 120 == 0) {
-            System.out.println("leftcollision = " + leftCollision);
-            System.out.println("rightcollision = " + rightCollision);
-            System.out.println("bottomcollision = " + bottomCollision);
 
-
+        if (!currentMino.isActive()) {
+            updateWhenMinoIsInactiveOnly();
         }
 
 
         gameCounter++;
     }
-
+    
     public void updateWhenMinoIsActiveOnly() {
         if (isDeactivating) {
             this.startDeactivatingCurrentMino();
         }
-
         this.checkCurrentMinoMovementCollision();
 
-
-
+        // keyboard input handler...
 
         // auto drop
         this.autoDropMechanism();
     }
 
+    public void updateWhenMinoIsInactiveOnly() {
+        for (int i = 0; i < NUM_OF_BLOCKS_PER_MINO; i++) {
+            int row = currentMino.blocks[i].getRow();
+            int col = currentMino.blocks[i].getCol();
+            inactiveBlocksArray[row][col] = currentMino.blocks[i];
+            System.out.println("place in inactiveblock row: " + row + "  col: " + col);
+        }
+        //this.checkRemoveLine();
+        currentMino = nextMino;
+        addMinoToPlayingField(currentMino);
+        nextMino = new MinoL(); // TODO: pickmino
+    }
+
+    // =================================================
+    // Mino update mechanism
+    // =================================================
+    
     public void startDeactivatingCurrentMino() {
         deactivateCounter++;
         if (deactivateCounter == FPS) {
-            deactivateCounter = 0;
-
             // check if the mino is still hitting the bottom after 1 second
             // if still hitting the bottom, deactivate it
-            // else reset the deactivate counter
+            // reset the deactivate counter and boolean
             this.checkCurrentMinoMovementCollision();
             if (bottomCollision) {
                 currentMino.deactivate();
-            } else {
-                deactivateCounter = 0;
             }
+            deactivateCounter = 0;
+            isDeactivating = false;
 
         }
     }
-
+    /**
+     * Moves the mino down one block every {@Code AUTO_DROP_INTERVAL}.
+     */
     public void autoDropMechanism() {
         if (bottomCollision) {
             this.isDeactivating = true;
@@ -119,33 +140,64 @@ public class Controller {
             }
         }
     }
-
-
+    
+    // =================================================
+    // Removing lines and effects
+    // =================================================
+    
+    
+    // =================================================
+    // Collision detection
+    // =================================================
+    
     /**
      * Check if the mino collides with the border or any inactive blocks.
      * <p>A collision means that the mino is "in contact" with the border/inactive blocks. </>
      */
     public void checkCurrentMinoMovementCollision() {
-        // reset signal
         leftCollision = rightCollision = bottomCollision = false;
-
-        for (int i = 0; i < NUM_OF_BLOCKS_PER_MINO; i++) {
-            Block block = currentMino.blocks[i];
-            // left collision
-            if (block.getCol() <= LEFTMOST_X) {
-                this.leftCollision = true;
-            }
-            // right collision
-            if (block.getCol() >= RIGHTMOST_X) {
-                this.rightCollision = true;
-            }
-            // bottom collision
-            if (block.getRow() >= BOTTOMMOST_Y) {
-                this.bottomCollision = true;
-            }
-
+        for (Block block : currentMino.blocks) {
+            isLeftBlocked(block);
+            isBottomBlocked(block);
+            isRightBlocked(block);
         }
     }
+    /**
+     * Checks if the left side of the block is the left border or an inactive block.
+     */
+    public void isLeftBlocked(Block block) {
+        int row = block.getRow();
+        int col = block.getCol();
+        if (col <= LEFTMOST_X || inactiveBlocksArray[row][col - 1] != null) {
+            leftCollision = true;
+        }
+    }
+    /**
+     * Checks if the bottom of the block is the bottom border or an inactive block.
+     */
+    public void isBottomBlocked(Block block) {
+        int row = block.getRow();
+        int col = block.getCol();
+        if (row >= BOTTOMMOST_Y || inactiveBlocksArray[row + 1][col] != null) {
+            bottomCollision = true;
+        }
+    }
+    /**
+     * Checks if the right side of the block is the right border or an inactive block.
+     */
+    public void isRightBlocked(Block block) {
+        int row = block.getRow();
+        int col = block.getCol();
+        if (col >= RIGHTMOST_X || inactiveBlocksArray[row][col + 1] != null) {
+            rightCollision = true;
+        }
+    }
+    
+
+    
+
+    
+
 
 
 

@@ -20,7 +20,7 @@ public abstract class Mino {
     public Mino create(Color color) {
         this.color = color;
         this.shadowColor = color;
-        this.isActive  =true;
+        this.isActive = true;
 
         blocks = new Block[NUM_OF_BLOCKS_PER_MINO];
         shadowBlocks = new Block[NUM_OF_BLOCKS_PER_MINO];

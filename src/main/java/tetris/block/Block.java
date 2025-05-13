@@ -75,4 +75,18 @@ public class Block {
         rectangle.setY(oldPixelX + BLOCK_SIZE);
     }
 
+    public void setRectangleCoor(int pixelX, int pixelY) {
+        rectangle.setX(pixelX);
+        rectangle.setY(pixelY);
+
+        this.pixelX = pixelX;
+        this.pixelY = pixelY;
+    }
+
+    public void setColRow(int col, int row) {
+        this.col = col;
+        this.row = row;
+    }
+
+
 }

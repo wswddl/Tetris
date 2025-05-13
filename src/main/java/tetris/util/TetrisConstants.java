@@ -19,5 +19,5 @@ public class TetrisConstants {
     public static final int MINO_START_X = NUM_OF_COL / 2 - 1;  // start from the fifth column
     public static final int MINO_START_Y = 1;  // start from the second row
     public static final int FPS = 120;
-    public static final int AUTO_DROP_INTERVAL = 120 * 3 / 4;
+    public static final int AUTO_DROP_INTERVAL = 30 * 3 / 4;
 }
