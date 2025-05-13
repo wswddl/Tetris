@@ -11,7 +11,7 @@
       </children>
    </VBox>
    <!-- Playing Field Pane with fixed size -->
-   <Pane fx:id="playingField" maxHeight="600.0" maxWidth="300.0" minHeight="600.0" minWidth="310.0" prefHeight="600" prefWidth="300" style="-fx-background-color: black;" />
+   <Pane fx:id="playingField" maxHeight="600.0" maxWidth="300.0" minHeight="600.0" minWidth="300.0" prefHeight="600" prefWidth="300" style="-fx-background-color: black;" />
 
    <!-- VBox for Hold and Next boxes stacked vertically -->
    <VBox maxHeight="600.0" spacing="20">

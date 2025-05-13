@@ -46,10 +46,13 @@ public class Controller {
         this.autoDropCounter = 0;
         this.gameCounter = 0;
 
-
-
-        System.out.println("initializing");
         addMinoToPlayingField(currentMino);
+    }
+
+    public void addMinoToPlayingField(Mino mino) {
+        for (Block block : mino.blocks) {
+            playingField.getChildren().add(block.getRectangle());
+        }
     }
 
     /**
@@ -57,34 +60,34 @@ public class Controller {
      * Updates the Minos and other UI components every time interval.
      */
     public void update() {
-        System.out.println("update :)");
 
         if (currentMino.isActive()) {
-            if (isDeactivating) {
-                startDeactivatingCurrentMino();
-            }
-            // auto drop
-            if (false) {
-                this.isDeactivating = true;
-                //this.isActive = false;
-            } else {
-                this.autoDropCounter++;
-                if (autoDropCounter == AUTO_DROP_INTERVAL) {
-                    currentMino.moveDown();
-                    autoDropCounter = 0;
-                }
-            }
+            updateWhenMinoIsActiveOnly();
         }
+        if (gameCounter % 120 == 0) {
+            System.out.println("leftcollision = " + leftCollision);
+            System.out.println("rightcollision = " + rightCollision);
+            System.out.println("bottomcollision = " + bottomCollision);
 
+
+        }
 
 
         gameCounter++;
     }
 
-    public void addMinoToPlayingField(Mino mino) {
-        for (Block block : mino.blocks) {
-            playingField.getChildren().add(block.getRectangle());
+    public void updateWhenMinoIsActiveOnly() {
+        if (isDeactivating) {
+            this.startDeactivatingCurrentMino();
         }
+
+        this.checkCurrentMinoMovementCollision();
+
+
+
+
+        // auto drop
+        this.autoDropMechanism();
     }
 
     public void startDeactivatingCurrentMino() {
@@ -95,11 +98,50 @@ public class Controller {
             // check if the mino is still hitting the bottom after 1 second
             // if still hitting the bottom, deactivate it
             // else reset the deactivate counter
-            /////////////////////////////////////////checkCurrentMinoMovementCollision();
+            this.checkCurrentMinoMovementCollision();
             if (bottomCollision) {
                 currentMino.deactivate();
             } else {
                 deactivateCounter = 0;
+            }
+
+        }
+    }
+
+    public void autoDropMechanism() {
+        if (bottomCollision) {
+            this.isDeactivating = true;
+        } else {
+            this.autoDropCounter++;
+            if (autoDropCounter == AUTO_DROP_INTERVAL) {
+                currentMino.moveDown();
+                autoDropCounter = 0;
+            }
+        }
+    }
+
+
+    /**
+     * Check if the mino collides with the border or any inactive blocks.
+     * <p>A collision means that the mino is "in contact" with the border/inactive blocks. </>
+     */
+    public void checkCurrentMinoMovementCollision() {
+        // reset signal
+        leftCollision = rightCollision = bottomCollision = false;
+
+        for (int i = 0; i < NUM_OF_BLOCKS_PER_MINO; i++) {
+            Block block = currentMino.blocks[i];
+            // left collision
+            if (block.getCol() <= LEFTMOST_X) {
+                this.leftCollision = true;
+            }
+            // right collision
+            if (block.getCol() >= RIGHTMOST_X) {
+                this.rightCollision = true;
+            }
+            // bottom collision
+            if (block.getRow() >= BOTTOMMOST_Y) {
+                this.bottomCollision = true;
             }
 
         }

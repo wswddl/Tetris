@@ -22,8 +22,8 @@ public class Block {
     private boolean isShadowBlock;
 
     public Block(Color color, boolean isShadowBlock) {
-        this.row = MINO_START_X;
-        this.col = MINO_START_Y;
+        this.row = MINO_START_Y;
+        this.col = MINO_START_X;
         this.pixelX = MINO_START_PIXEL_X;
         this.pixelY = MINO_START_PIXEL_Y;
         this.color = color;
@@ -38,7 +38,12 @@ public class Block {
     public Rectangle getRectangle() {
         return this.rectangle;
     }
-
+    public int getRow() {
+        return row;
+    }
+    public int getCol() {
+        return col;
+    }
 
     // Might be used in the future for auto-fitting
     public void moveUp() {
