@@ -2,7 +2,6 @@ package tetris;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -12,7 +11,7 @@ import javafx.util.Duration;
 
 import java.util.Arrays;
 
-import static tetris.TetrisConstants.FPS;
+import static tetris.util.TetrisConstants.FPS;
 
 public class Tetris extends Application {
 

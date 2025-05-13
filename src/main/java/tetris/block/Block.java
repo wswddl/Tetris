@@ -1,10 +1,16 @@
 package tetris.block;
 
+import static tetris.util.TetrisConstants.BLOCK_SIZE;
+import static tetris.util.TetrisConstants.MINO_START_PIXEL_X;
+import static tetris.util.TetrisConstants.MINO_START_PIXEL_Y;
+import static tetris.util.TetrisConstants.MINO_START_X;
+import static tetris.util.TetrisConstants.MINO_START_Y;
+
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import org.w3c.dom.css.Rect;
 
-import static tetris.TetrisConstants.*;
+
+
 
 public class Block {
     private Rectangle rectangle;

@@ -4,13 +4,11 @@ import tetris.block.Block;
 import tetris.block.Mino;
 import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import tetris.block.MinoL;
 
 import java.util.ArrayList;
 
-import static tetris.TetrisConstants.*;
+import static tetris.util.TetrisConstants.*;
 
 public class Controller {
     @FXML
@@ -25,12 +23,14 @@ public class Controller {
 
     // Signals for the game logic
     private boolean leftCollision, rightCollision, bottomCollision;
-    private boolean leftCollision;
-    private boolean bottomCollision;
     private boolean allowSwapMino;
     private boolean isDeactivating;
-    public int deactivateCounter;
+    private int deactivateCounter;
+    public boolean isGameOver;
+    public boolean isTimesUp;
 
+    // game counter
+    private int autoDropCounter;
     private int gameCounter;
     private final int GAME_DURATION = 2 * 60 * FPS; // 2 minutes gameplay
 
@@ -43,6 +43,7 @@ public class Controller {
 
         this.currentMino = new MinoL();
 
+        this.autoDropCounter = 0;
         this.gameCounter = 0;
 
 
@@ -61,6 +62,17 @@ public class Controller {
         if (currentMino.isActive()) {
             if (isDeactivating) {
                 startDeactivatingCurrentMino();
+            }
+            // auto drop
+            if (false) {
+                this.isDeactivating = true;
+                //this.isActive = false;
+            } else {
+                this.autoDropCounter++;
+                if (autoDropCounter == AUTO_DROP_INTERVAL) {
+                    currentMino.moveDown();
+                    autoDropCounter = 0;
+                }
             }
         }
 
@@ -83,7 +95,7 @@ public class Controller {
             // check if the mino is still hitting the bottom after 1 second
             // if still hitting the bottom, deactivate it
             // else reset the deactivate counter
-            checkCurrentMinoMovementCollision();
+            /////////////////////////////////////////checkCurrentMinoMovementCollision();
             if (bottomCollision) {
                 currentMino.deactivate();
             } else {

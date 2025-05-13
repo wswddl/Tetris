@@ -1,9 +1,8 @@
 package tetris.block;
 
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
-import static tetris.TetrisConstants.NUM_OF_BLOCKS_PER_MINO;
+import static tetris.util.TetrisConstants.NUM_OF_BLOCKS_PER_MINO;
 
 public abstract class Mino {
     public Block[] blocks;
@@ -24,6 +23,7 @@ public abstract class Mino {
         this.isActive  =true;
 
         blocks = new Block[NUM_OF_BLOCKS_PER_MINO];
+        shadowBlocks = new Block[NUM_OF_BLOCKS_PER_MINO];
         for (int i = 0; i < NUM_OF_BLOCKS_PER_MINO; i++) {
             blocks[i] = new Block(color, false);
 
