@@ -11,15 +11,18 @@ import java.util.ArrayList;
 import static tetris.util.TetrisConstants.*;
 
 public class Controller {
+
+    @FXML
+    private Pane holdMinoBox;
     @FXML
     private Pane playingField;
-    private ArrayList<Block> inactiveBlocks;
+    @FXML
+    private Pane nextMinoBox;
+
     private Block[][] inactiveBlocksArray; // only keep track of inactive blocks, not including active blocks
     public Mino currentMino;
     private Mino nextMino;
     private Mino holdMino;
-
-
 
     // Signals for the game logic
     private boolean leftCollision, rightCollision, bottomCollision;
@@ -42,23 +45,58 @@ public class Controller {
      * Is called by loader.load()
      */
     public void initialize() {
-        this.inactiveBlocks = new ArrayList<>();
         this.inactiveBlocksArray = new Block[NUM_OF_ROW][NUM_OF_COL];
 
-        this.currentMino = new MinoL();
+        this.currentMino = new MinoL(); // TODO: implement pcikMino
         this.nextMino = new MinoL(); // TODO: implement pcikMino
 
         this.autoDropCounter = 0;
         this.gameCounter = 0;
 
         addMinoToPlayingField(currentMino);
+        addMinoToNextMinoBox(nextMino);
+        addMinoToHoldMinoBox(new MinoL());
     }
 
+    // =================================================
+    // Add / Remove Rectangles from Pane (UI)
+    // =================================================
+
     public void addMinoToPlayingField(Mino mino) {
+        mino.setPlayingFieldStartPosition();
         for (Block block : mino.blocks) {
             playingField.getChildren().add(block.getRectangle());
         }
     }
+    public void removeMinoFromPlayingField(Mino mino) {
+        for (Block block : mino.blocks) {
+            playingField.getChildren().remove(block.getRectangle());
+        }
+    }
+    public void addMinoToNextMinoBox(Mino mino) {
+        mino.setNextAndHoldBoxPosition();
+        for (Block block : mino.blocks) {
+            nextMinoBox.getChildren().add(block.getRectangle());
+        }
+    }
+    public void removeMinoFromNextMinoBox(Mino mino) {
+        for (Block block : mino.blocks) {
+            nextMinoBox.getChildren().remove(block.getRectangle());
+        }
+    }
+    public void addMinoToHoldMinoBox(Mino mino) {
+        mino.setNextAndHoldBoxPosition();
+        for (Block block : mino.blocks) {
+            holdMinoBox.getChildren().add(block.getRectangle());
+        }
+    }
+    public void removeMinoFromHoldMinoBox(Mino mino) {
+        for (Block block : mino.blocks) {
+            holdMinoBox.getChildren().remove(block.getRectangle());
+        }
+    }
+
+
     
     // =================================================
     // Update the game
@@ -102,9 +140,11 @@ public class Controller {
             System.out.println("place in inactiveblock row: " + row + "  col: " + col);
         }
         //this.checkRemoveLine();
+        removeMinoFromNextMinoBox(nextMino);
         currentMino = nextMino;
         addMinoToPlayingField(currentMino);
         nextMino = new MinoL(); // TODO: pickmino
+        addMinoToNextMinoBox(nextMino);
     }
 
     // =================================================

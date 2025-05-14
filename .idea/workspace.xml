@@ -5,12 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="dd1c620e-ac4b-4af9-9371-a4b0c9d8245d" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/tetris/block/GhostBlock.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/tetris/util/GameSignal.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tetris/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/Controller.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tetris/block/Block.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/block/Block.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tetris/block/Mino.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/block/Mino.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tetris/block/MinoL.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/block/MinoL.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/block/ShadowBlock.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tetris/util/TetrisConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/util/TetrisConstants.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/view/Tetris.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/Tetris.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -73,7 +77,7 @@
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "last_directory_selection": "C:/Coding/My Project/Tetris/src/main/java/tetris",
-    "last_opened_file_path": "C:/Coding/My Project/Tetris",
+    "last_opened_file_path": "C:/Coding/My Project/Tetris-JavaSwing",
     "project.structure.last.edited": "Libraries",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.42068964",
@@ -86,6 +90,26 @@
       <recent name="tetris" />
       <recent name="tetris.block" />
     </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="Launcher" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="tetris.Launcher" />
+      <module name="Tetris.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="tetris.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Launcher" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
