@@ -96,8 +96,6 @@ public class Controller {
             holdMinoBox.getChildren().remove(block.getRectangle());
         }
     }
-
-
     
     // =================================================
     // Update the game
@@ -125,7 +123,6 @@ public class Controller {
         if (isDeactivating) {
             this.startDeactivatingCurrentMino();
         }
-        this.checkCurrentMinoMovementCollision();
 
         // keyboard input handler...
         if (KeyInputHandler.upPress) {
@@ -150,6 +147,8 @@ public class Controller {
 
         // auto drop
         this.autoDropMechanism();
+
+        // TODO: shadow
     }
 
     public void updateWhenMinoIsInactiveOnly() {
@@ -158,12 +157,14 @@ public class Controller {
             int col = currentMino.blocks[i].getCol();
             inactiveBlocksArray[row][col] = currentMino.blocks[i];
         }
-        //this.checkRemoveLine();
+        this.checkRemoveLine();
         removeMinoFromNextMinoBox(nextMino);
         currentMino = nextMino;
         addMinoToPlayingField(currentMino);
         nextMino = new MinoL(); // TODO: pickmino
         addMinoToNextMinoBox(nextMino);
+
+        // TODO: combo and soundeffect
     }
 
     // =================================================
@@ -254,7 +255,42 @@ public class Controller {
     // =================================================
     // Removing lines and effects
     // =================================================
-    
+
+    /**
+     * Starts from the lowest row to the top, if there is a full row (10 blocks in a row), remove it from the
+     * playing field, else drop the inactive blocks on top to fill in the gap of the deleted row.
+     */
+    private void checkRemoveLine() {
+        int numLineClear = 0;
+        for (int r = NUM_OF_ROW - 1; r >= 0; r--) {
+            int numBlocksInARow = 0;
+            for (int c = 0; c < NUM_OF_COL; c++) {
+                if (inactiveBlocksArray[r][c] != null) {
+                    numBlocksInARow++;
+                }
+            }
+            // remove line
+            if (numBlocksInARow == NUM_OF_COL) {
+                numLineClear++;
+                for (int c = 0; c < inactiveBlocksArray[0].length; c++) {
+                    Block toBeRemovedBlock = inactiveBlocksArray[r][c];
+                    if (toBeRemovedBlock != null) {
+                        toBeRemovedBlock.fade(playingField); // fade the block out and remove it from playing field
+                        inactiveBlocksArray[r][c] = null;
+                    }
+                }
+            } else {
+                for (int c = 0; c < inactiveBlocksArray[0].length; c++) {
+                    Block toBeDropBlock = inactiveBlocksArray[r][c];
+                    if (toBeDropBlock != null) {
+                        toBeDropBlock.dropSmoothly(numLineClear); // drop the block numLineClear number of rows
+                        inactiveBlocksArray[r][c] = null;
+                        inactiveBlocksArray[r + numLineClear][c] = toBeDropBlock;
+                    }
+                }
+            }
+        }
+    }
     
     // =================================================
     // Collision detection
@@ -276,6 +312,8 @@ public class Controller {
         }
     }
     public void isBorderCollision(Block block) {
+        assert block != null;
+
         int row = block.getRow();
         int col = block.getCol();
         if (col <= LEFTMOST_X) {
@@ -292,6 +330,8 @@ public class Controller {
      * Checks if the left side of the block is an inactive block.
      */
     public void isLeftBlocked(Block block) {
+        assert block != null;
+
         int row = block.getRow();
         int col = block.getCol();
         if (col <= LEFTMOST_X || inactiveBlocksArray[row][col - 1] != null) {
@@ -302,6 +342,8 @@ public class Controller {
      * Checks if the bottom of the block is an inactive block.
      */
     public void isBottomBlocked(Block block) {
+        assert block != null;
+
         int row = block.getRow();
         int col = block.getCol();
         if (row >= BOTTOMMOST_Y || inactiveBlocksArray[row + 1][col] != null) {
@@ -312,6 +354,8 @@ public class Controller {
      * Checks if the right side of the block is an inactive block.
      */
     public void isRightBlocked(Block block) {
+        assert block != null;
+
         int row = block.getRow();
         int col = block.getCol();
         if (col >= RIGHTMOST_X || inactiveBlocksArray[row][col + 1] != null) {

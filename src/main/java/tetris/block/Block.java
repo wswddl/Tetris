@@ -1,15 +1,13 @@
 package tetris.block;
 
-import static tetris.util.TetrisConstants.BLOCK_SIZE;
-import static tetris.util.TetrisConstants.MINO_START_PIXEL_X;
-import static tetris.util.TetrisConstants.MINO_START_PIXEL_Y;
-import static tetris.util.TetrisConstants.MINO_START_X;
-import static tetris.util.TetrisConstants.MINO_START_Y;
-
+import javafx.animation.FadeTransition;
+import javafx.animation.TranslateTransition;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
-
+import static tetris.util.TetrisConstants.*;
 
 
 public class Block {
@@ -92,11 +90,35 @@ public class Block {
         this.pixelX = pixelX;
         this.pixelY = pixelY;
     }
-/*
-    public void setColRow(int col, int row) {
-        this.col = col;
-        this.row = row;
+    public void dropSmoothly(int numBlocks) {
+        col += numBlocks;
+        pixelY += numBlocks * BLOCK_SIZE;
+
+        int dropPixelDistance = numBlocks * BLOCK_SIZE;
+
+        TranslateTransition transition = new TranslateTransition(Duration.millis(BLOCK_DROPING_DURATION), rectangle);
+        transition.setByY(dropPixelDistance); // Move down by dropPixelDistance pixels
+
+        // After dropping, set the rectangle position.
+        // NOTE: transition only move the rectangle virtually and doesn't change the rectangle's x,y value
+        // NOTE: where the rectangle will appear on the screen is based on rectangle's X,Y + rectangle's translateX,Y
+        transition.setOnFinished(e -> {
+            rectangle.setY(rectangle.getY() + rectangle.getTranslateY()); // Apply the translation
+            rectangle.setTranslateY(0); // Reset the translation
+        });
+        transition.play();
     }
-*/
+    public void fade(Pane playingField) {
+        FadeTransition fade = new FadeTransition(Duration.millis(BLOCK_FADING_DURATION), rectangle); // 500ms fade out
+        fade.setFromValue(1.0);  // Fully visible
+        fade.setToValue(0.0);    // Fully transparent
+
+        // After fade completes, remove from playing field
+        fade.setOnFinished(e -> playingField.getChildren().remove(rectangle));
+
+        // Start the animation
+        fade.play();
+    }
+
 
 }
