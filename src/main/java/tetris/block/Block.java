@@ -65,14 +65,14 @@ public class Block {
         this.pixelX -= BLOCK_SIZE;
 
         double oldPixelX = rectangle.getX();
-        rectangle.setY(oldPixelX - BLOCK_SIZE);
+        rectangle.setX(oldPixelX - BLOCK_SIZE);
     }
     public void moveRight() {
         this.col++;
         this.pixelX += BLOCK_SIZE;
 
-        double oldPixelX = rectangle.getY();
-        rectangle.setY(oldPixelX + BLOCK_SIZE);
+        double oldPixelX = rectangle.getX();
+        rectangle.setX(oldPixelX + BLOCK_SIZE);
     }
 
     public void setPosition(int pixelX, int pixelY, int col, int row) {

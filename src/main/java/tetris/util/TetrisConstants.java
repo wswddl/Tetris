@@ -45,5 +45,6 @@ public class TetrisConstants {
     // =================================================
 
     public static final int FPS = 120;
-    public static final int AUTO_DROP_INTERVAL = 30 * 3 / 4; // adjust the dropping speed of minos
+    public static final int DEACTIVATE_INTERVAL = FPS;
+    public static final int AUTO_DROP_INTERVAL = 120 * 3 / 4; // adjust the dropping speed of minos
 }

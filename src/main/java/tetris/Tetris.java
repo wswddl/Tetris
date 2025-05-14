@@ -30,7 +30,6 @@ public class Tetris extends Application {
         }
 
         try {
-
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Tetris.fxml"));
             Parent root = loader.load();
             this.gameController = loader.getController();
@@ -38,6 +37,9 @@ public class Tetris extends Application {
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.show();
+
+            // Keyboard input handler
+            new KeyInputHandler(scene, gameController);
 
             // Create the game loop
             gameLoop = new Timeline(new KeyFrame(Duration.seconds(1.0 / FPS), e -> gameController.update()));
