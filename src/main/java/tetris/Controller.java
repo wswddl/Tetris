@@ -1,10 +1,8 @@
 package tetris;
 
-import tetris.block.Block;
-import tetris.block.Mino;
+import tetris.block.*;
 import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
-import tetris.block.MinoL;
 
 import java.security.Key;
 import java.util.ArrayList;
@@ -21,6 +19,7 @@ public class Controller {
     private Pane nextMinoBox;
 
     private Block[][] inactiveBlocksArray; // only keep track of inactive blocks, not including active blocks
+    public Bag<Mino> bagOfMinos;
     public Mino currentMino;
     private Mino nextMino;
     private Mino holdMino;
@@ -39,7 +38,7 @@ public class Controller {
     private final int GAME_DURATION = 2 * 60 * FPS; // 2 minutes gameplay
     
     // =================================================
-    // Initialze the controller
+    // Initialize the controller
     // =================================================
 
     /**
@@ -48,15 +47,27 @@ public class Controller {
     public void initialize() {
         this.inactiveBlocksArray = new Block[NUM_OF_ROW][NUM_OF_COL];
 
-        this.currentMino = new MinoL(); // TODO: implement pcikMino
-        this.nextMino = new MinoL(); // TODO: implement pcikMino
+        this.fillInBagOfMinos();
+        this.initializeMinos();
+        this.initializeCounter();
+    }
+    private void fillInBagOfMinos() {
+        this.bagOfMinos = new Bag<Mino>(new MinoI(), new MinoJ(), new MinoL(), new MinoO(),
+                new MinoS(), new MinoT(), new MinoZ());
+    }
+    private void initializeMinos() {
+        assert bagOfMinos != null;
 
-        this.autoDropCounter = 0;
-        this.gameCounter = 0;
+        currentMino = bagOfMinos.pickRandomly();
+        nextMino = bagOfMinos.pickRandomly();
 
         addMinoToPlayingField(currentMino);
         addMinoToNextMinoBox(nextMino);
-        addMinoToHoldMinoBox(new MinoL());
+        // Don't add mino to hold box
+    }
+    private void initializeCounter() {
+        this.autoDropCounter = 0;
+        this.gameCounter = 0;
     }
 
     // =================================================
@@ -160,8 +171,8 @@ public class Controller {
         this.checkRemoveLine();
         removeMinoFromNextMinoBox(nextMino);
         currentMino = nextMino;
+        nextMino = bagOfMinos.pickRandomly();
         addMinoToPlayingField(currentMino);
-        nextMino = new MinoL(); // TODO: pickmino
         addMinoToNextMinoBox(nextMino);
 
         // TODO: combo and soundeffect
@@ -185,10 +196,13 @@ public class Controller {
             if (bottomCollision) {
                 currentMino.deactivate();
             }
-            deactivateCounter = 0;
-            isDeactivating = false;
+            resetDeactivation();
 
         }
+    }
+    public void resetDeactivation() {
+        this.deactivateCounter = 0;
+        this.isDeactivating = false;
     }
     /**
      * Moves the mino down one block every {@Code AUTO_DROP_INTERVAL}.
@@ -212,11 +226,7 @@ public class Controller {
             case 3: currentMino.getD4(); break;
             case 4: currentMino.getD1(); break;
         }
-        boolean isResetDeactivation = currentMino.tryRotatingMino(inactiveBlocksArray);
-        if (isResetDeactivation) {
-            deactivateCounter = 0;
-            isDeactivating = false;
-        }
+        currentMino.tryRotatingMino(inactiveBlocksArray, this);
         KeyInputHandler.upPress = false;
     }
     private void handleSpacePress() {

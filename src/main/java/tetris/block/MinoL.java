@@ -5,18 +5,11 @@ import javafx.scene.paint.Color;
 import static tetris.util.TetrisConstants.*;
 
 public class MinoL extends Mino {
-    public static int i = 0;
     public static final int MINO_L_NEXT_PIXEL_X = NEXT_BOX_HEIGHT_WIDTH / 2;
     public static final int MINO_L_NEXT_PIXEL_Y = NEXT_BOX_HEIGHT_WIDTH / 2;
     public MinoL() {
         super();
-        if (i % 2 == 0) {
-            create(Color.RED);
-        } else {
-            create(Color.ORANGE);
-        }
-        i++;
-
+        create(Color.ORANGE);
     }
     @Override
     public void setPlayingFieldStartPosition() {
@@ -71,5 +64,9 @@ public class MinoL extends Mino {
         ghostBlocks[1].setColRow(blocks[0].getCol(), blocks[0].getRow() + 1);
         ghostBlocks[2].setColRow(blocks[0].getCol(), blocks[0].getRow() - 1);
         ghostBlocks[3].setColRow(blocks[0].getCol() - 1, blocks[0].getRow() - 1);
+    }
+    @Override
+    public MinoL copy() {
+        return new MinoL();
     }
 }

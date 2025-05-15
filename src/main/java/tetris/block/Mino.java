@@ -1,10 +1,12 @@
 package tetris.block;
 
 import javafx.scene.paint.Color;
+import tetris.Controller;
+import tetris.util.Copyable;
 
 import static tetris.util.TetrisConstants.*;
 
-public abstract class Mino {
+public abstract class Mino implements Copyable<Mino> {
     public Block[] blocks;
     public Block[] shadowBlocks;
     public GhostBlock[] ghostBlocks;
@@ -18,7 +20,7 @@ public abstract class Mino {
     /**
      * Is invoked by the constructor of Mino classes that inherits this class
      */
-    public Mino create(Color color) {
+    public void create(Color color) {
         this.color = color;
         this.shadowColor = color;
         this.isActive = true;
@@ -34,8 +36,6 @@ public abstract class Mino {
 
             ghostBlocks[i] = new GhostBlock();
         }
-        return this;
-
     }
 
     public boolean isActive() {
@@ -85,7 +85,7 @@ public abstract class Mino {
      *
      * @return true if the mino is being push upwards, else return false;
      */
-    public boolean tryRotatingMino(Block[][] inactiveBlockArray) {
+    public void tryRotatingMino(Block[][] inactiveBlockArray, Controller gameController) {
         int altPosition = 1;
         boolean canRotate = true;
 
@@ -151,12 +151,8 @@ public abstract class Mino {
 
             // Mino is pushed upwards, so need to reset deactivation
             if (altPosition == 7 || altPosition == 8) {
-                return true;
+                gameController.resetDeactivation();
             }
-            return false;
-
-        } else {
-            return false;
         }
     }
     /**
@@ -198,7 +194,6 @@ public abstract class Mino {
 
             int pixelY = row * BLOCK_SIZE;
             int pixelX = col * BLOCK_SIZE;
-            System.out.println("in setRotation in Mino.java");
             blocks[i].setPosition(pixelX, pixelY, col, row);
         }
     }
