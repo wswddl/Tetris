@@ -42,8 +42,14 @@ public abstract class Mino implements Copyable<Mino> {
         return isActive;
     }
 
-    public void deactivate() {
+    /**
+     * set {@code isActive} to false and remove the shadow blocks from playing field pane
+     */
+    public void deactivate(Controller gameController) {
         isActive = false;
+        for (Block shadowBlock : shadowBlocks) {
+            gameController.removeBlockFromPlayingField(shadowBlock);
+        }
     }
 
     // =================================================
@@ -196,6 +202,33 @@ public abstract class Mino implements Copyable<Mino> {
             int pixelX = col * BLOCK_SIZE;
             blocks[i].setPosition(pixelX, pixelY, col, row);
         }
+    }
+    public void setShadowPosition(Block[][] inactiveBlockArray) {
+        for (int i = 0; i < NUM_OF_BLOCKS_PER_MINO; i++) {
+            shadowBlocks[i].copyPosition(blocks[i]);
+        }
+        while(!isBottomCollision(inactiveBlockArray)) {
+            for (Block shadowBlock : shadowBlocks) {
+                shadowBlock.moveDown();
+            }
+        }
+    }
+    /**
+     * Is used for shadow positioning.
+     */
+    private boolean isBottomCollision(Block[][] inactiveBlockArray) {
+        for (Block shadowBlock : shadowBlocks) {
+            int shadowRow = shadowBlock.getRow();
+            int shadowCol = shadowBlock.getCol();
+            if (shadowRow >= BOTTOMMOST_Y) {
+                return true;
+            }
+            // Bottom is another inactive block
+            if (inactiveBlockArray[shadowRow + 1][shadowCol] != null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // =================================================

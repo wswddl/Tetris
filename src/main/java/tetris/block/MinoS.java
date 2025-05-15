@@ -29,7 +29,7 @@ public class MinoS extends Mino {
         blocks[0].setRectangleCoor(MINO_S_NEXT_PIXEL_X + deltaX,
                 MINO_S_NEXT_PIXEL_Y + deltaY);
         blocks[1].setRectangleCoor(MINO_S_NEXT_PIXEL_X - BLOCK_SIZE + deltaX,
-                MINO_S_NEXT_PIXEL_Y - BLOCK_SIZE + deltaY);
+                MINO_S_NEXT_PIXEL_Y + deltaY);
         blocks[2].setRectangleCoor(MINO_S_NEXT_PIXEL_X + deltaX,
                 MINO_S_NEXT_PIXEL_Y - BLOCK_SIZE + deltaY);
         blocks[3].setRectangleCoor(MINO_S_NEXT_PIXEL_X + BLOCK_SIZE + deltaX,

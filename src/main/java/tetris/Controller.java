@@ -28,11 +28,12 @@ public class Controller {
     private boolean leftCollision, rightCollision, bottomCollision;
     private boolean allowSwapMino;
     private boolean isDeactivating;
-    private int deactivateCounter;
+
     public boolean isGameOver;
     public boolean isTimesUp;
 
     // game counter
+    private int deactivateCounter;
     private int autoDropCounter;
     private int gameCounter;
     private final int GAME_DURATION = 2 * 60 * FPS; // 2 minutes gameplay
@@ -49,7 +50,8 @@ public class Controller {
 
         this.fillInBagOfMinos();
         this.initializeMinos();
-        this.initializeCounter();
+        this.initializeSignals();
+        this.initializeCounters();
     }
     private void fillInBagOfMinos() {
         this.bagOfMinos = new Bag<Mino>(new MinoI(), new MinoJ(), new MinoL(), new MinoO(),
@@ -65,9 +67,20 @@ public class Controller {
         addMinoToNextMinoBox(nextMino);
         // Don't add mino to hold box
     }
-    private void initializeCounter() {
+    private void initializeCounters() {
+        this.deactivateCounter = 0;
         this.autoDropCounter = 0;
         this.gameCounter = 0;
+    }
+    private void initializeSignals() {
+        leftCollision = false;
+        rightCollision = false;
+        bottomCollision = false;
+        isDeactivating = false;
+        isGameOver = false;
+        isTimesUp = false;
+
+        allowSwapMino = true;
     }
 
     // =================================================
@@ -76,14 +89,24 @@ public class Controller {
 
     public void addMinoToPlayingField(Mino mino) {
         mino.setPlayingFieldStartPosition();
-        for (Block block : mino.blocks) {
-            playingField.getChildren().add(block.getRectangle());
+        mino.setShadowPosition(inactiveBlocksArray);
+
+        // add shadow blocks before normal blocks so the normal block will be in front when they overlap
+        for (int i = 0; i < NUM_OF_BLOCKS_PER_MINO; i++) {
+            playingField.getChildren().add(mino.shadowBlocks[i].getRectangle());
+        }
+        for (int i = 0; i < NUM_OF_BLOCKS_PER_MINO; i++) {
+            playingField.getChildren().add(mino.blocks[i].getRectangle());
         }
     }
     public void removeMinoFromPlayingField(Mino mino) {
-        for (Block block : mino.blocks) {
-            playingField.getChildren().remove(block.getRectangle());
+        for (int i = 0; i < NUM_OF_BLOCKS_PER_MINO; i++) {
+            playingField.getChildren().remove(mino.shadowBlocks[i].getRectangle());
+            playingField.getChildren().remove(mino.blocks[i].getRectangle());
         }
+    }
+    public void removeBlockFromPlayingField(Block toBeRemovedBlock) {
+        playingField.getChildren().remove(toBeRemovedBlock.getRectangle());
     }
     public void addMinoToNextMinoBox(Mino mino) {
         mino.setNextAndHoldBoxPosition();
@@ -118,16 +141,16 @@ public class Controller {
      */
     public void update() {
 
-        if (currentMino.isActive()) {
+        if (currentMino.isActive() && KeyInputHandler.holdPress && allowSwapMino) {
+            handleHoldPress();
+        } else if (currentMino.isActive()) {
             updateWhenMinoIsActiveOnly();
-        }
-
-        if (!currentMino.isActive()) {
+        } else {
             updateWhenMinoIsInactiveOnly();
         }
 
-
-        gameCounter++;
+        KeyInputHandler.holdPress = false;
+        gameCounter = gameCounter + 1;
     }
     
     public void updateWhenMinoIsActiveOnly() {
@@ -145,7 +168,6 @@ public class Controller {
         if (KeyInputHandler.spacePress) {
             handleSpacePress();
         }
-
         if (KeyInputHandler.downPress) {
             handleDownPress();
         }
@@ -159,10 +181,8 @@ public class Controller {
         // auto drop
         this.autoDropMechanism();
 
-        // TODO: shadow
     }
-
-    public void updateWhenMinoIsInactiveOnly() {
+    private void updateWhenMinoIsInactiveOnly() {
         for (int i = 0; i < NUM_OF_BLOCKS_PER_MINO; i++) {
             int row = currentMino.blocks[i].getRow();
             int col = currentMino.blocks[i].getCol();
@@ -174,6 +194,8 @@ public class Controller {
         nextMino = bagOfMinos.pickRandomly();
         addMinoToPlayingField(currentMino);
         addMinoToNextMinoBox(nextMino);
+
+        this.allowSwapMino = true;
 
         // TODO: combo and soundeffect
     }
@@ -194,7 +216,7 @@ public class Controller {
             // reset the deactivate counter and boolean
             this.checkCurrentMinoMovementCollision();
             if (bottomCollision) {
-                currentMino.deactivate();
+                currentMino.deactivate(this);
             }
             resetDeactivation();
 
@@ -227,7 +249,52 @@ public class Controller {
             case 4: currentMino.getD1(); break;
         }
         currentMino.tryRotatingMino(inactiveBlocksArray, this);
+        // after rotation, set the shadow position again
+        currentMino.setShadowPosition(inactiveBlocksArray);
         KeyInputHandler.upPress = false;
+    }
+    private void handleHoldPress() {
+        if (holdMino == null) {
+            // update UI
+            System.out.println("handling hold press");
+            removeMinoFromPlayingField(currentMino);
+            removeMinoFromNextMinoBox(nextMino);
+
+            // update minos
+            holdMino = currentMino;
+            holdMino.setNextAndHoldBoxPosition();
+            currentMino = nextMino;
+            currentMino.setPlayingFieldStartPosition();
+            nextMino = bagOfMinos.pickRandomly();
+            nextMino.setNextAndHoldBoxPosition();
+
+            // update UI
+            addMinoToPlayingField(currentMino);
+            addMinoToNextMinoBox(nextMino);
+            addMinoToHoldMinoBox(holdMino);
+
+        } else {
+            System.out.println("handling hold press BUT HOLD NOT NULL");
+            // update UI
+            removeMinoFromPlayingField(currentMino);
+            removeMinoFromHoldMinoBox(holdMino);
+
+            // swap hold and current mino
+            Mino tempMino = currentMino;
+            currentMino = holdMino;
+            currentMino.setPlayingFieldStartPosition();
+            holdMino = tempMino;
+            holdMino.setNextAndHoldBoxPosition();
+
+            // update UI
+            addMinoToPlayingField(currentMino);
+            addMinoToHoldMinoBox(holdMino);
+        }
+        this.allowSwapMino = false; // allow one swap per "round"
+        KeyInputHandler.holdPress = false;
+
+        // Sound effect for Hold (Shift)
+        //TetrisPanel.soundEffect.play(11, false); // TODO: sound effect for hold
     }
     private void handleSpacePress() {
         while(!bottomCollision) {
@@ -235,7 +302,7 @@ public class Controller {
             this.checkCurrentMinoMovementCollision();
         }
         // deactivate immediately
-        this.currentMino.deactivate();
+        this.currentMino.deactivate(this);
         KeyInputHandler.spacePress = false;
 
         // Sound effect for Space
@@ -251,12 +318,16 @@ public class Controller {
     private void handleLeftPress() {
         if (!leftCollision) {
             currentMino.moveLeft();
+            // after moving to the left, set the shadow position again
+            currentMino.setShadowPosition(inactiveBlocksArray);
         }
         KeyInputHandler.leftPress = false;
     }
     private void handleRightPress() {
         if (!rightCollision) {
             currentMino.moveRight();
+            // after moving to the right, set the shadow position again
+            currentMino.setShadowPosition(inactiveBlocksArray);
         }
         KeyInputHandler.rightPress = false;
     }

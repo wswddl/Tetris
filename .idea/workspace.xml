@@ -5,18 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="dd1c620e-ac4b-4af9-9371-a4b0c9d8245d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/tetris/Bag.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/tetris/block/MinoI.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/tetris/block/MinoJ.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/tetris/block/MinoO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/tetris/block/MinoS.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/tetris/block/MinoT.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/tetris/block/MinoZ.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/tetris/util/Copyable.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tetris/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/Controller.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/block/Block.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/block/Block.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tetris/block/Mino.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/block/Mino.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/block/MinoL.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/block/MinoL.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/block/MinoS.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/block/MinoS.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/util/TetrisConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/util/TetrisConstants.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

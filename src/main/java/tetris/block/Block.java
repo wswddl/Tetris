@@ -24,13 +24,16 @@ public class Block {
         this.col = MINO_START_X;
         this.pixelX = MINO_START_PIXEL_X;
         this.pixelY = MINO_START_PIXEL_Y;
-        this.color = color;
-        this.isShadowBlock = isShadowBlock;
-
         rectangle = new Rectangle(BLOCK_SIZE, BLOCK_SIZE);
-        rectangle.setFill(color);
         rectangle.setX(MINO_START_PIXEL_X);
         rectangle.setY(MINO_START_PIXEL_Y);
+
+        this.isShadowBlock = isShadowBlock;
+        if (isShadowBlock) {
+            rectangle.setFill(Color.GRAY);
+        } else {
+            rectangle.setFill(color);
+        }
     }
 
     public Rectangle getRectangle() {
@@ -90,13 +93,24 @@ public class Block {
         this.pixelX = pixelX;
         this.pixelY = pixelY;
     }
+    /**
+     * Copy the {@code row}, {@code col}, {@code pixelX}, {@code pixelY} and rectangle's position.
+     */
+    public void copyPosition(Block toBeCopyBlock) {
+        this.row = toBeCopyBlock.row;
+        this.col = toBeCopyBlock.col;
+        this.pixelX = toBeCopyBlock.pixelX;
+        this.pixelY = toBeCopyBlock.pixelY;
+        this.rectangle.setX(toBeCopyBlock.rectangle.getX());
+        this.rectangle.setY(toBeCopyBlock.rectangle.getY());
+    }
     public void dropSmoothly(int numBlocks) {
         col += numBlocks;
         pixelY += numBlocks * BLOCK_SIZE;
 
         int dropPixelDistance = numBlocks * BLOCK_SIZE;
 
-        TranslateTransition transition = new TranslateTransition(Duration.millis(BLOCK_DROPING_DURATION), rectangle);
+        TranslateTransition transition = new TranslateTransition(Duration.millis(BLOCK_DROPPING_DURATION), rectangle);
         transition.setByY(dropPixelDistance); // Move down by dropPixelDistance pixels
 
         // After dropping, set the rectangle position.
