@@ -1,0 +1,160 @@
+package tetris.block;
+
+
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.RadialGradient;
+import javafx.scene.paint.Stop;
+
+import java.awt.*;
+
+import static tetris.util.TetrisConstants.*;
+
+public class MinoBlock extends Block {
+    private Color color;
+    private Color darkColor;
+    private Color superDarkColor;
+    private Color ultraDarkColor;
+    private int margin;
+    private Color shadowColor;
+
+    public MinoBlock(Color color) {
+        this.color = color;
+        this.margin = 2;
+
+        // Extract RGB components (JavaFX uses 0-1 range, so we convert)
+        double red = color.getRed();
+        double green = color.getGreen();
+        double blue = color.getBlue();
+
+        float div = 2f;
+        float div2 = 5f; // for superDark
+        float div3 = 7f; // ultraDark (glow)
+
+        // Calculate darker colors
+        this.darkColor = Color.rgb(
+                (int) Math.round(red * 255 / div),
+                (int) Math.round(green * 255 / div),
+                (int) Math.round(blue * 255 / div)
+        );
+
+        this.superDarkColor = Color.rgb(
+                (int) Math.round(red * 255 / div2),
+                (int) Math.round(green * 255 / div2),
+                (int) Math.round(blue * 255 / div2)
+        );
+
+        this.ultraDarkColor = Color.rgb(
+                (int) Math.round(red * 255 / div3),
+                (int) Math.round(green * 255 / div3),
+                (int) Math.round(blue * 255 / div3)
+        );
+
+        this.shadowColor = color;
+
+        // Special handling for blue
+        if (color.equals(Color.BLUE)) {
+            this.shadowColor = Color.rgb(0, 100, 255);
+            div2 = 4f;
+            this.superDarkColor = Color.rgb(0, 8, (int) Math.round(blue * 255 / div2));
+            div3 = 5f;
+            this.ultraDarkColor = Color.rgb(0, 10, (int) Math.round(blue * 255 / div3));
+        }
+        // Special handling for red
+        else if (color.equals(Color.RED)) {
+            this.shadowColor = Color.RED;
+        }
+    }
+
+    /**
+     *
+     * @param gc
+     * @param workingCounter start from 0 to duration - 1
+     */
+    public void drawFading(GraphicsContext gc, int workingCounter) {
+        this.drawRemove(gc);
+
+        double alpha = 1.0 - (workingCounter / (BLOCK_FADING_DURATION - 1));
+        alpha = Math.max(0, alpha);  // Clamp to 0 if alpha goes below 0
+
+        this.darkColor = new Color(darkColor.getRed(), darkColor.getGreen(), darkColor.getBlue(), alpha);
+        this.superDarkColor = new Color(superDarkColor.getRed(), superDarkColor.getGreen(), superDarkColor.getBlue(), alpha);
+        this.ultraDarkColor = new Color(ultraDarkColor.getRed(), ultraDarkColor.getGreen(), ultraDarkColor.getBlue(), alpha);
+
+        this.drawAdd(gc);
+
+        if (workingCounter == BLOCK_FADING_DURATION - 1) {
+            this.drawRemove(gc);
+        }
+    }
+    /**
+     *
+     * @param gc
+     * @param workingCounter start from 0 to duration - 1
+     */
+    public void drawFalling(GraphicsContext gc, int workingCounter, int numLinesFall) {
+        assert workingCounter < BLOCK_FALLING_DURATION;
+
+        int finalPixelY = row * BLOCK_SIZE;
+
+
+        int fallHeight = numLinesFall * BLOCK_SIZE;
+
+        drawRemove(gc);
+
+        pixelY = finalPixelY - fallHeight + ((workingCounter * fallHeight) / BLOCK_FALLING_DURATION - 1); // finalPixelY + (workingCounter - BLOCK_FALLING_DURATION) * fallHeight / BLOCK_FALLING_DURATION;
+        if (workingCounter == BLOCK_FALLING_DURATION - 1) {
+            pixelY = finalPixelY; // snap
+        }
+        drawAdd(gc);
+    }
+
+    public void drawAdd(GraphicsContext gc) {
+            // Create radial gradient (equivalent to RadialGradientPaint)
+            RadialGradient gradient = new RadialGradient(
+                    0,                      // focusAngle
+                    0,                      // focusDistance
+                    pixelX + BLOCK_SIZE/2,             // centerX
+                    pixelY + BLOCK_SIZE/2,             // centerY
+                    30,                     // radius
+                    false,                  // proportional
+                    CycleMethod.NO_CYCLE,   // cycleMethod
+                    new Stop(0, superDarkColor),
+                    new Stop(1, darkColor)
+            );
+
+            // Set line width (equivalent to BasicStroke)
+            gc.setLineWidth(1.0);
+
+            // Edge glow effect
+            gc.setFill(ultraDarkColor);
+            gc.fillRect(pixelX, pixelY, BLOCK_SIZE, BLOCK_SIZE);
+
+            gc.setFill(superDarkColor);
+            gc.fillRect(pixelX+1, pixelY+1, BLOCK_SIZE-2, BLOCK_SIZE-2);
+
+            // Inner rectangle with gradient
+            gc.setFill(gradient);
+            gc.fillRect(pixelX+3, pixelY+3, BLOCK_SIZE-6, BLOCK_SIZE-6);
+
+            // Outer rectangle border
+            gc.setStroke(shadowColor);
+            gc.strokeRect(pixelX+2, pixelY+2, BLOCK_SIZE-4, BLOCK_SIZE-4);
+
+            // Reset stroke width
+            gc.setLineWidth(4.0);
+
+            //gc.setFill(Color.WHITE);
+            //gc.fillRect(pixelX, pixelY, BLOCK_SIZE, BLOCK_SIZE);
+    }
+
+    public void drawRemove(GraphicsContext gc) {
+        gc.clearRect(pixelX, pixelY, BLOCK_SIZE, BLOCK_SIZE);
+    }
+
+
+
+
+
+}

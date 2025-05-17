@@ -14,16 +14,14 @@ import static tetris.util.TetrisConstants.*;
 
 public class Block {
     private Rectangle rectangle;
-    private int row;  // row on the 20x10 matrix playing field
-    private int col;  // column on the 20x10 matrix playing field
+    protected int row;  // row on the 20x10 matrix playing field
+    protected int col;  // column on the 20x10 matrix playing field
     private int prevPixelX;
     private int prevPixelY;
-    private int pixelX; // X coordinate for the rectangle position in the UI
-    private int pixelY; // Y coordinate for the rectangle position in the UI
-    private Color color;
-    private boolean isShadowBlock;
+    public int pixelX; // X coordinate for the rectangle position in the UI
+    public int pixelY; // Y coordinate for the rectangle position in the UI
 
-    public Block(Color color, boolean isShadowBlock) {
+    public Block() {
         /*
         this.row = MINO_START_Y;
         this.col = MINO_START_X;
@@ -33,15 +31,20 @@ public class Block {
         this.isPrevCoordinateImmutable = false;*/
 
         rectangle = new Rectangle(BLOCK_SIZE, BLOCK_SIZE);
+        rectangle.setFill(Color.TRANSPARENT);
         //rectangle.setX(MINO_START_PIXEL_X);
         //rectangle.setY(MINO_START_PIXEL_Y);
-
+/*
         this.isShadowBlock = isShadowBlock;
         if (isShadowBlock) {
-            rectangle.setFill(Color.GRAY);
+            //rectangle.setFill(Color.GRAY);
+            rectangle.setFill(Color.TRANSPARENT);
+            this.color = Color.GREY;
         } else {
-            rectangle.setFill(color);
-        }
+            //rectangle.setFill(color);
+            rectangle.setFill(Color.TRANSPARENT);
+            this.color = color;
+        }*/
     }
 
     public Rectangle getRectangle() {
@@ -122,6 +125,13 @@ public class Block {
         this.rectangle.setX(toBeCopyBlock.rectangle.getX());
         this.rectangle.setY(toBeCopyBlock.rectangle.getY());
     }
+    public void dropImmediately(int numLineDrop) {
+        row += numLineDrop;
+    }
+    public void dropSmoothly(int numLineDrop, int effectCounter) {
+
+    }
+    /*
     public void dropSmoothly(int numBlocks) {
         col += numBlocks;
         pixelY += numBlocks * BLOCK_SIZE;
@@ -139,7 +149,8 @@ public class Block {
             rectangle.setTranslateY(0); // Reset the translation
         });
         transition.play();
-    }
+    }*/
+    /*
     public void fade(Pane playingField) {
         FadeTransition fade = new FadeTransition(Duration.millis(BLOCK_FADING_DURATION), rectangle); // 500ms fade out
         fade.setFromValue(1.0);  // Fully visible
@@ -150,22 +161,19 @@ public class Block {
 
         // Start the animation
         fade.play();
-    }
+    }*/
+
+
 
     public void drawAdd(GraphicsContext gc) {
 
+        /*
+        gc.setFill(color);
+        gc.fillRect(pixelX, pixelY, 30, 30);*/
     }
 
-    public void drawRemovePrevPosition(GraphicsContext gc) {
-
-    }
-
-    public void drawRemoveCurrentPosition(GraphicsContext gc) {
-
-    }
-
-    public void drawMove(GraphicsContext gc) {
-
+    public void drawRemove(GraphicsContext gc) {
+        gc.clearRect(pixelX, pixelY, BLOCK_SIZE, BLOCK_SIZE);
     }
 
 }

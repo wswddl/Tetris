@@ -8,8 +8,8 @@ import tetris.util.Copyable;
 import static tetris.util.TetrisConstants.*;
 
 public abstract class Mino implements Copyable<Mino> {
-    public Block[] blocks;
-    public Block[] shadowBlocks;
+    public MinoBlock[] blocks;
+    public ShadowBlock[] shadowBlocks;
     public GhostBlock[] ghostBlocks;
     public int direction = 1;  // 1, 2, 3, 4 directions
     public boolean leftCollision, rightCollision, bottomCollision;
@@ -26,14 +26,14 @@ public abstract class Mino implements Copyable<Mino> {
         this.shadowColor = color;
         this.isActive = true;
 
-        blocks = new Block[NUM_OF_BLOCKS_PER_MINO];
-        shadowBlocks = new Block[NUM_OF_BLOCKS_PER_MINO];
+        blocks = new MinoBlock[NUM_OF_BLOCKS_PER_MINO];
+        shadowBlocks = new ShadowBlock[NUM_OF_BLOCKS_PER_MINO];
         ghostBlocks = new GhostBlock[NUM_OF_BLOCKS_PER_MINO];
 
         for (int i = 0; i < NUM_OF_BLOCKS_PER_MINO; i++) {
-            blocks[i] = new Block(color, false);
+            blocks[i] = new MinoBlock(color);
 
-            shadowBlocks[i] = new Block(color, true);
+            shadowBlocks[i] = new ShadowBlock(color);
 
             ghostBlocks[i] = new GhostBlock();
         }
@@ -91,8 +91,6 @@ public abstract class Mino implements Copyable<Mino> {
      * boundary, this method will try to find an alternate position to "snap" the mino in place. If no alternate
      * position can be found, the mino won't be rotated.
      * Try snapping it to the left, right, bottom, bottom left, bottom right, top left and top right.</>
-     *
-     * @return true if the mino is being push upwards, else return false;
      */
     public void tryRotatingMino(Block[][] inactiveBlockArray, Controller gameController) {
         int altPosition = 1;

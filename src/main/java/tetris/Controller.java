@@ -1,21 +1,34 @@
 package tetris;
 
-import tetris.block.*;
 import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
+import tetris.block.Block;
+import tetris.block.Mino;
+import tetris.block.MinoBlock;
+import tetris.block.MinoI;
+import tetris.block.MinoJ;
+import tetris.block.MinoL;
+import tetris.block.MinoO;
+import tetris.block.MinoS;
+import tetris.block.MinoT;
+import tetris.block.MinoZ;
+import tetris.ui.UiManager;
 
 import static tetris.util.TetrisConstants.*;
 
 public class Controller {
 
+    // ui
     @FXML
     private Pane holdMinoBox;
     @FXML
     private Pane playingField;
     @FXML
     private Pane nextMinoBox;
+    private UiManager ui;
 
-    private Block[][] inactiveBlocksArray; // only keep track of inactive blocks, not including active blocks
+    // minos
+    private MinoBlock[][] inactiveBlocksArray; // only keep track of inactive blocks, not including active blocks
     public Bag<Mino> bagOfMinos;
     public Mino currentMino;
     private Mino nextMino;
@@ -25,6 +38,7 @@ public class Controller {
     private boolean leftCollision, rightCollision, bottomCollision;
     private boolean allowSwapMino;
     private boolean isDeactivating;
+    private boolean isEffectOn; // effect is on when there is line removal
 
     public boolean isGameOver;
     public boolean isTimesUp;
@@ -33,6 +47,7 @@ public class Controller {
     private int deactivateCounter;
     private int autoDropCounter;
     private int gameCounter;
+    private int effectCounter;
     private final int GAME_DURATION = 2 * 60 * FPS; // 2 minutes gameplay
     
     // =================================================
@@ -43,7 +58,10 @@ public class Controller {
      * Is called by loader.load()
      */
     public void initialize() {
-        this.inactiveBlocksArray = new Block[NUM_OF_ROW][NUM_OF_COL];
+        ui = new UiManager(playingField, nextMinoBox, holdMinoBox);
+        ui.drawPlayingFieldGrid();
+
+        this.inactiveBlocksArray = new MinoBlock[NUM_OF_ROW][NUM_OF_COL];
 
         this.fillInBagOfMinos();
         this.initializeMinos();
@@ -55,6 +73,7 @@ public class Controller {
                 new MinoS(), new MinoT(), new MinoZ());
     }
     private void initializeMinos() {
+        assert bagOfMinos != null;
         assert bagOfMinos != null;
 
         currentMino = bagOfMinos.pickRandomly();
@@ -68,12 +87,14 @@ public class Controller {
         this.deactivateCounter = 0;
         this.autoDropCounter = 0;
         this.gameCounter = 0;
+        this.effectCounter = 0;
     }
     private void initializeSignals() {
         leftCollision = false;
         rightCollision = false;
         bottomCollision = false;
         isDeactivating = false;
+        isEffectOn = false;
         isGameOver = false;
         isTimesUp = false;
 
@@ -89,6 +110,11 @@ public class Controller {
         mino.setShadowPosition(inactiveBlocksArray);
 
         // add shadow blocks before normal blocks so the normal block will be in front when they overlap
+        ui.addMinoShadowInPlayingField(mino);
+        ui.addMinoInPlayingField(mino);
+
+        // TODO: remove
+        // add shadow blocks before normal blocks so the normal block will be in front when they overlap
         for (int i = 0; i < NUM_OF_BLOCKS_PER_MINO; i++) {
             playingField.getChildren().add(mino.shadowBlocks[i].getRectangle());
         }
@@ -99,35 +125,56 @@ public class Controller {
 
     }
     public void removeMinoFromPlayingField(Mino mino) {
+        ui.removeMinoFromPlayingField(mino);
+        ui.removeMinoShadowFromPlayingField(mino);
+
+        // TODO: remove
         for (int i = 0; i < NUM_OF_BLOCKS_PER_MINO; i++) {
             playingField.getChildren().remove(mino.shadowBlocks[i].getRectangle());
             playingField.getChildren().remove(mino.blocks[i].getRectangle());
         }
     }
+    // TODO: remove
     public void removeBlockFromPlayingField(Block toBeRemovedBlock) {
         playingField.getChildren().remove(toBeRemovedBlock.getRectangle());
     }
     public void addMinoToNextMinoBox(Mino mino) {
         mino.setNextAndHoldBoxPosition();
+
+        // TODO: remove
         for (Block block : mino.blocks) {
             nextMinoBox.getChildren().add(block.getRectangle());
         }
+
+        ui.addMinoInNextBox(mino);
     }
     public void removeMinoFromNextMinoBox(Mino mino) {
+
+        // TODO: remove
         for (Block block : mino.blocks) {
             nextMinoBox.getChildren().remove(block.getRectangle());
         }
+
+        ui.removeMinoFromNextBox(mino);
     }
     public void addMinoToHoldMinoBox(Mino mino) {
         mino.setNextAndHoldBoxPosition();
+
+        // TODO: remove
         for (Block block : mino.blocks) {
             holdMinoBox.getChildren().add(block.getRectangle());
         }
+
+        ui.addMinoInHoldBox(mino);
     }
     public void removeMinoFromHoldMinoBox(Mino mino) {
+
+        // TODO: remove
         for (Block block : mino.blocks) {
             holdMinoBox.getChildren().remove(block.getRectangle());
         }
+
+        ui.removeMinoFromHoldBox(mino);
     }
     
     // =================================================
@@ -142,8 +189,13 @@ public class Controller {
 
         if (currentMino.isActive() && KeyInputHandler.holdPress && allowSwapMino) {
             handleHoldPress();
-        } else if (currentMino.isActive()) {
+        } else if (currentMino.isActive()){
             updateWhenMinoIsActiveOnly();
+            if (isEffectOn) {
+                // current mino is active (next round) but the effect is still going on
+                // don't proceed the game (by not calling updateWhenMinoIsActiveOnly()) until the effect is over
+                handleClearLineSpecialEffect();
+            }
         } else {
             updateWhenMinoIsInactiveOnly();
         }
@@ -233,26 +285,45 @@ public class Controller {
         } else {
             this.autoDropCounter++;
             if (autoDropCounter == AUTO_DROP_INTERVAL) {
+
+                ui.removeMinoFromPlayingField(currentMino);
                 currentMino.moveDown();
+                ui.addMinoInPlayingField(currentMino);
+
                 autoDropCounter = 0;
             }
         }
     }
     private void handleUpPress() {
-        // rotate
+        // Clear UI
+        ui.removeMinoFromPlayingField(currentMino);
+        ui.removeMinoShadowFromPlayingField(currentMino);
+
+        // set the ghost block position (rotation)
         switch(currentMino.direction) {
             case 1: currentMino.getD2(); break;
             case 2: currentMino.getD3(); break;
             case 3: currentMino.getD4(); break;
             case 4: currentMino.getD1(); break;
         }
+        // try to rotate the mino and snap to valid position
         currentMino.tryRotatingMino(inactiveBlocksArray, this);
         // after rotation, set the shadow position again
         currentMino.setShadowPosition(inactiveBlocksArray);
+
+        // Set UI
+        // Note: the order of adding mino shadow and mino doesn't matter since different Canvas object is used.
+        ui.addMinoShadowInPlayingField(currentMino);
+        ui.addMinoInPlayingField(currentMino);
+
+
         KeyInputHandler.upPress = false;
     }
     private void handleHoldPress() {
         if (holdMino == null) {
+            // clear UI
+            removeMinoFromPlayingField(currentMino);
+            removeMinoFromNextMinoBox(nextMino);
 
             // update minos
             holdMino = currentMino;
@@ -263,15 +334,15 @@ public class Controller {
             nextMino.setNextAndHoldBoxPosition();
 
             // update UI
-            removeMinoFromPlayingField(holdMino);
-            removeMinoFromNextMinoBox(nextMino);
 
             addMinoToPlayingField(currentMino);
             addMinoToNextMinoBox(nextMino);
             addMinoToHoldMinoBox(holdMino);
 
         } else {
-            System.out.println("handling hold press BUT HOLD NOT NULL");
+            // clear UI
+            removeMinoFromPlayingField(currentMino);
+            removeMinoFromHoldMinoBox(holdMino);
 
             // swap hold and current mino
             Mino tempMino = currentMino;
@@ -281,9 +352,6 @@ public class Controller {
             holdMino.setNextAndHoldBoxPosition();
 
             // update UI
-            removeMinoFromPlayingField(holdMino);
-            removeMinoFromHoldMinoBox(currentMino);
-
             addMinoToPlayingField(currentMino);
             addMinoToHoldMinoBox(holdMino);
         }
@@ -294,51 +362,73 @@ public class Controller {
         //TetrisPanel.soundEffect.play(11, false); // TODO: sound effect for hold
     }
     private void handleSpacePress() {
+
+        // Clear UI
+        ui.removeMinoFromPlayingField(currentMino); // Note: don't need to remove shadow in UI as it doesn't change position
+        ui.removeMinoShadowFromPlayingField(currentMino);
+
         while(!bottomCollision) {
             currentMino.moveDown();
             this.checkCurrentMinoMovementCollision();
         }
         // deactivate immediately
         this.currentMino.deactivate(playingField);
-        // ui.removeMinoShadow();
+
+        // Set UI
+        ui.addMinoInPlayingField(currentMino);
+
+        autoDropCounter = 0;
         KeyInputHandler.spacePress = false;
 
         // Sound effect for Space
         //TetrisPanel.soundEffect.play(12, false); TODO: sound effect for space
     }
     private void handleDownPress() {
+        // Clear UI
+        ui.removeMinoFromPlayingField(currentMino); // Note: don't need to remove shadow in UI as it doesn't change position
+
         if (!bottomCollision) {
+            // ui.removeMinoInPlayingField(currentMino);
             currentMino.moveDown();
             autoDropCounter = 0;
-            // ui.updateMinoPositionInPlayingField(mino);
+            // ui.addMinoInPlayingField(currentMino);
         }
+
+        // Set UI
+        ui.addMinoInPlayingField(currentMino);
 
         KeyInputHandler.downPress = false;
     }
     private void handleLeftPress() {
         if (!leftCollision) {
+            // Clear UI
+            ui.removeMinoFromPlayingField(currentMino);
+            ui.removeMinoShadowFromPlayingField(currentMino);
+
             currentMino.moveLeft();
             // after moving to the left, set the shadow position again
-
-            // ui.removeShadow(mino);
             currentMino.setShadowPosition(inactiveBlocksArray);
-            // ui.addBackShadow(mino);
 
-            // ui.updateMinoPositionInPlayingField(mino);
+            // Set UI
+            ui.addMinoInPlayingField(currentMino);
+            ui.addMinoShadowInPlayingField(currentMino);
 
         }
         KeyInputHandler.leftPress = false;
     }
     private void handleRightPress() {
         if (!rightCollision) {
+            // Clear UI
+            ui.removeMinoFromPlayingField(currentMino);
+            ui.removeMinoShadowFromPlayingField(currentMino);
+
             currentMino.moveRight();
             // after moving to the right, set the shadow position again
-
-            // ui.removeShadow(mino);
             currentMino.setShadowPosition(inactiveBlocksArray);
-            // ui.addBackShadow(mino);
 
-            // ui.updateMinoPositionInPlayingField(mino);
+            // Set UI
+            ui.addMinoInPlayingField(currentMino);
+            ui.addMinoShadowInPlayingField(currentMino);
         }
         KeyInputHandler.rightPress = false;
     }
@@ -353,7 +443,8 @@ public class Controller {
      * playing field, else drop the inactive blocks on top to fill in the gap of the deleted row.
      */
     private void checkRemoveLine() {
-        int numLineClear = 0;
+        int numLinesClear = 0;
+        boolean gotLineRemoval = false;
         for (int r = NUM_OF_ROW - 1; r >= 0; r--) {
             int numBlocksInARow = 0;
             for (int c = 0; c < NUM_OF_COL; c++) {
@@ -363,25 +454,32 @@ public class Controller {
             }
             // remove line
             if (numBlocksInARow == NUM_OF_COL) {
-                numLineClear++;
+                gotLineRemoval = true;
+                this.isEffectOn = true;
+                numLinesClear++;
                 for (int c = 0; c < inactiveBlocksArray[0].length; c++) {
-                    Block toBeRemovedBlock = inactiveBlocksArray[r][c];
+                    MinoBlock toBeRemovedBlock = inactiveBlocksArray[r][c];
                     if (toBeRemovedBlock != null) {
-                        toBeRemovedBlock.fade(playingField); // fade the block out and remove it from playing field
-                        // ui.fadeBlock(toBeRemovedBlock);
-
+                        //ui.removeBlock(toBeRemovedBlock);
+                        ui.addFadingBlock(toBeRemovedBlock);
                         inactiveBlocksArray[r][c] = null;
                     }
                 }
             } else {
                 for (int c = 0; c < inactiveBlocksArray[0].length; c++) {
-                    Block toBeDropBlock = inactiveBlocksArray[r][c];
-                    if (toBeDropBlock != null) {
-                        toBeDropBlock.dropSmoothly(numLineClear); // drop the block numLineClear number of rows
-                        // ui.dropBlockSmoothly(toBeDropBlock, numLineClear);
+                    MinoBlock fallingBlock = inactiveBlocksArray[r][c];
+                    if (fallingBlock != null) {
+                        //toBeDropBlock.dropSmoothly(numLineClear); // drop the block numLineClear number of rows
+                        //ui.dropBlockSmoothly(toBeDropBlock, numLineClear);
+                        //ui.removeBlock(fallingBlock);
+                        //ui.addBlock(fallingBlock);
+                        if (gotLineRemoval) {
+                            fallingBlock.dropImmediately(numLinesClear);
+                            ui.addFallingBlock(fallingBlock, numLinesClear);
+                            inactiveBlocksArray[r][c] = null;
+                            inactiveBlocksArray[r + numLinesClear][c] = fallingBlock;
+                        }
 
-                        inactiveBlocksArray[r][c] = null;
-                        inactiveBlocksArray[r + numLineClear][c] = toBeDropBlock;
                     }
                 }
             }
@@ -459,7 +557,26 @@ public class Controller {
         }
     }
     
+    // =================================================
+    // Handle special effects
+    // =================================================
 
+    public void handleClearLineSpecialEffect() {
+        ui.handleClearLineSpecialEffect(effectCounter, SPECIAL_EFFECT_DURATION);
+
+        effectCounter++;
+
+        if (effectCounter > SPECIAL_EFFECT_DURATION) {
+            // clear cached block in ui
+            ui.clear();
+            System.out.println("check ui cache is empty = " + (ui.fallingBlocks.size() == 0 && ui.fadingBlocks.size() == 0));
+
+            isEffectOn = false;
+            effectCounter = 0;
+        }
+
+
+    }
     
 
     

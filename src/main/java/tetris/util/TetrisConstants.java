@@ -1,5 +1,7 @@
 package tetris.util;
 
+import javafx.scene.paint.Color;
+
 public class TetrisConstants {
 
     // =================================================
@@ -19,9 +21,11 @@ public class TetrisConstants {
     public static final int PLAYING_FIELD_WIDTH = NUM_OF_COL * BLOCK_SIZE;
     public static final int LEFTMOST_PIXEL = 0;
     public static final int LEFTMOST_X = 0;
-    public static final int RIGHTMOST_PIXEL = NUM_OF_COL * BLOCK_SIZE;
+    public static final int RIGHTMOST_PIXEL = NUM_OF_COL * BLOCK_SIZE - 1;
     public static final int RIGHTMOST_X = NUM_OF_COL - 1;
+    public static final int TOPMOST_PIXEL = 0;
     public static final int TOPMOST_Y = 0;
+    public static final int BOTTOMMOST_PIXEL = NUM_OF_ROW * BLOCK_SIZE - 1;
     public static final int BOTTOMMOST_Y = NUM_OF_ROW - 1;
 
     // =================================================
@@ -46,7 +50,15 @@ public class TetrisConstants {
 
     public static final int FPS = 120;
     public static final int DEACTIVATE_INTERVAL = FPS;
+    public static final int SPECIAL_EFFECT_DURATION = 30;
     public static final int AUTO_DROP_INTERVAL = 120 * 3 / 4; // adjust the dropping speed of minos
-    public static final double BLOCK_FADING_DURATION = 70.0; // in millisecond, around 8 frames when FPS is 120
-    public static final double BLOCK_DROPPING_DURATION = 70.0; // in millisecond, around 8 frames when FPS is 120
+    public static final int BLOCK_FADING_DURATION = 7; // in millisecond, around 8 frames when FPS is 120
+    public static final int BLOCK_FALLING_DURATION = 8; // in millisecond, around 8 frames when FPS is 120
+
+    // =================================================
+    // Colors and Designs
+    // =================================================
+    public static final Color PLAYING_FIELD_GRID_LIGHT_GREY = Color.rgb(15, 15, 15);
+    public static final Color PLAYING_FIELD_GRID_GREY = Color.rgb(8, 8, 8);
+
 }
