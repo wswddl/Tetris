@@ -2,10 +2,12 @@ package tetris.block;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import tetris.util.GameSignal;
 
 import static tetris.util.TetrisConstants.*;
 
@@ -14,19 +16,25 @@ public class Block {
     private Rectangle rectangle;
     private int row;  // row on the 20x10 matrix playing field
     private int col;  // column on the 20x10 matrix playing field
+    private int prevPixelX;
+    private int prevPixelY;
     private int pixelX; // X coordinate for the rectangle position in the UI
     private int pixelY; // Y coordinate for the rectangle position in the UI
     private Color color;
     private boolean isShadowBlock;
 
     public Block(Color color, boolean isShadowBlock) {
+        /*
         this.row = MINO_START_Y;
         this.col = MINO_START_X;
+        prevPixelX =
         this.pixelX = MINO_START_PIXEL_X;
         this.pixelY = MINO_START_PIXEL_Y;
+        this.isPrevCoordinateImmutable = false;*/
+
         rectangle = new Rectangle(BLOCK_SIZE, BLOCK_SIZE);
-        rectangle.setX(MINO_START_PIXEL_X);
-        rectangle.setY(MINO_START_PIXEL_Y);
+        //rectangle.setX(MINO_START_PIXEL_X);
+        //rectangle.setY(MINO_START_PIXEL_Y);
 
         this.isShadowBlock = isShadowBlock;
         if (isShadowBlock) {
@@ -49,6 +57,7 @@ public class Block {
     // Might be used in the future for auto-fitting
     public void moveUp() {
         this.row--;
+        this.prevPixelY = this.pixelY;
         this.pixelY -= BLOCK_SIZE;
 
         double oldPixelY = rectangle.getY();
@@ -56,6 +65,7 @@ public class Block {
     }
     public void moveDown() {
         this.row++;
+        this.prevPixelY = this.pixelY;
         this.pixelY += BLOCK_SIZE;
 
         double oldPixelY = rectangle.getY();
@@ -63,6 +73,7 @@ public class Block {
     }
     public void moveLeft() {
         this.col--;
+        this.prevPixelX = this.pixelX;
         this.pixelX -= BLOCK_SIZE;
 
         double oldPixelX = rectangle.getX();
@@ -70,6 +81,7 @@ public class Block {
     }
     public void moveRight() {
         this.col++;
+        this.prevPixelX = this.pixelX;
         this.pixelX += BLOCK_SIZE;
 
         double oldPixelX = rectangle.getX();
@@ -80,6 +92,8 @@ public class Block {
         rectangle.setX(pixelX);
         rectangle.setY(pixelY);
 
+        this.prevPixelX = pixelX;
+        this.prevPixelY = pixelY;
         this.pixelX = pixelX;
         this.pixelY = pixelY;
 
@@ -90,6 +104,8 @@ public class Block {
         rectangle.setX(pixelX);
         rectangle.setY(pixelY);
 
+        this.prevPixelX = this.pixelY;
+        this.prevPixelY = this.pixelY;
         this.pixelX = pixelX;
         this.pixelY = pixelY;
     }
@@ -99,6 +115,8 @@ public class Block {
     public void copyPosition(Block toBeCopyBlock) {
         this.row = toBeCopyBlock.row;
         this.col = toBeCopyBlock.col;
+        this.prevPixelX = toBeCopyBlock.prevPixelX;
+        this.prevPixelY = toBeCopyBlock.prevPixelY;
         this.pixelX = toBeCopyBlock.pixelX;
         this.pixelY = toBeCopyBlock.pixelY;
         this.rectangle.setX(toBeCopyBlock.rectangle.getX());
@@ -134,5 +152,20 @@ public class Block {
         fade.play();
     }
 
+    public void drawAdd(GraphicsContext gc) {
+
+    }
+
+    public void drawRemovePrevPosition(GraphicsContext gc) {
+
+    }
+
+    public void drawRemoveCurrentPosition(GraphicsContext gc) {
+
+    }
+
+    public void drawMove(GraphicsContext gc) {
+
+    }
 
 }

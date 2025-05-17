@@ -1,5 +1,6 @@
 package tetris.block;
 
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import tetris.Controller;
 import tetris.util.Copyable;
@@ -45,11 +46,13 @@ public abstract class Mino implements Copyable<Mino> {
     /**
      * set {@code isActive} to false and remove the shadow blocks from playing field pane
      */
-    public void deactivate(Controller gameController) {
+    public void deactivate(Pane playingField) {
         isActive = false;
+        // TODO: remove this shit down here, no more handling of ui here
         for (Block shadowBlock : shadowBlocks) {
-            gameController.removeBlockFromPlayingField(shadowBlock);
+            playingField.getChildren().remove(shadowBlock.getRectangle());
         }
+
     }
 
     // =================================================
