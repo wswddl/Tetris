@@ -39,7 +39,7 @@ public class Controller {
     private boolean allowSwapMino;
     private boolean isDeactivating;
     private boolean isEffectOn; // effect is on when there is line removal
-
+    private boolean isTSpin;
     public boolean isGameOver;
     public boolean isTimesUp;
 
@@ -97,6 +97,7 @@ public class Controller {
         bottomCollision = false;
         isDeactivating = false;
         isEffectOn = false;
+        isTSpin = false;
         isGameOver = false;
         isTimesUp = false;
 
@@ -193,12 +194,7 @@ public class Controller {
 
     }
     private void updateWhenMinoIsInactiveOnly() {
-        for (int i = 0; i < NUM_OF_BLOCKS_PER_MINO; i++) {
-            int row = currentMino.blocks[i].getRow();
-            int col = currentMino.blocks[i].getCol();
-            inactiveBlocksArray[row][col] = currentMino.blocks[i];
-        }
-        this.checkRemoveLine();
+        this.handleRemoveLine();
 
         // Clear UI
         removeMinoFromNextMinoBox(nextMino);
@@ -415,9 +411,20 @@ public class Controller {
      * Starts from the lowest row to the top, if there is a full row (10 blocks in a row), remove it from the
      * playing field, else drop the inactive blocks on top to fill in the gap of the deleted row.
      */
-    private void checkRemoveLine() {
+    private void handleRemoveLine() {
         int numLinesClear = 0;
         boolean gotLineRemoval = false;
+
+        // check if it is potentially a t spin before adding current mino into inactive block array
+        boolean isPotentialTSpin = currentMino.checkTSpinConfiguration(inactiveBlocksArray);
+
+        // add the current mino blocks into the inactive block array
+        for (int i = 0; i < NUM_OF_BLOCKS_PER_MINO; i++) {
+            int row = currentMino.blocks[i].getRow();
+            int col = currentMino.blocks[i].getCol();
+            inactiveBlocksArray[row][col] = currentMino.blocks[i];
+        }
+
         for (int r = NUM_OF_ROW - 1; r >= 0; r--) {
             int numBlocksInARow = 0;
             for (int c = 0; c < NUM_OF_COL; c++) {
@@ -428,12 +435,10 @@ public class Controller {
             // remove line
             if (numBlocksInARow == NUM_OF_COL) {
                 gotLineRemoval = true;
-                this.isEffectOn = true;
                 numLinesClear++;
                 for (int c = 0; c < inactiveBlocksArray[0].length; c++) {
                     MinoBlock toBeRemovedBlock = inactiveBlocksArray[r][c];
                     if (toBeRemovedBlock != null) {
-                        //ui.removeBlock(toBeRemovedBlock);
                         ui.addFadingBlock(toBeRemovedBlock);
                         inactiveBlocksArray[r][c] = null;
                     }
@@ -441,22 +446,24 @@ public class Controller {
             } else {
                 for (int c = 0; c < inactiveBlocksArray[0].length; c++) {
                     MinoBlock fallingBlock = inactiveBlocksArray[r][c];
-                    if (fallingBlock != null) {
-                        //toBeDropBlock.dropSmoothly(numLineClear); // drop the block numLineClear number of rows
-                        //ui.dropBlockSmoothly(toBeDropBlock, numLineClear);
-                        //ui.removeBlock(fallingBlock);
-                        //ui.addBlock(fallingBlock);
-                        if (gotLineRemoval) {
-                            fallingBlock.dropImmediately(numLinesClear);
-                            ui.addFallingBlock(fallingBlock, numLinesClear);
-                            inactiveBlocksArray[r][c] = null;
-                            inactiveBlocksArray[r + numLinesClear][c] = fallingBlock;
-                        }
-
+                    if (fallingBlock != null && gotLineRemoval) {
+                        fallingBlock.dropImmediately(numLinesClear);
+                        ui.addFallingBlock(fallingBlock, numLinesClear);
+                        inactiveBlocksArray[r][c] = null;
+                        inactiveBlocksArray[r + numLinesClear][c] = fallingBlock;
                     }
                 }
             }
         }
+        // after scanning through the board
+        if (gotLineRemoval) {
+            this.isEffectOn = true;
+            this.isTSpin = isPotentialTSpin;
+            if (isTSpin) {
+                // TODO: t spin sound effect
+            }
+        }
+
     }
     
     // =================================================
@@ -534,17 +541,24 @@ public class Controller {
     // Handle special effects
     // =================================================
 
+    /**
+     * Handles special effects when there is a line cleared.
+     */
     public void handleClearLineSpecialEffect() {
         ui.handleClearLineSpecialEffect(effectCounter, SPECIAL_EFFECT_DURATION);
+
+        if (isTSpin) {
+            // ui.handleTSpinSpecialEffect(effectCounter);
+        }
 
         effectCounter++;
 
         if (effectCounter > SPECIAL_EFFECT_DURATION) {
             // clear cached block in ui
             ui.clear();
-            System.out.println("check ui cache is empty = " + (ui.fallingBlocks.size() == 0 && ui.fadingBlocks.size() == 0));
 
             isEffectOn = false;
+            isTSpin = false;
             effectCounter = 0;
         }
 

@@ -227,6 +227,16 @@ public abstract class Mino implements Copyable<Mino> {
         return false;
     }
 
+    /**
+     * Checks if there is any inactive block on top of the T mino.
+     * This method is called when clearing a line.
+     * @return false for non-T-shape minos, for T-shape mino, return true if there is any inactive block on top of it,
+     * else return false.
+     */
+    public boolean checkTSpinConfiguration(Block[][] inactiveBlocks) {
+        return false; // overriden by MinoT
+    }
+
     // =================================================
     // Abstract methods
     // =================================================

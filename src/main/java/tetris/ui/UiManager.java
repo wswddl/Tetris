@@ -36,8 +36,8 @@ public class UiManager {
     private GraphicsContext shadowGC; // Draw the minos' shadow in the playing field
 
     // Keeps data for animation
-    public ArrayList<MinoBlock> fadingBlocks;
-    public ArrayList<MinoBlock> fallingBlocks;
+    private ArrayList<MinoBlock> fadingBlocks;
+    private ArrayList<MinoBlock> fallingBlocks;
     private ArrayList<Integer> numLinesFallList;
 
     public Parent root;
@@ -189,10 +189,7 @@ public class UiManager {
             int workingCounter = effectCounter;
             for (MinoBlock fadingBlock : fadingBlocks) {
                 fadingBlock.drawFading(blockGC, workingCounter);
-                //fadingBlock.drawRemove(blockGC);
             }
-            //System.out.println("fading block counter " + workingCounter);
-            //fadingBlock.drawFading(blockGC, workingCounter);
         }
 
 
@@ -206,7 +203,6 @@ public class UiManager {
 
                 fallingBlock.drawFalling(blockGC, workingCounter, numLinesFall);
             }
-            //System.out.println("fallingnggggggggg block counter " + workingCounter);
         }
     }
 
