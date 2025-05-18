@@ -7,7 +7,7 @@
 <HBox fx:id="mainLayout" alignment="CENTER" spacing="20" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tetris.Controller">
    <VBox maxHeight="600.0" spacing="20">
       <children>
-         <Pane fx:id="holdMinoBox" prefHeight="170.0" prefWidth="170.0" style="-fx-background-color: gray;" />
+         <Pane fx:id="holdMinoBox" prefHeight="170.0" prefWidth="170.0" style="-fx-background-color: black;" />
       </children>
    </VBox>
    <!-- Playing Field Pane with fixed size -->
@@ -16,6 +16,6 @@
    <!-- VBox for Hold and Next boxes stacked vertically -->
    <VBox maxHeight="600.0" spacing="20">
       <!-- Hold Box Pane -->
-      <Pane fx:id="nextMinoBox" prefHeight="170.0" prefWidth="170.0" style="-fx-background-color: gray;" />
+      <Pane fx:id="nextMinoBox" prefHeight="170.0" prefWidth="170.0" style="-fx-background-color: black;" />
    </VBox>
 </HBox>

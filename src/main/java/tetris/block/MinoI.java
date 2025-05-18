@@ -14,6 +14,8 @@ public class MinoI extends Mino {
     }
     @Override
     public void setPlayingFieldStartPosition() {
+        // make sure to set the direction to 1 (or else it will appear to be in the direction 1 but the direction is not 1)
+        direction = 1;
         blocks[0].setPosition(MINO_START_PIXEL_X, MINO_START_PIXEL_Y,
                 MINO_START_X, MINO_START_Y);
         blocks[1].setPosition(MINO_START_PIXEL_X - BLOCK_SIZE, MINO_START_PIXEL_Y,
@@ -25,8 +27,8 @@ public class MinoI extends Mino {
     }
     @Override
     public void setNextAndHoldBoxPosition() {
-        int deltaX = -14;
-        int deltaY = 0;
+        int deltaX = - BLOCK_SIZE;
+        int deltaY = - BLOCK_SIZE / 2;
         blocks[0].setRectangleCoor(MINO_I_NEXT_PIXEL_X + deltaX,
                 MINO_I_NEXT_PIXEL_Y + deltaY);
         blocks[1].setRectangleCoor(MINO_I_NEXT_PIXEL_X - BLOCK_SIZE + deltaX,

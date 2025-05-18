@@ -3,8 +3,6 @@ package tetris.ui;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.util.Pair;
 import tetris.block.Block;
 import tetris.block.Mino;
 import tetris.block.MinoBlock;
@@ -50,9 +48,11 @@ public class UiManager {
 
         blockCanvas = new Canvas(PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
         blockGC = blockCanvas.getGraphicsContext2D();
+        blockCanvas.getGraphicsContext2D().setImageSmoothing(false); // disable anti-aliasing
 
         shadowCanvas = new Canvas(PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
         shadowGC = shadowCanvas.getGraphicsContext2D();
+        shadowCanvas.getGraphicsContext2D().setImageSmoothing(false); // disable anti-aliasing
 
         // follow the hierarchical order of drawing: playing field grid -> shadow -> mino
         playingField.getChildren().add(playingFieldCanvas);
@@ -93,7 +93,7 @@ public class UiManager {
             block.drawAdd(blockGC);
         }
     }
-    public void removeMinoFromPlayingField(Mino mino) {
+    public void removeMinoInPlayingField(Mino mino) {
         for (Block block : mino.blocks) {
             block.drawRemove(blockGC);
         }
@@ -103,7 +103,7 @@ public class UiManager {
             block.drawAdd(shadowGC);
         }
     }
-    public void removeMinoShadowFromPlayingField(Mino mino) {
+    public void removeMinoShadowInPlayingField(Mino mino) {
         for (Block block : mino.shadowBlocks) {
             block.drawRemove(shadowGC);
         }
@@ -114,7 +114,7 @@ public class UiManager {
             block.drawAdd(nextBoxGC);
         }
     }
-    public void removeMinoFromNextBox(Mino mino) {
+    public void removeMinoInNextBox(Mino mino) {
         for (Block block : mino.blocks) {
             block.drawRemove(nextBoxGC);
         }
@@ -125,19 +125,10 @@ public class UiManager {
             block.drawAdd(holdBoxGC);
         }
     }
-    public void removeMinoFromHoldBox(Mino mino) {
+    public void removeMinoInHoldBox(Mino mino) {
         for (Block block : mino.blocks) {
             block.drawRemove(holdBoxGC);
         }
-    }
-    public void fadeBlock(Block block) {
-        block.drawRemove(blockGC);
-    }
-    public void removeBlock(Block block) {
-        block.drawRemove(blockGC);
-    }
-    public void addBlock(Block block) {
-        block.drawAdd(blockGC);
     }
 
     // =================================================
@@ -181,5 +172,6 @@ public class UiManager {
     public void clear() {
         fadingBlocks.clear();
         fallingBlocks.clear();
+        numLinesFallList.clear();
     }
 }

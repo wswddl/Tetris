@@ -17,7 +17,6 @@ public class MinoBlock extends Block {
     private Color superDarkColor;
     private Color ultraDarkColor;
     private int margin;
-    private Color shadowColor;
 
     public MinoBlock(Color color) {
         this.color = color;
@@ -51,20 +50,57 @@ public class MinoBlock extends Block {
                 (int) Math.round(blue * 255 / div3)
         );
 
-        this.shadowColor = color;
-
         // Special handling for blue
         if (color.equals(Color.BLUE)) {
-            this.shadowColor = Color.rgb(0, 100, 255);
+            this.color = Color.rgb(0, 120, 255);
             div2 = 4f;
             this.superDarkColor = Color.rgb(0, 8, (int) Math.round(blue * 255 / div2));
             div3 = 5f;
             this.ultraDarkColor = Color.rgb(0, 10, (int) Math.round(blue * 255 / div3));
         }
-        // Special handling for red
-        else if (color.equals(Color.RED)) {
-            this.shadowColor = Color.RED;
-        }
+    }
+    @Override
+    public void drawAdd(GraphicsContext gc) {
+            // Create radial gradient (equivalent to RadialGradientPaint)
+            RadialGradient gradient = new RadialGradient(
+                    0,                      // focusAngle
+                    0,                      // focusDistance
+                    pixelX + BLOCK_SIZE/2,             // centerX
+                    pixelY + BLOCK_SIZE/2,             // centerY
+                    30,                     // radius
+                    false,                  // proportional
+                    CycleMethod.NO_CYCLE,   // cycleMethod
+                    new Stop(0, superDarkColor),
+                    new Stop(1, darkColor)
+            );
+
+            // Set line width (equivalent to BasicStroke)
+            gc.setLineWidth(1.0);
+
+            // Edge glow effect
+            gc.setFill(ultraDarkColor);
+            gc.fillRect(pixelX, pixelY, BLOCK_SIZE, BLOCK_SIZE);
+
+            gc.setFill(superDarkColor);
+            gc.fillRect(pixelX+1, pixelY+1, BLOCK_SIZE-2, BLOCK_SIZE-2);
+
+            // Inner rectangle with gradient
+            gc.setFill(gradient);
+            gc.fillRect(pixelX+3, pixelY+3, BLOCK_SIZE-6, BLOCK_SIZE-6);
+
+            // Outer rectangle border
+            gc.setStroke(color);
+            gc.strokeRect(pixelX+2 + 0.5, pixelY+2 + 0.5, BLOCK_SIZE-4, BLOCK_SIZE-4);
+
+            // Reset stroke width
+            gc.setLineWidth(4.0);
+
+            //gc.setFill(Color.WHITE);
+            //gc.fillRect(pixelX, pixelY, BLOCK_SIZE, BLOCK_SIZE);
+    }
+    @Override
+    public void drawRemove(GraphicsContext gc) {
+        gc.clearRect(pixelX, pixelY, BLOCK_SIZE, BLOCK_SIZE);
     }
 
     /**
@@ -95,6 +131,11 @@ public class MinoBlock extends Block {
      */
     public void drawFalling(GraphicsContext gc, int workingCounter, int numLinesFall) {
         assert workingCounter < BLOCK_FALLING_DURATION;
+        assert workingCounter >= 0;
+
+        if (workingCounter < 0) {
+            System.out.println("falling counter smaller than  0 !!!!!!!!!!!!!!!!");
+        }
 
         int finalPixelY = row * BLOCK_SIZE;
 
@@ -108,49 +149,6 @@ public class MinoBlock extends Block {
             pixelY = finalPixelY; // snap
         }
         drawAdd(gc);
-    }
-
-    public void drawAdd(GraphicsContext gc) {
-            // Create radial gradient (equivalent to RadialGradientPaint)
-            RadialGradient gradient = new RadialGradient(
-                    0,                      // focusAngle
-                    0,                      // focusDistance
-                    pixelX + BLOCK_SIZE/2,             // centerX
-                    pixelY + BLOCK_SIZE/2,             // centerY
-                    30,                     // radius
-                    false,                  // proportional
-                    CycleMethod.NO_CYCLE,   // cycleMethod
-                    new Stop(0, superDarkColor),
-                    new Stop(1, darkColor)
-            );
-
-            // Set line width (equivalent to BasicStroke)
-            gc.setLineWidth(1.0);
-
-            // Edge glow effect
-            gc.setFill(ultraDarkColor);
-            gc.fillRect(pixelX, pixelY, BLOCK_SIZE, BLOCK_SIZE);
-
-            gc.setFill(superDarkColor);
-            gc.fillRect(pixelX+1, pixelY+1, BLOCK_SIZE-2, BLOCK_SIZE-2);
-
-            // Inner rectangle with gradient
-            gc.setFill(gradient);
-            gc.fillRect(pixelX+3, pixelY+3, BLOCK_SIZE-6, BLOCK_SIZE-6);
-
-            // Outer rectangle border
-            gc.setStroke(shadowColor);
-            gc.strokeRect(pixelX+2, pixelY+2, BLOCK_SIZE-4, BLOCK_SIZE-4);
-
-            // Reset stroke width
-            gc.setLineWidth(4.0);
-
-            //gc.setFill(Color.WHITE);
-            //gc.fillRect(pixelX, pixelY, BLOCK_SIZE, BLOCK_SIZE);
-    }
-
-    public void drawRemove(GraphicsContext gc) {
-        gc.clearRect(pixelX, pixelY, BLOCK_SIZE, BLOCK_SIZE);
     }
 
 

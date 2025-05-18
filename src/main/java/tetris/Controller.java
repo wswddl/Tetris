@@ -112,69 +112,24 @@ public class Controller {
         // add shadow blocks before normal blocks so the normal block will be in front when they overlap
         ui.addMinoShadowInPlayingField(mino);
         ui.addMinoInPlayingField(mino);
-
-        // TODO: remove
-        // add shadow blocks before normal blocks so the normal block will be in front when they overlap
-        for (int i = 0; i < NUM_OF_BLOCKS_PER_MINO; i++) {
-            playingField.getChildren().add(mino.shadowBlocks[i].getRectangle());
-        }
-        for (int i = 0; i < NUM_OF_BLOCKS_PER_MINO; i++) {
-            playingField.getChildren().add(mino.blocks[i].getRectangle());
-        }
-
-
     }
     public void removeMinoFromPlayingField(Mino mino) {
-        ui.removeMinoFromPlayingField(mino);
-        ui.removeMinoShadowFromPlayingField(mino);
-
-        // TODO: remove
-        for (int i = 0; i < NUM_OF_BLOCKS_PER_MINO; i++) {
-            playingField.getChildren().remove(mino.shadowBlocks[i].getRectangle());
-            playingField.getChildren().remove(mino.blocks[i].getRectangle());
-        }
-    }
-    // TODO: remove
-    public void removeBlockFromPlayingField(Block toBeRemovedBlock) {
-        playingField.getChildren().remove(toBeRemovedBlock.getRectangle());
+        ui.removeMinoInPlayingField(mino);
+        ui.removeMinoShadowInPlayingField(mino);
     }
     public void addMinoToNextMinoBox(Mino mino) {
         mino.setNextAndHoldBoxPosition();
-
-        // TODO: remove
-        for (Block block : mino.blocks) {
-            nextMinoBox.getChildren().add(block.getRectangle());
-        }
-
         ui.addMinoInNextBox(mino);
     }
     public void removeMinoFromNextMinoBox(Mino mino) {
-
-        // TODO: remove
-        for (Block block : mino.blocks) {
-            nextMinoBox.getChildren().remove(block.getRectangle());
-        }
-
-        ui.removeMinoFromNextBox(mino);
+        ui.removeMinoInNextBox(mino);
     }
     public void addMinoToHoldMinoBox(Mino mino) {
         mino.setNextAndHoldBoxPosition();
-
-        // TODO: remove
-        for (Block block : mino.blocks) {
-            holdMinoBox.getChildren().add(block.getRectangle());
-        }
-
         ui.addMinoInHoldBox(mino);
     }
     public void removeMinoFromHoldMinoBox(Mino mino) {
-
-        // TODO: remove
-        for (Block block : mino.blocks) {
-            holdMinoBox.getChildren().remove(block.getRectangle());
-        }
-
-        ui.removeMinoFromHoldBox(mino);
+        ui.removeMinoInHoldBox(mino);
     }
     
     // =================================================
@@ -190,10 +145,12 @@ public class Controller {
         if (currentMino.isActive() && KeyInputHandler.holdPress && allowSwapMino) {
             handleHoldPress();
         } else if (currentMino.isActive()){
-            updateWhenMinoIsActiveOnly();
-            if (isEffectOn) {
+            if (!isEffectOn) {
+                updateWhenMinoIsActiveOnly();
+            } else {
                 // current mino is active (next round) but the effect is still going on
                 // don't proceed the game (by not calling updateWhenMinoIsActiveOnly()) until the effect is over
+                //System.out.println("HANDLING SPECIAL EFFECT");
                 handleClearLineSpecialEffect();
             }
         } else {
@@ -240,9 +197,14 @@ public class Controller {
             inactiveBlocksArray[row][col] = currentMino.blocks[i];
         }
         this.checkRemoveLine();
+
+        // Clear UI
         removeMinoFromNextMinoBox(nextMino);
+
         currentMino = nextMino;
         nextMino = bagOfMinos.pickRandomly();
+
+        // Set UI
         addMinoToPlayingField(currentMino);
         addMinoToNextMinoBox(nextMino);
 
@@ -285,9 +247,12 @@ public class Controller {
         } else {
             this.autoDropCounter++;
             if (autoDropCounter == AUTO_DROP_INTERVAL) {
+                // Clear UI
+                ui.removeMinoInPlayingField(currentMino);
 
-                ui.removeMinoFromPlayingField(currentMino);
                 currentMino.moveDown();
+
+                // Set UI
                 ui.addMinoInPlayingField(currentMino);
 
                 autoDropCounter = 0;
@@ -296,8 +261,8 @@ public class Controller {
     }
     private void handleUpPress() {
         // Clear UI
-        ui.removeMinoFromPlayingField(currentMino);
-        ui.removeMinoShadowFromPlayingField(currentMino);
+        ui.removeMinoInPlayingField(currentMino);
+        ui.removeMinoShadowInPlayingField(currentMino);
 
         // set the ghost block position (rotation)
         switch(currentMino.direction) {
@@ -342,7 +307,7 @@ public class Controller {
         } else {
             // clear UI
             removeMinoFromPlayingField(currentMino);
-            removeMinoFromHoldMinoBox(holdMino);
+            ui.removeMinoInHoldBox(holdMino);
 
             // swap hold and current mino
             Mino tempMino = currentMino;
@@ -364,8 +329,8 @@ public class Controller {
     private void handleSpacePress() {
 
         // Clear UI
-        ui.removeMinoFromPlayingField(currentMino); // Note: don't need to remove shadow in UI as it doesn't change position
-        ui.removeMinoShadowFromPlayingField(currentMino);
+        ui.removeMinoInPlayingField(currentMino); // Note: don't need to remove shadow in UI as it doesn't change position
+        ui.removeMinoShadowInPlayingField(currentMino);
 
         while(!bottomCollision) {
             currentMino.moveDown();
@@ -385,25 +350,25 @@ public class Controller {
     }
     private void handleDownPress() {
         // Clear UI
-        ui.removeMinoFromPlayingField(currentMino); // Note: don't need to remove shadow in UI as it doesn't change position
+        ui.removeMinoInPlayingField(currentMino); // Note: just remove the shadow and add it back, lag may cause the shadow to not be removed
+        ui.removeMinoShadowInPlayingField(currentMino);
 
         if (!bottomCollision) {
-            // ui.removeMinoInPlayingField(currentMino);
             currentMino.moveDown();
             autoDropCounter = 0;
-            // ui.addMinoInPlayingField(currentMino);
         }
 
         // Set UI
         ui.addMinoInPlayingField(currentMino);
+        ui.addMinoShadowInPlayingField(currentMino);
 
         KeyInputHandler.downPress = false;
     }
     private void handleLeftPress() {
         if (!leftCollision) {
             // Clear UI
-            ui.removeMinoFromPlayingField(currentMino);
-            ui.removeMinoShadowFromPlayingField(currentMino);
+            ui.removeMinoInPlayingField(currentMino);
+            ui.removeMinoShadowInPlayingField(currentMino);
 
             currentMino.moveLeft();
             // after moving to the left, set the shadow position again
@@ -419,8 +384,8 @@ public class Controller {
     private void handleRightPress() {
         if (!rightCollision) {
             // Clear UI
-            ui.removeMinoFromPlayingField(currentMino);
-            ui.removeMinoShadowFromPlayingField(currentMino);
+            ui.removeMinoInPlayingField(currentMino);
+            ui.removeMinoShadowInPlayingField(currentMino);
 
             currentMino.moveRight();
             // after moving to the right, set the shadow position again

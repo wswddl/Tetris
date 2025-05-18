@@ -2,8 +2,9 @@ package tetris.block;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import tetris.util.TetrisConstants;
 
-import static tetris.Tetris.BLOCK_SIZE;
+import static tetris.util.TetrisConstants.BLOCK_SIZE;
 
 public class ShadowBlock extends Block {
     private Color shadowColor;
@@ -16,18 +17,22 @@ public class ShadowBlock extends Block {
             this.shadowColor = shadowColor;
         }
     }
-
+    @Override
     public void drawAdd(GraphicsContext gc) {
-        /*gc.setLineWidth(1.0); // Equivalent to BasicStroke(1f)
+        gc.setLineWidth(1.0); // Equivalent to BasicStroke(1f)
         gc.setStroke(this.shadowColor);
         gc.strokeRect(
-                this.pixelX + margin,
-                this.pixelY + margin,
-                BLOCK_SIZE - margin * 2,
-                BLOCK_SIZE - margin * 2
-        );*/
-        gc.setFill(Color.GREY);
-        gc.fillRect(pixelX + 2, pixelY + 2, BLOCK_SIZE - 4, BLOCK_SIZE - 4);
+                this.pixelX + margin + 0.5,
+                this.pixelY + margin + 0.5,
+                BLOCK_SIZE - margin * 2 - 0.5,
+                BLOCK_SIZE - margin * 2 - 0.5
+        );
+        //gc.setFill(Color.GREY);
+        //gc.fillRect(pixelX + 2, pixelY + 2, BLOCK_SIZE - 4, BLOCK_SIZE - 4);
+    }
+    @Override
+    public void drawRemove(GraphicsContext gc) {
+        gc.clearRect(pixelX, pixelY, BLOCK_SIZE, BLOCK_SIZE);
     }
 
 }

@@ -9,10 +9,12 @@ public class MinoS extends Mino {
     public static final int MINO_S_NEXT_PIXEL_Y = NEXT_BOX_HEIGHT_WIDTH / 2;
     public MinoS() {
         super();
-        create(Color.GREEN);
+        create(Color.rgb(0, 255, 0)); // pure green
     }
     @Override
     public void setPlayingFieldStartPosition() {
+        // make sure to set the direction to 1 (or else it will appear to be in the direction 1 but the direction is not 1)
+        direction = 1;
         blocks[0].setPosition(MINO_START_PIXEL_X, MINO_START_PIXEL_Y,
                 MINO_START_X, MINO_START_Y);
         blocks[1].setPosition(MINO_START_PIXEL_X - BLOCK_SIZE, MINO_START_PIXEL_Y,
@@ -24,7 +26,7 @@ public class MinoS extends Mino {
     }
     @Override
     public void setNextAndHoldBoxPosition() {
-        int deltaX = -14;
+        int deltaX = - BLOCK_SIZE / 2;
         int deltaY = 0;
         blocks[0].setRectangleCoor(MINO_S_NEXT_PIXEL_X + deltaX,
                 MINO_S_NEXT_PIXEL_Y + deltaY);

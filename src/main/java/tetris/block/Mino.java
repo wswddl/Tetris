@@ -48,11 +48,6 @@ public abstract class Mino implements Copyable<Mino> {
      */
     public void deactivate(Pane playingField) {
         isActive = false;
-        // TODO: remove this shit down here, no more handling of ui here
-        for (Block shadowBlock : shadowBlocks) {
-            playingField.getChildren().remove(shadowBlock.getRectangle());
-        }
-
     }
 
     // =================================================
