@@ -1,5 +1,6 @@
 package tetris.ui;
 
+import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
@@ -12,9 +13,12 @@ import java.util.ArrayList;
 import static tetris.util.TetrisConstants.*;
 
 public class UiManager {
+    @FXML
     private Pane playingField;
-    private Pane nextBox;
-    private Pane holdBox;
+    @FXML
+    private Pane nextMinoBox;
+    @FXML
+    private Pane holdMinoBox;
 
     private Canvas playingFieldCanvas; // Draw the grid background in the playing field
     private GraphicsContext playingFieldGC;
@@ -32,11 +36,12 @@ public class UiManager {
     public ArrayList<MinoBlock> fallingBlocks;
     private ArrayList<Integer> numLinesFallList;
 
-    public UiManager(Pane playingField, Pane nextBox, Pane holdBox) {
-        this.playingField = playingField;
-        this.nextBox = nextBox;
-        this.holdBox = holdBox;
+    //public UiManager(Pane playingField, Pane nextBox, Pane holdBox) {
+        //this.playingField = playingField;
+        //this.nextMinoBox = nextBox;
+        //this.holdMinoBox = holdBox;
 
+    public void initialize() {
         playingFieldCanvas = new Canvas(PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
         playingFieldGC = playingFieldCanvas.getGraphicsContext2D();
 
@@ -59,8 +64,8 @@ public class UiManager {
         playingField.getChildren().add(shadowCanvas);
         playingField.getChildren().add(blockCanvas);
 
-        nextBox.getChildren().add(nextBoxCanvas);
-        holdBox.getChildren().add(holdBoxCanvas);
+        nextMinoBox.getChildren().add(nextBoxCanvas);
+        holdMinoBox.getChildren().add(holdBoxCanvas);
 
         fadingBlocks = new ArrayList<>();
         fallingBlocks = new ArrayList<>();
