@@ -1,0 +1,27 @@
+/* Define the font faces */
+@font-face {
+    font-family: 'Silkscreen';
+    src: url('fonts/Silkscreen-Regular.ttf');
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: 'Silkscreen';
+    src: url('fonts/Silkscreen-Bold.ttf');
+    font-weight: bold;
+}
+
+/* Apply to classes */
+.silkscreen-regular {
+    -fx-font-family: 'Silkscreen';
+    -fx-font-weight: normal;
+    -fx-font-size: 50px;
+    -fx-text-fill: white;
+}
+
+.silkscreen-bold {
+    -fx-font-family: 'Silkscreen';
+    -fx-font-weight: bold;
+    -fx-font-size: 50px;
+    -fx-text-fill: #FF5555;
+}

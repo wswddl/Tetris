@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -27,6 +28,8 @@ public class UiManager {
     private Pane nextMinoBox;
     @FXML
     private Pane holdMinoBox;
+    @FXML
+    private Label score;
 
     // Graphic contexts
     private GraphicsContext playingFieldGC; // Draw the grid background in the playing field
@@ -99,6 +102,9 @@ public class UiManager {
         fadingBlocks = new ArrayList<>();
         fallingBlocks = new ArrayList<>();
         numLinesFallList = new ArrayList<>();
+
+        // score label
+        score.setText("Score: 0");
     }
     public Scene getGameScene() {
         return gameScene;
@@ -218,4 +224,12 @@ public class UiManager {
         fallingBlocks.clear();
         numLinesFallList.clear();
     }
+
+    // =================================================
+    // Metrics UI
+    // =================================================
+    public void updateScore(int currentScore) {
+        score.setText("Score: " + currentScore);
+    }
+
 }

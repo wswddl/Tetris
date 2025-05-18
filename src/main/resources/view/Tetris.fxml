@@ -1,13 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<HBox fx:id="mainLayout" alignment="CENTER" spacing="20" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" > <!-- fx:controller="tetris.ui.UiManager" -->
+<HBox fx:id="mainLayout" alignment="CENTER" spacing="20" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"> <!-- fx:controller="tetris.ui.UiManager" -->
    <VBox maxHeight="600.0" spacing="20">
       <children>
-         <Pane fx:id="holdMinoBox" prefHeight="170.0" prefWidth="170.0" style="-fx-background-color: black;" />
+         <Pane fx:id="holdMinoBox" prefHeight="170.0" prefWidth="170.0" style="-fx-background-color: black;">
+            <children>
+               <Label layoutX="51.0" layoutY="14.0" text="Hold" textFill="WHITE">
+                  <font>
+                     <Font size="32.0" />
+                  </font>
+               </Label>
+            </children></Pane>
+         <Pane prefHeight="300.0" prefWidth="170.0">
+            <children>
+               <Label fx:id="score" layoutX="71.0" layoutY="37.0" text="Label" />
+            </children>
+         </Pane>
       </children>
    </VBox>
    <!-- Playing Field Pane with fixed size -->
@@ -16,6 +30,13 @@
    <!-- VBox for Hold and Next boxes stacked vertically -->
    <VBox maxHeight="600.0" spacing="20">
       <!-- Hold Box Pane -->
-      <Pane fx:id="nextMinoBox" prefHeight="170.0" prefWidth="170.0" style="-fx-background-color: black;" />
+      <Pane fx:id="nextMinoBox" prefHeight="170.0" prefWidth="170.0" style="-fx-background-color: black;">
+         <children>
+            <Label layoutX="52.0" layoutY="14.0" text="Next" textFill="WHITE">
+               <font>
+                  <Font size="32.0" />
+               </font>
+            </Label>
+         </children></Pane>
    </VBox>
 </HBox>

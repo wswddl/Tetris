@@ -470,7 +470,7 @@ public class Controller {
         }
 
         gameMetrics.updateScore(numLinesClear, false);
-
+        ui.updateScore(gameMetrics.getScore());
 
 
     }
