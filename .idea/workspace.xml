@@ -5,11 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="dd1c620e-ac4b-4af9-9371-a4b0c9d8245d" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/tetris/logic/GameMetrics.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/Controller.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/logic/Controller.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/KeyInputHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/logic/KeyInputHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/Tetris.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/Tetris.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tetris/block/Mino.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/block/Mino.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/block/MinoT.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/block/MinoT.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/ui/UiManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/ui/UiManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/block/MinoI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/block/MinoI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/block/MinoO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/block/MinoO.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,6 +89,7 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="tetris.logic" />
       <recent name="tetris.util" />
       <recent name="tetris" />
       <recent name="tetris.block" />
@@ -97,7 +101,7 @@
       <module name="Tetris.main" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="tetris.*" />
+          <option name="PATTERN" value="tetris.logic.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>

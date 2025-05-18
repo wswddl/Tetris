@@ -1,7 +1,7 @@
-package tetris;
+package tetris.logic;
 
-import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
+import tetris.Bag;
 import tetris.block.Block;
 import tetris.block.Mino;
 import tetris.block.MinoBlock;
@@ -49,6 +49,9 @@ public class Controller {
     private int gameCounter;
     private int effectCounter;
     private final int GAME_DURATION = 2 * 60 * FPS; // 2 minutes gameplay
+
+    // game metrics
+    private GameMetrics gameMetrics;
     
     // =================================================
     // Initialize the controller
@@ -64,6 +67,7 @@ public class Controller {
         ui.drawPlayingFieldGrid();
 
         this.inactiveBlocksArray = new MinoBlock[NUM_OF_ROW][NUM_OF_COL];
+        this.gameMetrics = new GameMetrics();
 
         this.fillInBagOfMinos();
         this.initializeMinos();
@@ -75,7 +79,6 @@ public class Controller {
                 new MinoS(), new MinoT(), new MinoZ());
     }
     private void initializeMinos() {
-        assert bagOfMinos != null;
         assert bagOfMinos != null;
 
         currentMino = bagOfMinos.pickRandomly();
@@ -462,7 +465,13 @@ public class Controller {
             if (isTSpin) {
                 // TODO: t spin sound effect
             }
+            // TODO: sound effect based on numLinesClear
+
         }
+
+        gameMetrics.updateScore(numLinesClear, false);
+
+
 
     }
     
@@ -548,7 +557,7 @@ public class Controller {
         ui.handleClearLineSpecialEffect(effectCounter, SPECIAL_EFFECT_DURATION);
 
         if (isTSpin) {
-            // ui.handleTSpinSpecialEffect(effectCounter);
+            // TODO : ui.handleTSpinSpecialEffect(effectCounter);
         }
 
         effectCounter++;

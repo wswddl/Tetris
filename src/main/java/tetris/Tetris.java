@@ -1,17 +1,14 @@
 package tetris;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
+import tetris.logic.Controller;
+import tetris.logic.KeyInputHandler;
 import tetris.ui.UiManager;
-
-import java.util.Arrays;
 
 import static tetris.util.TetrisConstants.FPS;
 

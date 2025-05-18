@@ -2,7 +2,7 @@ package tetris.block;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import tetris.Controller;
+import tetris.logic.Controller;
 import tetris.util.Copyable;
 
 import static tetris.util.TetrisConstants.*;
