@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
+import tetris.ui.UiManager;
 
 import java.util.Arrays;
 
@@ -22,6 +23,7 @@ public class Tetris extends Application {
     public static final int MAX_HEIGHT = 30 * 20;
     public static int[][] grid = new int[MAX_WIDTH / BLOCK_SIZE][MAX_HEIGHT / BLOCK_SIZE];
     private Timeline gameLoop;
+    private UiManager ui;
     private Controller gameController;
 
     @Override
@@ -33,7 +35,8 @@ public class Tetris extends Application {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Tetris.fxml"));
             Parent root = loader.load();
-            this.gameController = loader.getController();
+            this.ui = loader.getController();
+            gameController = new Controller(ui);
 
             Scene scene = new Scene(root);
             scene.setFill(Color.TRANSPARENT);

@@ -19,11 +19,11 @@ import static tetris.util.TetrisConstants.*;
 public class Controller {
 
     // ui
-    @FXML
+    //@FXML
     private Pane holdMinoBox;
-    @FXML
+    //@FXML
     private Pane playingField;
-    @FXML
+    //@FXML
     private Pane nextMinoBox;
     private UiManager ui;
 
@@ -57,8 +57,10 @@ public class Controller {
     /**
      * Is called by loader.load()
      */
-    public void initialize() {
-        ui = new UiManager(playingField, nextMinoBox, holdMinoBox);
+    //public void initialize() {
+    public Controller(UiManager ui) {
+        //ui = new UiManager(playingField, nextMinoBox, holdMinoBox);
+        this.ui = ui;
         ui.drawPlayingFieldGrid();
 
         this.inactiveBlocksArray = new MinoBlock[NUM_OF_ROW][NUM_OF_COL];
