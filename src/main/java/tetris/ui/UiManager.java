@@ -1,9 +1,14 @@
 package tetris.ui;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import tetris.block.Block;
 import tetris.block.Mino;
 import tetris.block.MinoBlock;
@@ -13,6 +18,9 @@ import java.util.ArrayList;
 import static tetris.util.TetrisConstants.*;
 
 public class UiManager {
+    private static final String FXML = "/view/Tetris.fxml";
+    private Stage primaryStage;
+    private Scene gameScene;
     @FXML
     private Pane playingField;
     @FXML
@@ -20,42 +28,62 @@ public class UiManager {
     @FXML
     private Pane holdMinoBox;
 
-    private Canvas playingFieldCanvas; // Draw the grid background in the playing field
-    private GraphicsContext playingFieldGC;
-    private Canvas nextBoxCanvas; // Draw the minos in the next box
-    private GraphicsContext nextBoxGC;
-    private Canvas holdBoxCanvas; // Draw the minos in the hold box
-    private GraphicsContext holdBoxGC;
-    private Canvas blockCanvas; // Draw the minos and blocks in the playing field
-    private GraphicsContext blockGC;
-    private Canvas shadowCanvas; // Draw the minos' shadow in the playing field
-    private GraphicsContext shadowGC;
+    // Graphic contexts
+    private GraphicsContext playingFieldGC; // Draw the grid background in the playing field
+    private GraphicsContext nextBoxGC; // Draw the minos in the next box
+    private GraphicsContext holdBoxGC; // Draw the minos in the hold box
+    private GraphicsContext blockGC; // Draw the minos and blocks in the playing field
+    private GraphicsContext shadowGC; // Draw the minos' shadow in the playing field
 
-    // Fading blocks
+    // Keeps data for animation
     public ArrayList<MinoBlock> fadingBlocks;
     public ArrayList<MinoBlock> fallingBlocks;
     private ArrayList<Integer> numLinesFallList;
 
-    //public UiManager(Pane playingField, Pane nextBox, Pane holdBox) {
-        //this.playingField = playingField;
-        //this.nextMinoBox = nextBox;
-        //this.holdMinoBox = holdBox;
+    public Parent root;
 
-    public void initialize() {
-        playingFieldCanvas = new Canvas(PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
+    // =================================================
+    // Set up UI
+    // =================================================
+
+    public UiManager(Stage primaryStage) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML));
+            loader.setController(this);
+            Parent root = loader.load();
+
+            this.primaryStage = primaryStage;
+            this.gameScene = new Scene(root);
+            gameScene.setFill(Color.TRANSPARENT);
+            primaryStage.setScene(gameScene);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+    public void show() {
+        primaryStage.show();
+    }
+    public void fillInnerParts() {
+        // Draw the grid background in the playing field
+        Canvas playingFieldCanvas = new Canvas(PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
         playingFieldGC = playingFieldCanvas.getGraphicsContext2D();
 
-        nextBoxCanvas = new Canvas(NEXT_BOX_HEIGHT_WIDTH, NEXT_BOX_HEIGHT_WIDTH);
+        // Draw the minos in the next box
+        Canvas nextBoxCanvas = new Canvas(NEXT_BOX_HEIGHT_WIDTH, NEXT_BOX_HEIGHT_WIDTH);
         nextBoxGC = nextBoxCanvas.getGraphicsContext2D();
 
-        holdBoxCanvas = new Canvas(HOLD_BOX_HEIGHT_WIDTH, HOLD_BOX_HEIGHT_WIDTH);
+        // Draw the minos in the hold box
+        Canvas holdBoxCanvas = new Canvas(HOLD_BOX_HEIGHT_WIDTH, HOLD_BOX_HEIGHT_WIDTH);
         holdBoxGC = holdBoxCanvas.getGraphicsContext2D();
 
-        blockCanvas = new Canvas(PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
+        // Draw the minos and blocks in the playing field
+        Canvas blockCanvas = new Canvas(PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
         blockGC = blockCanvas.getGraphicsContext2D();
         blockCanvas.getGraphicsContext2D().setImageSmoothing(false); // disable anti-aliasing
 
-        shadowCanvas = new Canvas(PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
+        // Draw the minos' shadow in the playing field
+        Canvas shadowCanvas = new Canvas(PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
         shadowGC = shadowCanvas.getGraphicsContext2D();
         shadowCanvas.getGraphicsContext2D().setImageSmoothing(false); // disable anti-aliasing
 
@@ -67,11 +95,19 @@ public class UiManager {
         nextMinoBox.getChildren().add(nextBoxCanvas);
         holdMinoBox.getChildren().add(holdBoxCanvas);
 
+        // keeps the blocks for animation (fading and falling)
         fadingBlocks = new ArrayList<>();
         fallingBlocks = new ArrayList<>();
         numLinesFallList = new ArrayList<>();
     }
+    public Scene getGameScene() {
+        return gameScene;
+    }
 
+
+    // =================================================
+    // Drawing
+    // =================================================
 
     public void drawPlayingFieldGrid() {
         int margin = 2;
@@ -112,6 +148,13 @@ public class UiManager {
         for (Block block : mino.shadowBlocks) {
             block.drawRemove(shadowGC);
         }
+    }
+
+    /**
+     * Invoked when mino is deactivated to prevent bug (shadow not being removed in UI).
+     */
+    public void clearAllShadowInPlayingField() {
+        shadowGC.clearRect(LEFTMOST_PIXEL, TOPMOST_PIXEL, PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
     }
 
     public void addMinoInNextBox(Mino mino) {

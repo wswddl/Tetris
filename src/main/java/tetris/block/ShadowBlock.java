@@ -2,7 +2,6 @@ package tetris.block;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import tetris.util.TetrisConstants;
 
 import static tetris.util.TetrisConstants.BLOCK_SIZE;
 

@@ -16,45 +16,51 @@ import java.util.Arrays;
 import static tetris.util.TetrisConstants.FPS;
 
 public class Tetris extends Application {
-
-    public static final int BLOCK_SIZE = 30;
-    public static final int MOVEMENT_SIZE = 30;
-    public static final int MAX_WIDTH = 30 * 10;
-    public static final int MAX_HEIGHT = 30 * 20;
-    public static int[][] grid = new int[MAX_WIDTH / BLOCK_SIZE][MAX_HEIGHT / BLOCK_SIZE];
     private Timeline gameLoop;
     private UiManager ui;
     private Controller gameController;
 
     @Override
-    public void start(Stage stage) throws Exception {
-        for (int[] row : grid) {
-            Arrays.fill(row, 0);
-        }
+    public void start(Stage primaryStage) throws Exception {
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Tetris.fxml"));
-            Parent root = loader.load();
-            this.ui = loader.getController();
+
+            //FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Tetris.fxml"));
+            //Parent root = loader.load();
+            //this.ui = loader.getController();
+            this.ui = new UiManager(primaryStage);
+            ui.show();
+            ui.fillInnerParts();
+
+            //Parent root = ui.getRoot();
             gameController = new Controller(ui);
 
-            Scene scene = new Scene(root);
-            scene.setFill(Color.TRANSPARENT);
-            stage.setScene(scene);
-            stage.show();
+            // ui.start();
+
+
 
             // Keyboard input handler
-            new KeyInputHandler(scene, gameController);
+            Scene gameScene = ui.getGameScene();
+            new KeyInputHandler(gameScene, gameController);
 
-            // Create the game loop
-            gameLoop = new Timeline(new KeyFrame(Duration.seconds(1.0 / FPS), e -> gameController.update()));
-            gameLoop.setCycleCount(Timeline.INDEFINITE); // repeat forever
-            gameLoop.play(); // start the loop
+            setUpGameLoop();
+
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+    }
+
+    private void setUpFxmlLoaderAndComponents() {
+
+    }
+
+    private void setUpGameLoop() {
+        // Create the game loop
+        gameLoop = new Timeline(new KeyFrame(Duration.seconds(1.0 / FPS), e -> gameController.update()));
+        gameLoop.setCycleCount(Timeline.INDEFINITE); // repeat forever
+        gameLoop.play(); // start the loop
     }
 
 }

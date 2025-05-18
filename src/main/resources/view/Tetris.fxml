@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox fx:id="mainLayout" alignment="CENTER" spacing="20" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tetris.ui.UiManager">
+<HBox fx:id="mainLayout" alignment="CENTER" spacing="20" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" > <!-- fx:controller="tetris.ui.UiManager" -->
    <VBox maxHeight="600.0" spacing="20">
       <children>
          <Pane fx:id="holdMinoBox" prefHeight="170.0" prefWidth="170.0" style="-fx-background-color: black;" />

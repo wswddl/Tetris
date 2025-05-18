@@ -231,6 +231,9 @@ public class Controller {
             // reset the deactivate counter and boolean
             this.checkCurrentMinoMovementCollision();
             if (bottomCollision) {
+                // Clear the all shadow when touch down (prevent bugs)
+                ui.clearAllShadowInPlayingField();
+
                 currentMino.deactivate(playingField);
             }
             resetDeactivation();
@@ -309,7 +312,7 @@ public class Controller {
         } else {
             // clear UI
             removeMinoFromPlayingField(currentMino);
-            ui.removeMinoInHoldBox(holdMino);
+            removeMinoFromHoldMinoBox(holdMino);
 
             // swap hold and current mino
             Mino tempMino = currentMino;
@@ -331,8 +334,8 @@ public class Controller {
     private void handleSpacePress() {
 
         // Clear UI
-        ui.removeMinoInPlayingField(currentMino); // Note: don't need to remove shadow in UI as it doesn't change position
-        ui.removeMinoShadowInPlayingField(currentMino);
+        ui.removeMinoInPlayingField(currentMino);
+        ui.clearAllShadowInPlayingField(); // clear all shadow and not just the mino position to prevent bugs
 
         while(!bottomCollision) {
             currentMino.moveDown();
@@ -351,52 +354,55 @@ public class Controller {
         //TetrisPanel.soundEffect.play(12, false); TODO: sound effect for space
     }
     private void handleDownPress() {
-        // Clear UI
-        ui.removeMinoInPlayingField(currentMino); // Note: just remove the shadow and add it back, lag may cause the shadow to not be removed
-        ui.removeMinoShadowInPlayingField(currentMino);
-
         if (!bottomCollision) {
+            // Clear UI
+            ui.removeMinoInPlayingField(currentMino);
+            ui.removeMinoShadowInPlayingField(currentMino);
+
             currentMino.moveDown();
             autoDropCounter = 0;
+
+            // Set UI
+            ui.addMinoInPlayingField(currentMino);
+            ui.addMinoShadowInPlayingField(currentMino);
+        } else {
+            ui.removeMinoShadowInPlayingField(currentMino); // remember to remove the shadow when "touch down"
+        }
+
+        KeyInputHandler.downPress = false;
+    }
+    private void handleLeftPress() {
+        // Clear UI
+        ui.removeMinoInPlayingField(currentMino);
+        ui.removeMinoShadowInPlayingField(currentMino);
+
+        if (!leftCollision) {
+            currentMino.moveLeft();
+            // after moving to the left, set the shadow position again
+            currentMino.setShadowPosition(inactiveBlocksArray);
         }
 
         // Set UI
         ui.addMinoInPlayingField(currentMino);
         ui.addMinoShadowInPlayingField(currentMino);
 
-        KeyInputHandler.downPress = false;
-    }
-    private void handleLeftPress() {
-        if (!leftCollision) {
-            // Clear UI
-            ui.removeMinoInPlayingField(currentMino);
-            ui.removeMinoShadowInPlayingField(currentMino);
-
-            currentMino.moveLeft();
-            // after moving to the left, set the shadow position again
-            currentMino.setShadowPosition(inactiveBlocksArray);
-
-            // Set UI
-            ui.addMinoInPlayingField(currentMino);
-            ui.addMinoShadowInPlayingField(currentMino);
-
-        }
         KeyInputHandler.leftPress = false;
     }
     private void handleRightPress() {
-        if (!rightCollision) {
-            // Clear UI
-            ui.removeMinoInPlayingField(currentMino);
-            ui.removeMinoShadowInPlayingField(currentMino);
+        // Clear UI
+        ui.removeMinoInPlayingField(currentMino);
+        ui.removeMinoShadowInPlayingField(currentMino);
 
+        if (!rightCollision) {
             currentMino.moveRight();
             // after moving to the right, set the shadow position again
             currentMino.setShadowPosition(inactiveBlocksArray);
-
-            // Set UI
-            ui.addMinoInPlayingField(currentMino);
-            ui.addMinoShadowInPlayingField(currentMino);
         }
+
+        // Set UI
+        ui.addMinoInPlayingField(currentMino);
+        ui.addMinoShadowInPlayingField(currentMino);
+
         KeyInputHandler.rightPress = false;
     }
 
