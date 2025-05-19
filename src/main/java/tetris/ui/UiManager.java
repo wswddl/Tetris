@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -15,6 +16,7 @@ import tetris.block.Mino;
 import tetris.block.MinoBlock;
 
 import java.util.ArrayList;
+import java.util.PriorityQueue;
 
 import static tetris.util.TetrisConstants.*;
 
@@ -52,7 +54,7 @@ public class UiManager {
 
     public UiManager(Stage primaryStage) {
         config(primaryStage);
-
+        setIcon(primaryStage);
     }
     private void config(Stage primaryStage) {
         try {
@@ -68,6 +70,9 @@ public class UiManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    private void setIcon(Stage primaryStage) {
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/tetris_icon.png")));
     }
     public void show() {
         primaryStage.show();

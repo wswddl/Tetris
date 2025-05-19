@@ -26,5 +26,10 @@ jar {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 
+    // For Windows .ico support
+    from('src/main/resources') {
+        include 'app-icon.ico'
+    }
+
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
