@@ -11,8 +11,8 @@
   <component name="ChangeListManager">
     <list default="true" id="dd1c620e-ac4b-4af9-9371-a4b0c9d8245d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/ui/UiManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/ui/UiManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/block/Mino.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/block/Mino.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/logic/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/logic/Controller.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

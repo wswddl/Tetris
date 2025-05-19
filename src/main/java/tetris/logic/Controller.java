@@ -149,6 +149,9 @@ public class Controller {
      * Updates the Minos and other UI components every time interval.
      */
     public void update() {
+        if (isGameOver) {
+            return;
+        }
 
         if (currentMino.isActive() && KeyInputHandler.holdPress && allowSwapMino) {
             handleHoldPress();
@@ -168,6 +171,8 @@ public class Controller {
         KeyInputHandler.holdPress = false;
         gameCounter = gameCounter + 1;
     }
+
+
     
     public void updateWhenMinoIsActiveOnly() {
         if (isDeactivating) {
@@ -199,6 +204,9 @@ public class Controller {
 
     }
     private void updateWhenMinoIsInactiveOnly() {
+        if (this.checkGameOver()) {
+            this.isGameOver = true;
+        }
         this.handleRemoveLine();
 
         // Clear UI
@@ -547,7 +555,18 @@ public class Controller {
             rightCollision = true;
         }
     }
-    
+
+    // =================================================
+    // game over & restart
+    // =================================================
+
+    public boolean checkGameOver() {
+        if (currentMino.isAtStartingPosition()) {
+            return true;
+        }
+        return false;
+    }
+
     // =================================================
     // Handle special effects
     // =================================================

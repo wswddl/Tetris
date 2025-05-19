@@ -227,6 +227,10 @@ public abstract class Mino implements Copyable<Mino> {
         return false;
     }
 
+    // =================================================
+    // mino position checking
+    // =================================================
+
     /**
      * Checks if there is any inactive block on top of the T mino.
      * This method is called when clearing a line.
@@ -235,6 +239,16 @@ public abstract class Mino implements Copyable<Mino> {
      */
     public boolean checkTSpinConfiguration(Block[][] inactiveBlocks) {
         return false; // overriden by MinoT
+    }
+
+    /**
+     * Checks if the mino is at the starting position.
+     * <p>This method is invoked when the mino has touched down to see if it is already game over (touch down but still
+     * at starting position).</p>
+     */
+    public boolean isAtStartingPosition() {
+        // every mino's block0 will always be at MINO_START_X, MINO_START_Y position at the beginning
+        return blocks[0].getRow() == MINO_START_Y && blocks[0].getCol() == MINO_START_X;
     }
 
     // =================================================
