@@ -1,7 +1,7 @@
-package tetris;
+package tetris.logic;
 
-import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
+import tetris.Bag;
 import tetris.block.Block;
 import tetris.block.Mino;
 import tetris.block.MinoBlock;
@@ -39,7 +39,7 @@ public class Controller {
     private boolean allowSwapMino;
     private boolean isDeactivating;
     private boolean isEffectOn; // effect is on when there is line removal
-
+    private boolean isTSpin;
     public boolean isGameOver;
     public boolean isTimesUp;
 
@@ -49,6 +49,9 @@ public class Controller {
     private int gameCounter;
     private int effectCounter;
     private final int GAME_DURATION = 2 * 60 * FPS; // 2 minutes gameplay
+
+    // game metrics
+    private GameMetrics gameMetrics;
     
     // =================================================
     // Initialize the controller
@@ -61,9 +64,9 @@ public class Controller {
     public Controller(UiManager ui) {
         //ui = new UiManager(playingField, nextMinoBox, holdMinoBox);
         this.ui = ui;
-        ui.drawPlayingFieldGrid();
 
         this.inactiveBlocksArray = new MinoBlock[NUM_OF_ROW][NUM_OF_COL];
+        this.gameMetrics = new GameMetrics();
 
         this.fillInBagOfMinos();
         this.initializeMinos();
@@ -75,7 +78,6 @@ public class Controller {
                 new MinoS(), new MinoT(), new MinoZ());
     }
     private void initializeMinos() {
-        assert bagOfMinos != null;
         assert bagOfMinos != null;
 
         currentMino = bagOfMinos.pickRandomly();
@@ -97,6 +99,7 @@ public class Controller {
         bottomCollision = false;
         isDeactivating = false;
         isEffectOn = false;
+        isTSpin = false;
         isGameOver = false;
         isTimesUp = false;
 
@@ -112,7 +115,10 @@ public class Controller {
         mino.setShadowPosition(inactiveBlocksArray);
 
         // add shadow blocks before normal blocks so the normal block will be in front when they overlap
-        ui.addMinoShadowInPlayingField(mino);
+        if (!isEffectOn) {
+            ui.addMinoShadowInPlayingField(mino);
+        }
+        // if effect is on, effect handler will add the shadow at the end of special effect (i.e. when the effect is about to end)
         ui.addMinoInPlayingField(mino);
     }
     public void removeMinoFromPlayingField(Mino mino) {
@@ -193,12 +199,7 @@ public class Controller {
 
     }
     private void updateWhenMinoIsInactiveOnly() {
-        for (int i = 0; i < NUM_OF_BLOCKS_PER_MINO; i++) {
-            int row = currentMino.blocks[i].getRow();
-            int col = currentMino.blocks[i].getCol();
-            inactiveBlocksArray[row][col] = currentMino.blocks[i];
-        }
-        this.checkRemoveLine();
+        this.handleRemoveLine();
 
         // Clear UI
         removeMinoFromNextMinoBox(nextMino);
@@ -231,6 +232,9 @@ public class Controller {
             // reset the deactivate counter and boolean
             this.checkCurrentMinoMovementCollision();
             if (bottomCollision) {
+                // Clear the all shadow when touch down (prevent bugs)
+                ui.clearAllShadowInPlayingField();
+
                 currentMino.deactivate(playingField);
             }
             resetDeactivation();
@@ -309,7 +313,7 @@ public class Controller {
         } else {
             // clear UI
             removeMinoFromPlayingField(currentMino);
-            ui.removeMinoInHoldBox(holdMino);
+            removeMinoFromHoldMinoBox(holdMino);
 
             // swap hold and current mino
             Mino tempMino = currentMino;
@@ -331,8 +335,8 @@ public class Controller {
     private void handleSpacePress() {
 
         // Clear UI
-        ui.removeMinoInPlayingField(currentMino); // Note: don't need to remove shadow in UI as it doesn't change position
-        ui.removeMinoShadowInPlayingField(currentMino);
+        ui.removeMinoInPlayingField(currentMino);
+        ui.clearAllShadowInPlayingField(); // clear all shadow and not just the mino position to prevent bugs
 
         while(!bottomCollision) {
             currentMino.moveDown();
@@ -351,52 +355,55 @@ public class Controller {
         //TetrisPanel.soundEffect.play(12, false); TODO: sound effect for space
     }
     private void handleDownPress() {
-        // Clear UI
-        ui.removeMinoInPlayingField(currentMino); // Note: just remove the shadow and add it back, lag may cause the shadow to not be removed
-        ui.removeMinoShadowInPlayingField(currentMino);
-
         if (!bottomCollision) {
+            // Clear UI
+            ui.removeMinoInPlayingField(currentMino);
+            ui.removeMinoShadowInPlayingField(currentMino);
+
             currentMino.moveDown();
             autoDropCounter = 0;
+
+            // Set UI
+            ui.addMinoInPlayingField(currentMino);
+            ui.addMinoShadowInPlayingField(currentMino);
+        } else {
+            ui.removeMinoShadowInPlayingField(currentMino); // remember to remove the shadow when "touch down"
+        }
+
+        KeyInputHandler.downPress = false;
+    }
+    private void handleLeftPress() {
+        // Clear UI
+        ui.removeMinoInPlayingField(currentMino);
+        ui.removeMinoShadowInPlayingField(currentMino);
+
+        if (!leftCollision) {
+            currentMino.moveLeft();
+            // after moving to the left, set the shadow position again
+            currentMino.setShadowPosition(inactiveBlocksArray);
         }
 
         // Set UI
         ui.addMinoInPlayingField(currentMino);
         ui.addMinoShadowInPlayingField(currentMino);
 
-        KeyInputHandler.downPress = false;
-    }
-    private void handleLeftPress() {
-        if (!leftCollision) {
-            // Clear UI
-            ui.removeMinoInPlayingField(currentMino);
-            ui.removeMinoShadowInPlayingField(currentMino);
-
-            currentMino.moveLeft();
-            // after moving to the left, set the shadow position again
-            currentMino.setShadowPosition(inactiveBlocksArray);
-
-            // Set UI
-            ui.addMinoInPlayingField(currentMino);
-            ui.addMinoShadowInPlayingField(currentMino);
-
-        }
         KeyInputHandler.leftPress = false;
     }
     private void handleRightPress() {
-        if (!rightCollision) {
-            // Clear UI
-            ui.removeMinoInPlayingField(currentMino);
-            ui.removeMinoShadowInPlayingField(currentMino);
+        // Clear UI
+        ui.removeMinoInPlayingField(currentMino);
+        ui.removeMinoShadowInPlayingField(currentMino);
 
+        if (!rightCollision) {
             currentMino.moveRight();
             // after moving to the right, set the shadow position again
             currentMino.setShadowPosition(inactiveBlocksArray);
-
-            // Set UI
-            ui.addMinoInPlayingField(currentMino);
-            ui.addMinoShadowInPlayingField(currentMino);
         }
+
+        // Set UI
+        ui.addMinoInPlayingField(currentMino);
+        ui.addMinoShadowInPlayingField(currentMino);
+
         KeyInputHandler.rightPress = false;
     }
 
@@ -409,9 +416,20 @@ public class Controller {
      * Starts from the lowest row to the top, if there is a full row (10 blocks in a row), remove it from the
      * playing field, else drop the inactive blocks on top to fill in the gap of the deleted row.
      */
-    private void checkRemoveLine() {
+    private void handleRemoveLine() {
         int numLinesClear = 0;
         boolean gotLineRemoval = false;
+
+        // check if it is potentially a t spin before adding current mino into inactive block array
+        boolean isPotentialTSpin = currentMino.checkTSpinConfiguration(inactiveBlocksArray);
+
+        // add the current mino blocks into the inactive block array
+        for (int i = 0; i < NUM_OF_BLOCKS_PER_MINO; i++) {
+            int row = currentMino.blocks[i].getRow();
+            int col = currentMino.blocks[i].getCol();
+            inactiveBlocksArray[row][col] = currentMino.blocks[i];
+        }
+
         for (int r = NUM_OF_ROW - 1; r >= 0; r--) {
             int numBlocksInARow = 0;
             for (int c = 0; c < NUM_OF_COL; c++) {
@@ -422,12 +440,10 @@ public class Controller {
             // remove line
             if (numBlocksInARow == NUM_OF_COL) {
                 gotLineRemoval = true;
-                this.isEffectOn = true;
                 numLinesClear++;
                 for (int c = 0; c < inactiveBlocksArray[0].length; c++) {
                     MinoBlock toBeRemovedBlock = inactiveBlocksArray[r][c];
                     if (toBeRemovedBlock != null) {
-                        //ui.removeBlock(toBeRemovedBlock);
                         ui.addFadingBlock(toBeRemovedBlock);
                         inactiveBlocksArray[r][c] = null;
                     }
@@ -435,22 +451,30 @@ public class Controller {
             } else {
                 for (int c = 0; c < inactiveBlocksArray[0].length; c++) {
                     MinoBlock fallingBlock = inactiveBlocksArray[r][c];
-                    if (fallingBlock != null) {
-                        //toBeDropBlock.dropSmoothly(numLineClear); // drop the block numLineClear number of rows
-                        //ui.dropBlockSmoothly(toBeDropBlock, numLineClear);
-                        //ui.removeBlock(fallingBlock);
-                        //ui.addBlock(fallingBlock);
-                        if (gotLineRemoval) {
-                            fallingBlock.dropImmediately(numLinesClear);
-                            ui.addFallingBlock(fallingBlock, numLinesClear);
-                            inactiveBlocksArray[r][c] = null;
-                            inactiveBlocksArray[r + numLinesClear][c] = fallingBlock;
-                        }
-
+                    if (fallingBlock != null && gotLineRemoval) {
+                        fallingBlock.dropImmediately(numLinesClear);
+                        ui.addFallingBlock(fallingBlock, numLinesClear);
+                        inactiveBlocksArray[r][c] = null;
+                        inactiveBlocksArray[r + numLinesClear][c] = fallingBlock;
                     }
                 }
             }
         }
+        // after scanning through the board
+        if (gotLineRemoval) {
+            this.isEffectOn = true;
+            this.isTSpin = isPotentialTSpin;
+            if (isTSpin) {
+                // TODO: t spin sound effect
+            }
+            // TODO: sound effect based on numLinesClear
+
+        }
+
+        gameMetrics.updateScore(numLinesClear, false);
+        ui.updateScore(gameMetrics.getScore());
+
+
     }
     
     // =================================================
@@ -528,17 +552,28 @@ public class Controller {
     // Handle special effects
     // =================================================
 
+    /**
+     * Handles special effects when there is a line cleared.
+     */
     public void handleClearLineSpecialEffect() {
-        ui.handleClearLineSpecialEffect(effectCounter, SPECIAL_EFFECT_DURATION);
+        ui.handleClearLineSpecialEffect(effectCounter);
+
+        if (isTSpin) {
+            ui.handleTSpinSpecialEffect(effectCounter);
+        }
 
         effectCounter++;
 
         if (effectCounter > SPECIAL_EFFECT_DURATION) {
             // clear cached block in ui
-            ui.clear();
-            System.out.println("check ui cache is empty = " + (ui.fallingBlocks.size() == 0 && ui.fadingBlocks.size() == 0));
+            ui.clearEffect();
 
+            // add the shadow when the animation is finished
+            ui.addMinoShadowInPlayingField(currentMino);
+
+            // reset all the flags
             isEffectOn = false;
+            isTSpin = false;
             effectCounter = 0;
         }
 

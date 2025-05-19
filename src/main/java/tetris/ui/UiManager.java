@@ -1,9 +1,15 @@
 package tetris.ui;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import tetris.block.Block;
 import tetris.block.Mino;
 import tetris.block.MinoBlock;
@@ -13,65 +19,123 @@ import java.util.ArrayList;
 import static tetris.util.TetrisConstants.*;
 
 public class UiManager {
+    private static final String FXML = "/view/Tetris.fxml";
+    private Stage primaryStage;
+    private Scene gameScene;
     @FXML
     private Pane playingField;
     @FXML
     private Pane nextMinoBox;
     @FXML
     private Pane holdMinoBox;
+    @FXML
+    private Label score;
 
-    private Canvas playingFieldCanvas; // Draw the grid background in the playing field
-    private GraphicsContext playingFieldGC;
-    private Canvas nextBoxCanvas; // Draw the minos in the next box
-    private GraphicsContext nextBoxGC;
-    private Canvas holdBoxCanvas; // Draw the minos in the hold box
-    private GraphicsContext holdBoxGC;
-    private Canvas blockCanvas; // Draw the minos and blocks in the playing field
-    private GraphicsContext blockGC;
-    private Canvas shadowCanvas; // Draw the minos' shadow in the playing field
-    private GraphicsContext shadowGC;
+    // Graphic contexts
+    private GraphicsContext playingFieldGC; // Draw the grid background in the playing field
+    private GraphicsContext nextBoxGC; // Draw the minos in the next box
+    private GraphicsContext holdBoxGC; // Draw the minos in the hold box
+    private GraphicsContext blockGC; // Draw the minos and blocks in the playing field
+    private GraphicsContext shadowGC; // Draw the minos' shadow in the playing field
+    private GraphicsContext specialEffectGC;
 
-    // Fading blocks
-    public ArrayList<MinoBlock> fadingBlocks;
-    public ArrayList<MinoBlock> fallingBlocks;
+    // Keeps data for animation
+    private ArrayList<MinoBlock> fadingBlocks;
+    private ArrayList<MinoBlock> fallingBlocks;
     private ArrayList<Integer> numLinesFallList;
 
-    //public UiManager(Pane playingField, Pane nextBox, Pane holdBox) {
-        //this.playingField = playingField;
-        //this.nextMinoBox = nextBox;
-        //this.holdMinoBox = holdBox;
+    public Parent root;
 
-    public void initialize() {
-        playingFieldCanvas = new Canvas(PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
+    // =================================================
+    // Set up UI
+    // =================================================
+
+    public UiManager(Stage primaryStage) {
+        config(primaryStage);
+
+    }
+    private void config(Stage primaryStage) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML));
+            loader.setController(this);
+            Parent root = loader.load();
+
+            this.primaryStage = primaryStage;
+            this.gameScene = new Scene(root);
+            gameScene.setFill(Color.TRANSPARENT);
+            primaryStage.setScene(gameScene);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void show() {
+        primaryStage.show();
+
+        double minWidth = primaryStage.getWidth();
+        double minHeight = primaryStage.getHeight();
+
+        primaryStage.setMinWidth((int) minWidth);
+        primaryStage.setMinHeight((int) minHeight);
+
+        primaryStage.setMaximized(true);
+    }
+    public void fillInnerParts() {
+
+        // Draw the grid background in the playing field
+        Canvas playingFieldCanvas = new Canvas(PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
         playingFieldGC = playingFieldCanvas.getGraphicsContext2D();
 
-        nextBoxCanvas = new Canvas(NEXT_BOX_HEIGHT_WIDTH, NEXT_BOX_HEIGHT_WIDTH);
+        // Draw the minos in the next box
+        Canvas nextBoxCanvas = new Canvas(NEXT_BOX_HEIGHT_WIDTH, NEXT_BOX_HEIGHT_WIDTH);
         nextBoxGC = nextBoxCanvas.getGraphicsContext2D();
 
-        holdBoxCanvas = new Canvas(HOLD_BOX_HEIGHT_WIDTH, HOLD_BOX_HEIGHT_WIDTH);
+        // Draw the minos in the hold box
+        Canvas holdBoxCanvas = new Canvas(HOLD_BOX_HEIGHT_WIDTH, HOLD_BOX_HEIGHT_WIDTH);
         holdBoxGC = holdBoxCanvas.getGraphicsContext2D();
 
-        blockCanvas = new Canvas(PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
+        // Draw the minos and blocks in the playing field
+        Canvas blockCanvas = new Canvas(PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
         blockGC = blockCanvas.getGraphicsContext2D();
         blockCanvas.getGraphicsContext2D().setImageSmoothing(false); // disable anti-aliasing
 
-        shadowCanvas = new Canvas(PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
+        // Draw the minos' shadow in the playing field
+        Canvas shadowCanvas = new Canvas(PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
         shadowGC = shadowCanvas.getGraphicsContext2D();
         shadowCanvas.getGraphicsContext2D().setImageSmoothing(false); // disable anti-aliasing
 
-        // follow the hierarchical order of drawing: playing field grid -> shadow -> mino
+        // Special effect
+        Canvas specialEffectCanvas = new Canvas(PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
+        specialEffectGC = specialEffectCanvas.getGraphicsContext2D();
+        specialEffectCanvas.getGraphicsContext2D().setImageSmoothing(false); // disable anti-aliasing
+
+        // follow the hierarchical order of drawing: playing field grid -> shadow -> mino -> special effect
         playingField.getChildren().add(playingFieldCanvas);
         playingField.getChildren().add(shadowCanvas);
         playingField.getChildren().add(blockCanvas);
+        playingField.getChildren().add(specialEffectCanvas);
 
         nextMinoBox.getChildren().add(nextBoxCanvas);
         holdMinoBox.getChildren().add(holdBoxCanvas);
 
+        // keeps the blocks for animation (fading and falling)
         fadingBlocks = new ArrayList<>();
         fallingBlocks = new ArrayList<>();
         numLinesFallList = new ArrayList<>();
+
+        // score label
+        updateScore(0);
+
+        drawPlayingFieldGrid();
+    }
+    public Scene getGameScene() {
+        return gameScene;
     }
 
+
+    // =================================================
+    // Drawing
+    // =================================================
 
     public void drawPlayingFieldGrid() {
         int margin = 2;
@@ -109,9 +173,18 @@ public class UiManager {
         }
     }
     public void removeMinoShadowInPlayingField(Mino mino) {
+        //shadowGC.clearRect(LEFTMOST_PIXEL, RIGHTMOST_PIXEL, PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
+
         for (Block block : mino.shadowBlocks) {
             block.drawRemove(shadowGC);
         }
+    }
+
+    /**
+     * Invoked when mino is deactivated to prevent bug (shadow not being removed in UI).
+     */
+    public void clearAllShadowInPlayingField() {
+        shadowGC.clearRect(LEFTMOST_PIXEL, TOPMOST_PIXEL, PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
     }
 
     public void addMinoInNextBox(Mino mino) {
@@ -140,16 +213,13 @@ public class UiManager {
     // Effects
     // =================================================
 
-    public void handleClearLineSpecialEffect(int effectCounter, int EFFECT_DURATION) {
+    public void handleClearLineSpecialEffect(int effectCounter) {
 
         if (effectCounter >= 0 && effectCounter < BLOCK_FADING_DURATION) {
             int workingCounter = effectCounter;
             for (MinoBlock fadingBlock : fadingBlocks) {
                 fadingBlock.drawFading(blockGC, workingCounter);
-                //fadingBlock.drawRemove(blockGC);
             }
-            //System.out.println("fading block counter " + workingCounter);
-            //fadingBlock.drawFading(blockGC, workingCounter);
         }
 
 
@@ -163,8 +233,101 @@ public class UiManager {
 
                 fallingBlock.drawFalling(blockGC, workingCounter, numLinesFall);
             }
-            //System.out.println("fallingnggggggggg block counter " + workingCounter);
         }
+    }
+
+    /**
+     * Draw a spinning T shape mino onto the screen.
+     * <ul>
+     *     <li>The shape is a T-shape mino made up of 8 points (x1,y1 to x8,y8), connected with lines.</li>
+     *     <li>The T rotates over time by incrementing the base angle using `effectCounter` and `angleStep`.</li>
+     *     <li>Each point's position is calculated using polar coordinates: (length, angle), converted to Cartesian (x, y).</li>
+     *     <li>Lengths (`l1` to `l8`) and fixed angle offsets (`a1` to `a8`) are geometrically tuned to create the T shape.</li>
+     *     <li>Alpha is computed as a linear fade-out: starts at 1.0 and decreases to 0.0 over `howLong` frames.</li>
+     * </ul>
+     * @param effectCounter
+     */
+    public void handleTSpinSpecialEffect(int effectCounter) {
+        specialEffectGC.clearRect(LEFTMOST_PIXEL, TOPMOST_PIXEL, PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
+
+        double x = LEFTMOST_PIXEL + PLAYING_FIELD_WIDTH / 2.0;
+        double y = TOPMOST_PIXEL + PLAYING_FIELD_HEIGHT / 2.0;
+
+        double totalAngle = 2 * Math.PI * 270 / 360; // 270 degrees in radians
+        double angleStep = totalAngle / T_SPIN_DURATION;
+        double initialAngle = 2 * Math.PI * 150 / 360; // 150 degrees in radians
+        double angle = initialAngle + effectCounter * angleStep;
+        int size = (int) Math.round(50 + effectCounter / 1.2);
+
+        // Calculate points (same math as your original)
+        double l1 = Math.sqrt(1.5 * size * 1.5 * size + size * size);
+        double a1 = Math.PI - 0.5880026035 + angle;
+        double x1 = l1 * Math.cos(a1) + x;
+        double y1 = l1 * Math.sin(a1) + y;
+
+        double l2 = l1;
+        double a2 = 0.5880026035 + angle;
+        double x2 = l2 * Math.cos(a2) + x;
+        double y2 = l2 * Math.sin(a2) + y;
+
+        double l3 = 1.5 * size;
+        double a3 = 0 + angle;
+        double x3 = l3 * Math.cos(a3) + x;
+        double y3 = l3 * Math.sin(a3) + y;
+
+        double l4 = 0.5 * size;
+        double a4 = 0 + angle;
+        double x4 = l4 * Math.cos(a4) + x;
+        double y4 = l4 * Math.sin(a4) + y;
+
+        double l5 = 0.5 * size;
+        double a5 = Math.PI + angle;
+        double x5 = l5 * Math.cos(a5) + x;
+        double y5 = l5 * Math.sin(a5) + y;
+
+        double l6 = 1.5 * size;
+        double a6 = Math.PI + angle;
+        double x6 = l6 * Math.cos(a6) + x;
+        double y6 = l6 * Math.sin(a6) + y;
+
+        double l7 = Math.sqrt(0.5 * size * 0.5 * size + size * size);
+        double a7 = -1.107148718 + angle;
+        double x7 = l7 * Math.cos(a7) + x;
+        double y7 = l7 * Math.sin(a7) + y;
+
+        double l8 = Math.sqrt(0.5 * size * 0.5 * size + size * size);
+        double a8 = -Math.PI + 1.107148718 + angle;
+        double x8 = l8 * Math.cos(a8) + x;
+        double y8 = l8 * Math.sin(a8) + y;
+
+        double alpha = 1.0 - (double) effectCounter / T_SPIN_DURATION; // alpha from 1 to 0
+
+        // Set stroke width and color for first layer (thick purple line)
+        specialEffectGC.setLineWidth(10 + 20 * effectCounter / (double) T_SPIN_DURATION);
+        specialEffectGC.setStroke(Color.rgb(255, 0, 255, alpha)); // purple with alpha
+
+        // Draw lines - JavaFX has no drawLine for multiple lines at once, so call strokeLine
+        specialEffectGC.strokeLine(x1, y1, x2, y2);
+        specialEffectGC.strokeLine(x2, y2, x3, y3);
+        specialEffectGC.strokeLine(x3, y3, x4, y4);
+        specialEffectGC.strokeLine(x4, y4, x7, y7);
+        specialEffectGC.strokeLine(x7, y7, x8, y8);
+        specialEffectGC.strokeLine(x8, y8, x5, y5);
+        specialEffectGC.strokeLine(x5, y5, x6, y6);
+        specialEffectGC.strokeLine(x6, y6, x1, y1);
+
+        // Set stroke width and color for second layer (thin white line)
+        specialEffectGC.setLineWidth(3 + 5 * effectCounter / (double) T_SPIN_DURATION);
+        specialEffectGC.setStroke(Color.rgb(255, 255, 255, alpha)); // white with alpha
+
+        specialEffectGC.strokeLine(x1, y1, x2, y2);
+        specialEffectGC.strokeLine(x2, y2, x3, y3);
+        specialEffectGC.strokeLine(x3, y3, x4, y4);
+        specialEffectGC.strokeLine(x4, y4, x7, y7);
+        specialEffectGC.strokeLine(x7, y7, x8, y8);
+        specialEffectGC.strokeLine(x8, y8, x5, y5);
+        specialEffectGC.strokeLine(x5, y5, x6, y6);
+        specialEffectGC.strokeLine(x6, y6, x1, y1);
     }
 
     public void addFadingBlock(MinoBlock minoBlock) {
@@ -174,9 +337,23 @@ public class UiManager {
         fallingBlocks.add(minoBlock);
         numLinesFallList.add(numLinesFall);
     }
-    public void clear() {
+
+    /**
+     * Clears every data and special effects on the screen.
+     */
+    public void clearEffect() {
         fadingBlocks.clear();
         fallingBlocks.clear();
         numLinesFallList.clear();
+
+        specialEffectGC.clearRect(LEFTMOST_PIXEL, TOPMOST_PIXEL, PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
     }
+
+    // =================================================
+    // Metrics UI
+    // =================================================
+    public void updateScore(int currentScore) {
+        score.setText("" + currentScore);
+    }
+
 }

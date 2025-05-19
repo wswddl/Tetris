@@ -1,7 +1,7 @@
 package tetris.block;
 
 import javafx.scene.paint.Color;
-import tetris.Controller;
+import tetris.logic.Controller;
 
 import static tetris.util.TetrisConstants.*;
 

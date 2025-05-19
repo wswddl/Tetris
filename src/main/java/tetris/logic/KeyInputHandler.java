@@ -1,9 +1,10 @@
-package tetris;
+package tetris.logic;
 
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.Scene;
 import javafx.scene.Node;
+import tetris.logic.Controller;
 
 public class KeyInputHandler {
 
