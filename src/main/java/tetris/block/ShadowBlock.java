@@ -7,7 +7,7 @@ import static tetris.util.TetrisConstants.BLOCK_SIZE;
 
 public class ShadowBlock extends Block {
     private Color shadowColor;
-    private int margin = 2;
+    private int margin = 3;
 
     public ShadowBlock(Color shadowColor) {
         if (shadowColor.equals(Color.BLUE)) {

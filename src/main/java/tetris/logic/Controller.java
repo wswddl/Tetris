@@ -64,7 +64,6 @@ public class Controller {
     public Controller(UiManager ui) {
         //ui = new UiManager(playingField, nextMinoBox, holdMinoBox);
         this.ui = ui;
-        ui.drawPlayingFieldGrid();
 
         this.inactiveBlocksArray = new MinoBlock[NUM_OF_ROW][NUM_OF_COL];
         this.gameMetrics = new GameMetrics();
@@ -116,7 +115,10 @@ public class Controller {
         mino.setShadowPosition(inactiveBlocksArray);
 
         // add shadow blocks before normal blocks so the normal block will be in front when they overlap
-        ui.addMinoShadowInPlayingField(mino);
+        if (!isEffectOn) {
+            ui.addMinoShadowInPlayingField(mino);
+        }
+        // if effect is on, effect handler will add the shadow at the end of special effect (i.e. when the effect is about to end)
         ui.addMinoInPlayingField(mino);
     }
     public void removeMinoFromPlayingField(Mino mino) {
@@ -554,18 +556,22 @@ public class Controller {
      * Handles special effects when there is a line cleared.
      */
     public void handleClearLineSpecialEffect() {
-        ui.handleClearLineSpecialEffect(effectCounter, SPECIAL_EFFECT_DURATION);
+        ui.handleClearLineSpecialEffect(effectCounter);
 
         if (isTSpin) {
-            // TODO : ui.handleTSpinSpecialEffect(effectCounter);
+            ui.handleTSpinSpecialEffect(effectCounter);
         }
 
         effectCounter++;
 
         if (effectCounter > SPECIAL_EFFECT_DURATION) {
             // clear cached block in ui
-            ui.clear();
+            ui.clearEffect();
 
+            // add the shadow when the animation is finished
+            ui.addMinoShadowInPlayingField(currentMino);
+
+            // reset all the flags
             isEffectOn = false;
             isTSpin = false;
             effectCounter = 0;

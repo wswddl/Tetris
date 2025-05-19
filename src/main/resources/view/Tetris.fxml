@@ -6,22 +6,23 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox fx:id="mainLayout" alignment="CENTER" spacing="20" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"> <!-- fx:controller="tetris.ui.UiManager" -->
+<HBox fx:id="mainLayout" alignment="CENTER" spacing="20.0" stylesheets="@/view/style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"> <!-- fx:controller="tetris.ui.UiManager" -->
    <VBox maxHeight="600.0" spacing="20">
       <children>
-         <Pane fx:id="holdMinoBox" prefHeight="170.0" prefWidth="170.0" style="-fx-background-color: black;">
+         <Pane fx:id="holdMinoBox" prefHeight="170.0" prefWidth="170.0" stylesheets="@style.css">
             <children>
-               <Label layoutX="51.0" layoutY="14.0" text="Hold" textFill="WHITE">
+               <Label alignment="CENTER" layoutX="59.0" layoutY="14.0" text="Hold" textFill="WHITE">
                   <font>
                      <Font size="32.0" />
                   </font>
                </Label>
             </children></Pane>
-         <Pane prefHeight="300.0" prefWidth="170.0">
+         <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
             <children>
-               <Label fx:id="score" layoutX="71.0" layoutY="37.0" text="Label" />
+               <Label text="Score" />
+               <Label fx:id="score" text="Label" />
             </children>
-         </Pane>
+         </VBox>
       </children>
    </VBox>
    <!-- Playing Field Pane with fixed size -->
@@ -30,9 +31,9 @@
    <!-- VBox for Hold and Next boxes stacked vertically -->
    <VBox maxHeight="600.0" spacing="20">
       <!-- Hold Box Pane -->
-      <Pane fx:id="nextMinoBox" prefHeight="170.0" prefWidth="170.0" style="-fx-background-color: black;">
+      <Pane fx:id="nextMinoBox" prefHeight="170.0" prefWidth="170.0" stylesheets="@style.css">
          <children>
-            <Label layoutX="52.0" layoutY="14.0" text="Next" textFill="WHITE">
+            <Label layoutX="60.0" layoutY="14.0" text="Next" textFill="WHITE">
                <font>
                   <Font size="32.0" />
                </font>
