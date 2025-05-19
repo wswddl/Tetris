@@ -50,6 +50,7 @@ public class KeyInputHandler {
         }
         else if (code == javafx.scene.input.KeyCode.R) {
             pausePress = false;
+            resumePress = true;
         }
         else if (code == javafx.scene.input.KeyCode.SPACE) {
             spacePress = true;

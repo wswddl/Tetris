@@ -17,7 +17,7 @@
                   </font>
                </Label>
             </children></Pane>
-         <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+         <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" style="-fx-background-color: white;">
             <children>
                <Label text="Score" />
                <Label fx:id="score" text="Label" />

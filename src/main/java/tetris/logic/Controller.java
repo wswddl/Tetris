@@ -1,5 +1,6 @@
 package tetris.logic;
 
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.Pane;
 import tetris.Bag;
 import tetris.block.Block;
@@ -12,7 +13,8 @@ import tetris.block.MinoO;
 import tetris.block.MinoS;
 import tetris.block.MinoT;
 import tetris.block.MinoZ;
-import tetris.ui.UiManager;
+import tetris.ui.GameplayUI;
+import tetris.ui.PauseMenuUI;
 
 import static tetris.util.TetrisConstants.*;
 
@@ -25,7 +27,9 @@ public class Controller {
     private Pane playingField;
     //@FXML
     private Pane nextMinoBox;
-    private UiManager ui;
+    //private UiManager ui;
+    private GameplayUI ui;
+    private PauseMenuUI pauseMenuUI;
 
     // minos
     private MinoBlock[][] inactiveBlocksArray; // only keep track of inactive blocks, not including active blocks
@@ -41,6 +45,7 @@ public class Controller {
     private boolean isEffectOn; // effect is on when there is line removal
     private boolean isTSpin;
     public boolean isGameOver;
+    public boolean isPaused;
     public boolean isTimesUp;
 
     // game counter
@@ -61,9 +66,10 @@ public class Controller {
      * Is called by loader.load()
      */
     //public void initialize() {
-    public Controller(UiManager ui) {
+    public Controller(GameplayUI ui, PauseMenuUI pauseMenuUI) {
         //ui = new UiManager(playingField, nextMinoBox, holdMinoBox);
         this.ui = ui;
+        this.pauseMenuUI = pauseMenuUI;
 
         this.inactiveBlocksArray = new MinoBlock[NUM_OF_ROW][NUM_OF_COL];
         this.gameMetrics = new GameMetrics();
@@ -101,6 +107,7 @@ public class Controller {
         isEffectOn = false;
         isTSpin = false;
         isGameOver = false;
+        isPaused = false;
         isTimesUp = false;
 
         allowSwapMino = true;
@@ -149,10 +156,27 @@ public class Controller {
      * Updates the Minos and other UI components every time interval.
      */
     public void update() {
-        if (isGameOver) {
-            return;
+        if (!KeyInputHandler.pausePress && !KeyInputHandler.resumePress && !isGameOver) {
+            updateNormalGameplay();
+        } else if (KeyInputHandler.pausePress && !isGameOver) {
+            KeyInputHandler.ignoreMovement();
+            handlePausePress();
+            //TetrisPanel.OST.pause();
+        } else if (KeyInputHandler.resumePress && !isGameOver) {
+            //TetrisPanel.OST.resume();
+            KeyInputHandler.resumePress = false;
+            handleResumePress();
+        } else if (isGameOver && KeyInputHandler.restartPress) {
+            // restart();
+        /*} else if (TetrisFunctions.isTimesUp && KeyInputHandler.restartPressForTimesUp) {
+            tf.restart();*/
+        } else { // gameOver and NO restart
+            KeyInputHandler.ignoreMovement();
+            KeyInputHandler.pausePress = false;
         }
+    }
 
+    public void updateNormalGameplay() {
         if (currentMino.isActive() && KeyInputHandler.holdPress && allowSwapMino) {
             handleHoldPress();
         } else if (currentMino.isActive()){
@@ -273,6 +297,11 @@ public class Controller {
             }
         }
     }
+
+    // =================================================
+    // Key Press Hnadler
+    // =================================================
+
     private void handleUpPress() {
         // Clear UI
         ui.removeMinoInPlayingField(currentMino);
@@ -413,6 +442,19 @@ public class Controller {
         ui.addMinoShadowInPlayingField(currentMino);
 
         KeyInputHandler.rightPress = false;
+    }
+    public void handlePausePress() {
+        ui.getRoot().setEffect(new GaussianBlur(10));
+        pauseMenuUI.getRoot().setVisible(true);
+
+        // don't reset the pausePress to false, needed to detect resume press
+    }
+    public void handleResumePress() {
+        ui.getRoot().setEffect(null); // remove blur
+        pauseMenuUI.getRoot().setVisible(false);
+
+        KeyInputHandler.resumePress = false;
+        KeyInputHandler.pausePress = false;
     }
 
     
