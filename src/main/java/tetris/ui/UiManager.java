@@ -16,12 +16,11 @@ import tetris.block.Mino;
 import tetris.block.MinoBlock;
 
 import java.util.ArrayList;
-import java.util.PriorityQueue;
 
 import static tetris.util.TetrisConstants.*;
 
 public class UiManager {
-    private static final String FXML = "/view/Tetris.fxml";
+    private static final String FXML = "/view/GameScreen.fxml";
     private Stage primaryStage;
     private Scene gameScene;
     @FXML

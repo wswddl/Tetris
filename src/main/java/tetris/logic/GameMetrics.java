@@ -38,7 +38,15 @@ public class GameMetrics {
     public int getScore() {
         return score;
     }
+    public void resetScore() {
+        score = 0;
+    }
     public int getHighScore() {
         return highScore;
+    }
+    public void setHighScore() {
+        if (score > highScore) {
+            highScore = score;
+        }
     }
 }

@@ -2,7 +2,6 @@ package tetris.block;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import tetris.logic.TetrisManager;
 import tetris.logic.GameState;
 import tetris.util.Copyable;
 
@@ -91,7 +90,7 @@ public abstract class Mino implements Copyable<Mino> {
      * position can be found, the mino won't be rotated.
      * Try snapping it to the left, right, bottom, bottom left, bottom right, top left and top right.</>
      */
-    public void tryRotatingMino(Block[][] inactiveBlockArray, TetrisManager gameController) {
+    /*public void tryRotatingMino(Block[][] inactiveBlockArray, TetrisManager tetrisManager) {
         int altPosition = 1;
         boolean canRotate = true;
 
@@ -160,7 +159,7 @@ public abstract class Mino implements Copyable<Mino> {
                 gameController.resetDeactivation();
             }
         }
-    }
+    }*/
     // copy version for new refactoring
     public void tryRotatingMino(Block[][] inactiveBlockArray, GameState gameState) {
         int altPosition = 1;

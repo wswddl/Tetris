@@ -29,7 +29,7 @@ public class MinoManager {
         this.bagOfMinos = new Bag<Mino>(new MinoI(), new MinoJ(), new MinoL(), new MinoO(),
                 new MinoS(), new MinoT(), new MinoZ());
     }
-    private void initializeMinos() {
+    public void initializeMinos() {
         assert bagOfMinos != null;
 
         currentMino = bagOfMinos.pickRandomly();
@@ -102,8 +102,15 @@ public class MinoManager {
     }
 
     public void setNewCurrentNextMino() {
+        // clear UI
+        this.removeMinoFromNextMinoBox();
+
         currentMino = nextMino;
         nextMino = bagOfMinos.pickRandomly();
+
+        // update UI
+        this.addMinoToPlayingField();
+        this.addMinoToNextMinoBox();
     }
 
     public void deactivateCurrentMino() {

@@ -6,7 +6,7 @@ import tetris.ui.GameScreen;
 
 public class ActiveStateManager {
     GameState gameState;
-    GameScreen gameplayUI;
+    GameScreen gameScreen;
     MinoManager minoManager;
     MinoBlock[][] inactiveBlocksArray;
 
@@ -14,79 +14,25 @@ public class ActiveStateManager {
     CollisionDetector collisionDetector;
     InputHandler inputHandler;
 
-    public ActiveStateManager(GameState gameState, GameScreen gameplayUI, MinoManager minoManager, MinoBlock[][] inactiveBlocksArray) {
+    public ActiveStateManager(GameState gameState, GameScreen gameScreen, MinoManager minoManager, MinoBlock[][] inactiveBlocksArray) {
         this.gameState = gameState;
-        this.gameplayUI = gameplayUI;
+        this.gameScreen = gameScreen;
         this.minoManager = minoManager;
         this.inactiveBlocksArray = inactiveBlocksArray;
 
 
         collisionDetector = new CollisionDetector(inactiveBlocksArray);
-        inputHandler = new InputHandler(gameState, gameplayUI, minoManager, inactiveBlocksArray, collisionDetector);
+        inputHandler = new InputHandler(gameState, gameScreen, minoManager, inactiveBlocksArray, collisionDetector);
     }
-    // gameState.
+
+    /**
+     * Updates the game when current mino is active.
+     * This method only handles auto drop mechanism and deactivation of current mino.
+     * Key press movement on mino is handled by {@code handleUpPress}, {@code handleLeftPress} ...
+     */
     public void update() {
-        /*
-        if (KeyInputHandler.holdPress && gameState.isAllowSwapMino()) {
-            inputHandler.handleHoldPress();
-        }
-
-        // keyboard input handler...
-        if (KeyInputHandler.upPress) {
-            inputHandler.handleUpPress();
-        }
-
-        //this.checkCurrentMinoMovementCollision();
         Mino currentMino = minoManager.getCurrentMino();
         collisionDetector.checkCurrentMinoMovementCollision(currentMino);
-
-        if (KeyInputHandler.spacePress) {
-            inputHandler.handleSpacePress();
-        }
-        if (KeyInputHandler.downPress) {
-            inputHandler.handleDownPress();
-        }
-        if (KeyInputHandler.leftPress) {
-            inputHandler.handleLeftPress();
-        }
-        if (KeyInputHandler.rightPress) {
-            inputHandler.handleRightPress();
-        }
-
-        // auto drop
-        this.autoDropMechanism();
-
-        // after actions, check if the mino is deactivating
-        // NOTE: don't check isDeactivating before any action (KeyInput handling) to prevent buggy output (e.g. floating inactive blocks)
-        if (gameState.isDeactivating()) {
-            this.startDeactivatingCurrentMino();
-        }*/
-
-        if (KeyInputController.minoAction == MinoAction.HOLD && gameState.isAllowSwapMino()) {
-            inputHandler.handleHoldPress();
-        }
-
-        // keyboard input handler...
-        if (KeyInputController.minoAction == MinoAction.UP) {
-            inputHandler.handleUpPress();
-        }
-
-        //this.checkCurrentMinoMovementCollision();
-        Mino currentMino = minoManager.getCurrentMino();
-        collisionDetector.checkCurrentMinoMovementCollision(currentMino);
-
-        if (KeyInputController.minoAction == MinoAction.SPACE) {
-            inputHandler.handleSpacePress();
-        }
-        if (KeyInputController.minoAction == MinoAction.DOWN) {
-            inputHandler.handleDownPress();
-        }
-        if (KeyInputController.minoAction == MinoAction.LEFT) {
-            inputHandler.handleLeftPress();
-        }
-        if (KeyInputController.minoAction == MinoAction.RIGHT) {
-            inputHandler.handleRightPress();
-        }
 
         // auto drop
         this.autoDropMechanism();
@@ -114,7 +60,7 @@ public class ActiveStateManager {
 
             if (collisionDetector.hasBottomCollision()) {
                 // Clear the all shadow when touch down (prevent bugs)
-                gameplayUI.clearAllShadowInPlayingField();
+                gameScreen.clearAllShadowInPlayingField();
                 minoManager.deactivateCurrentMino();
             }
             gameState.resetDeactivation();
@@ -131,15 +77,48 @@ public class ActiveStateManager {
             if (gameState.hasReachAutoDropInterval()) {
                 // Clear UI
                 Mino currentMino = minoManager.getCurrentMino();
-                gameplayUI.removeMinoInPlayingField(currentMino);
+                gameScreen.removeMinoInPlayingField(currentMino);
 
                 currentMino.moveDown();
 
                 // Set UI
-                gameplayUI.addMinoInPlayingField(currentMino);
+                gameScreen.addMinoInPlayingField(currentMino);
 
                 gameState.resetAutoDropCounter();
             }
+        }
+    }
+
+    public void handleUpPress() {
+        Mino currentMino = minoManager.getCurrentMino();
+        collisionDetector.checkCurrentMinoMovementCollision(currentMino);
+        inputHandler.handleUpPress();
+    }
+    public void handleLeftPress() {
+        Mino currentMino = minoManager.getCurrentMino();
+        collisionDetector.checkCurrentMinoMovementCollision(currentMino);
+        inputHandler.handleLeftPress();
+    }
+    public void handleDownPress() {
+        Mino currentMino = minoManager.getCurrentMino();
+        collisionDetector.checkCurrentMinoMovementCollision(currentMino);
+        inputHandler.handleDownPress();
+    }
+    public void handleRightPress() {
+        Mino currentMino = minoManager.getCurrentMino();
+        collisionDetector.checkCurrentMinoMovementCollision(currentMino);
+        inputHandler.handleRightPress();
+    }
+    public void handleSpacePress() {
+        Mino currentMino = minoManager.getCurrentMino();
+        collisionDetector.checkCurrentMinoMovementCollision(currentMino);
+        inputHandler.handleSpacePress();
+    }
+    public void handleHoldPress() {
+        Mino currentMino = minoManager.getCurrentMino();
+        collisionDetector.checkCurrentMinoMovementCollision(currentMino);
+        if (gameState.isAllowSwapMino()) {
+            inputHandler.handleHoldPress();
         }
     }
 

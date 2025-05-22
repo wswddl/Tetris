@@ -1,22 +1,20 @@
 package tetris.logic;
 
 import javafx.scene.effect.GaussianBlur;
-import javafx.scene.layout.Pane;
-import tetris.block.*;
+import tetris.ui.GameOverScreen;
 import tetris.ui.GameScreen;
 import tetris.ui.PauseMenuScreen;
 
-import static tetris.util.TetrisConstants.*;
-
-public class TetrisManager {
+public class GameController {
 
     // model manager
     private GameplayManager gameplayManager;
-    private PauseController pauseController;
 
     // ui
     private GameScreen gameScreen;
     private PauseMenuScreen pauseMenuScreen;
+    private GameOverScreen gameOverScreen;
+    // game state
     private GameState gameState;
 
 
@@ -31,22 +29,39 @@ public class TetrisManager {
      * Is called by loader.load()
      */
     //public void initialize() {
-    public TetrisManager(GameScreen gameScreen, PauseMenuScreen pauseMenuScreen) {
+    public GameController(GameScreen gameScreen, PauseMenuScreen pauseMenuScreen, GameOverScreen gameOverScreen) {
         //ui = new UiManager(playingField, nextMinoBox, holdMinoBox);
         this.gameScreen = gameScreen;
         this.pauseMenuScreen = pauseMenuScreen;
+        this.gameOverScreen = gameOverScreen;
 
         this.gameState = new GameState();
 
-        this.gameplayManager = new GameplayManager(gameState, gameScreen);
-
-
-
+        this.gameplayManager = new GameplayManager(gameState, gameScreen, gameOverScreen);
     }
     public GameState getGameState() {
         return this.gameState;
     }
 
+
+    public void pauseGame() {
+        gameState.pauseTheGame();
+        gameplayManager.pauseGameLoop();
+
+        gameScreen.getRoot().setEffect(new GaussianBlur(10));
+        pauseMenuScreen.getRoot().setVisible(true);
+    }
+    public void resumeGame() {
+        gameState.resumeTheGame();
+        gameplayManager.resumeGameLoop();
+
+        gameScreen.getRoot().setEffect(null); // remove blur
+        pauseMenuScreen.getRoot().setVisible(false);
+    }
+
+    public void restartGame() {
+        gameplayManager.restartGame();
+    }
 
 
 
@@ -124,21 +139,6 @@ public class TetrisManager {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public void pauseGame() {
-        gameState.pauseTheGame();
-        gameplayManager.pauseGameLoop();
-
-        gameScreen.getRoot().setEffect(new GaussianBlur(10));
-        pauseMenuScreen.getRoot().setVisible(true);
-
-    }
-    public void resumeGame() {
-        gameState.resumeTheGame();
-        gameplayManager.resumeGameLoop();
-
-        gameScreen.getRoot().setEffect(null); // remove blur
-        pauseMenuScreen.getRoot().setVisible(false);
-    }
 
 
 

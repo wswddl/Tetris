@@ -9,22 +9,20 @@ import static tetris.util.TetrisConstants.NUM_OF_COL;
 
 public class InactiveStateManager {
     private GameState gameState;
-    private GameScreen gameplayUI;
+    private GameScreen gameScreen;
     private MinoManager minoManager;
     private MinoBlock[][] inactiveBlocksArray;
     private GameMetrics gameMetrics;
 
-    public InactiveStateManager(GameState gameState, GameScreen gameplayUI, MinoManager minoManager, MinoBlock[][] inactiveBlocksArray, GameMetrics gameMetrics) {
+    public InactiveStateManager(GameState gameState, GameScreen gameScreen, MinoManager minoManager, MinoBlock[][] inactiveBlocksArray, GameMetrics gameMetrics) {
         this.gameState = gameState;
-        this.gameplayUI = gameplayUI;
+        this.gameScreen = gameScreen;
         this.minoManager = minoManager;
         this.inactiveBlocksArray = inactiveBlocksArray;
         this.gameMetrics = gameMetrics;
     }
 
     public void update() {
-
-
         this.handleRemoveLine();
 
         if (this.checkGameOver()) {
@@ -32,16 +30,7 @@ public class InactiveStateManager {
             return;
         }
 
-        // Clear UI
-        minoManager.removeMinoFromNextMinoBox();
-
-        /*currentMino = nextMino;
-        nextMino = bagOfMinos.pickRandomly();*/
         minoManager.setNewCurrentNextMino();
-
-        // Set UI
-        minoManager.addMinoToPlayingField();
-        minoManager.addMinoToNextMinoBox();
 
         gameState.enableSwapMino();
 
@@ -61,7 +50,7 @@ public class InactiveStateManager {
      * playing field, else drop the inactive blocks on top to fill in the gap of the deleted row.
      */
     private void handleRemoveLine() {
-        gameplayUI.clearAllShadowInPlayingField(); // safety measures :)
+        gameScreen.clearAllShadowInPlayingField(); // safety measures :)
 
         int numLinesClear = 0;
         boolean gotLineRemoval = false;
@@ -92,7 +81,7 @@ public class InactiveStateManager {
                 for (int c = 0; c < inactiveBlocksArray[0].length; c++) {
                     MinoBlock toBeRemovedBlock = inactiveBlocksArray[r][c];
                     if (toBeRemovedBlock != null) {
-                        gameplayUI.addFadingBlock(toBeRemovedBlock);
+                        gameScreen.addFadingBlock(toBeRemovedBlock);
                         inactiveBlocksArray[r][c] = null;
                     }
                 }
@@ -101,7 +90,7 @@ public class InactiveStateManager {
                     MinoBlock fallingBlock = inactiveBlocksArray[r][c];
                     if (fallingBlock != null && gotLineRemoval) {
                         fallingBlock.dropImmediately(numLinesClear);
-                        gameplayUI.addFallingBlock(fallingBlock, numLinesClear);
+                        gameScreen.addFallingBlock(fallingBlock, numLinesClear);
                         inactiveBlocksArray[r][c] = null;
                         inactiveBlocksArray[r + numLinesClear][c] = fallingBlock;
                     }
@@ -118,9 +107,8 @@ public class InactiveStateManager {
             // TODO: t spin sound effect
         }
 
-        gameMetrics.updateScore(numLinesClear, false);
-        gameplayUI.updateScore(gameMetrics.getScore());
-
+        gameMetrics.updateScore(numLinesClear, gameState.isTSpin());
+        gameScreen.updateScore(gameMetrics.getScore());
 
     }
 }

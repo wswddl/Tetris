@@ -7,18 +7,21 @@ import javafx.scene.Node;
 
 public class KeyInputController {
 
-    public static boolean upPress, downPress, leftPress, rightPress, escapePress, spacePress, holdPress, restartPress, resumePress, restartPressForTimesUp, pausePress;
-    //  public Controller gameController;
-    public static MinoAction minoAction;
     public GameState gameState;
+    public GameController gameController;
+    public GameplayManager gameplayManager;
+    public ActiveStateManager activeStateManager;
 
-    //public KeyInputHandler(Scene scene, Controller gameController) {
-    public KeyInputController(Scene scene, GameState gameState) {
+    public KeyInputController(Scene scene, GameState gameState, GameController gameController) {
         // Set key event handlers on the scene
         scene.setOnKeyPressed(this::keyPressed);
         scene.setOnKeyReleased(this::keyReleased);
 
         this.gameState = gameState;
+        this.gameController = gameController;
+        this.gameplayManager = gameController.getGameplayManager();
+        this.activeStateManager = gameplayManager.getActiveStateManager();
+
 
         //this.gameController = gameController;
     }
@@ -71,8 +74,7 @@ public class KeyInputController {
     private void keyPressed(KeyEvent ke) {
         if (gameState.isGameOver()) {
             this.keyPressedWhenGameOver(ke);
-        }
-        if (!gameState.isGamePaused()) {
+        } else if (!gameState.isGamePaused()) {
             this.keyPressedWhenGameIsPlaying(ke);
         } else {
             this.keyPressedWhenGameIsPaused(ke);
@@ -82,71 +84,59 @@ public class KeyInputController {
         var code = ke.getCode();
 
         if (code == KeyCode.R) {
+            gameController.restartGame();
             //****restartPress = true;
-            gameState.restartGame();
-            gameState.playGameLoop();
+            //gameState.restartGame();
+            //gameState.playGameLoop();
         }
     }
     public void keyPressedWhenGameIsPlaying(KeyEvent ke) {
         var code = ke.getCode();
 
         if (code == KeyCode.W || code == KeyCode.UP) {
-            //upPress = true;
-            minoAction = MinoAction.UP;
+            activeStateManager.handleUpPress();
         }
         else if (code == KeyCode.A || code == KeyCode.LEFT) {
-            // leftPress = true;
-            minoAction = MinoAction.LEFT;
+            activeStateManager.handleLeftPress();
         }
         else if (code == KeyCode.S || code == KeyCode.DOWN) {
-            //downPress = true;
-            minoAction = MinoAction.DOWN;
+            activeStateManager.handleDownPress();
         }
         else if (code == KeyCode.D || code == KeyCode.RIGHT) {
-           //rightPress = true;
-            minoAction = MinoAction.RIGHT;
-        }
-        else if (code == KeyCode.ESCAPE) {
-            //escapePress = true;
-            /*
-            if (!pausePress) {
-                pausePress = true;
-            } else {
-                resumePress = true;
-                pausePress = false;
-            }*/
-        }
-        else if (code == KeyCode.R) {
-            //pausePress = false;
-            //resumePress = true;
+            activeStateManager.handleRightPress();
         }
         else if (code == KeyCode.SPACE) {
-            //spacePress = true;
-            minoAction = MinoAction.SPACE;
+            activeStateManager.handleSpacePress();
         }
         // hold
         else if (code == KeyCode.SHIFT || code == KeyCode.TAB) {
             //holdPress = true;
-            minoAction = MinoAction.HOLD;
+            activeStateManager.handleHoldPress();
+        }
+        // pause game
+        else if (code == KeyCode.ESCAPE) {
+            gameController.pauseGame();
         }
     }
 
     public void keyPressedWhenGameIsPaused(KeyEvent ke) {
-
+        var code = ke.getCode();
+        // resume game
+        if (code == KeyCode.ESCAPE || code == KeyCode.R) {
+            gameController.resumeGame();
+        }
     }
 
 
     private void keyReleased(KeyEvent ke) {
-        // You can handle key releases if needed
-        // This is a stub for handling when the key is released, if necessary
     }
 
     public static void ignoreMovement() {
-        upPress = downPress = leftPress = rightPress = spacePress = holdPress = false;
+
     }
 
     public static void resetPressFlags() {
-        upPress = downPress = leftPress = rightPress = escapePress = spacePress = holdPress = restartPress = resumePress = restartPressForTimesUp = pausePress = false;
+
     }
 
     public static void enableTabKey(Node node) {

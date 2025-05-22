@@ -19,7 +19,7 @@ import static tetris.util.TetrisConstants.PLAYING_FIELD_HEIGHT;
 
 public class GameScreen extends UiPart<HBox> {
 
-    private static final String FXML = "Tetris.fxml";
+    private static final String FXML = "GameScreen.fxml";
 
     @FXML
     private Pane playingField;
@@ -29,6 +29,8 @@ public class GameScreen extends UiPart<HBox> {
     private Pane holdMinoBox;
     @FXML
     private Label score;
+    @FXML
+    private Label highScore;
 
     // Graphic contexts
     private GraphicsContext playingFieldGC; // Draw the grid background in the playing field
@@ -132,6 +134,7 @@ public class GameScreen extends UiPart<HBox> {
 
         // score label
         updateScore(0);
+        updateHighScore(0);
 
         drawPlayingFieldGrid();
     }
@@ -357,6 +360,19 @@ public class GameScreen extends UiPart<HBox> {
     // Metrics UI
     // =================================================
     public void updateScore(int currentScore) {
-        score.setText("" + currentScore);
+        this.score.setText("" + currentScore);
+    }
+    public void updateHighScore(int newHighScore) {
+        this.highScore.setText("" + newHighScore);
+    }
+
+    // =================================================
+    // Restart game
+    // =================================================
+    public void restartGame() {
+        blockGC.clearRect(LEFTMOST_PIXEL, TOPMOST_PIXEL, PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
+        shadowGC.clearRect(LEFTMOST_PIXEL, TOPMOST_PIXEL, PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
+        holdBoxGC.clearRect(LEFTMOST_PIXEL, TOPMOST_PIXEL, HOLD_BOX_HEIGHT_WIDTH, HOLD_BOX_HEIGHT_WIDTH);
+        nextBoxGC.clearRect(LEFTMOST_PIXEL, TOPMOST_PIXEL, HOLD_BOX_HEIGHT_WIDTH, HOLD_BOX_HEIGHT_WIDTH);
     }
 }

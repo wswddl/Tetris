@@ -2,20 +2,20 @@ package tetris.logic;
 
 import javafx.scene.effect.GaussianBlur;
 import tetris.ui.GameScreen;
-import tetris.ui.PauseMenu;
+import tetris.ui.PauseMenuScreen;
 
 public class PauseController{
     GameScreen gameplayUI;
-    PauseMenu pauseMenuUI;
+    PauseMenuScreen pauseMenuScreen;
 
-    public PauseController(GameScreen gameplayUI, PauseMenu pauseMenuUI) {
+    public PauseController(GameScreen gameplayUI, PauseMenuScreen pauseMenuScreen) {
         this.gameplayUI = gameplayUI;
-        this.pauseMenuUI = pauseMenuUI;
+        this.pauseMenuScreen = pauseMenuScreen;
     }
 
     public void handlePausePress() {
         gameplayUI.getRoot().setEffect(new GaussianBlur(10));
-        pauseMenuUI.getRoot().setVisible(true);
+        pauseMenuScreen.getRoot().setVisible(true);
 
         // NOTE: Don't reset the pausePress to false, needed to detect resume press
 
@@ -24,10 +24,10 @@ public class PauseController{
     }
     public void handleResumePress() {
         gameplayUI.getRoot().setEffect(null); // remove blur
-        pauseMenuUI.getRoot().setVisible(false);
+        pauseMenuScreen.getRoot().setVisible(false);
 
-        KeyInputController.resumePress = false;
-        KeyInputController.pausePress = false;
+        //KeyInputController.resumePress = false;
+        //KeyInputController.pausePress = false;
 
         // TODO:
         // TetrisPanel.OST.resume();

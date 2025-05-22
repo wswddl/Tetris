@@ -6,14 +6,14 @@ import tetris.ui.GameScreen;
 
 public class InputHandler {
     private GameState gameState;
-    private GameScreen gameplayUI;
+    private GameScreen gameScreen;
     private MinoManager minoManager;
     private MinoBlock[][] inactiveBlocksArray;
     private CollisionDetector collisionDetector;
 
-    public InputHandler(GameState gameState, GameScreen gameplayUI, MinoManager minoManager, MinoBlock[][] inactiveBlocksArray, CollisionDetector collisionDetector) {
+    public InputHandler(GameState gameState, GameScreen gameScreen, MinoManager minoManager, MinoBlock[][] inactiveBlocksArray, CollisionDetector collisionDetector) {
         this.gameState = gameState;
-        this.gameplayUI = gameplayUI;
+        this.gameScreen = gameScreen;
         this.minoManager = minoManager;
         this.inactiveBlocksArray = inactiveBlocksArray;
         this.collisionDetector = collisionDetector;
@@ -22,8 +22,8 @@ public class InputHandler {
     public void handleUpPress() {
         Mino currentMino = minoManager.getCurrentMino();
         // Clear UI
-        gameplayUI.removeMinoInPlayingField(currentMino);
-        gameplayUI.removeMinoShadowInPlayingField(currentMino);
+        gameScreen.removeMinoInPlayingField(currentMino);
+        gameScreen.removeMinoShadowInPlayingField(currentMino);
 
         // set the ghost block position (rotation)
         switch(currentMino.direction) {
@@ -40,10 +40,9 @@ public class InputHandler {
 
         // Set UI
         // Note: the order of adding mino shadow and mino doesn't matter since different Canvas object is used.
-        gameplayUI.addMinoShadowInPlayingField(currentMino);
-        gameplayUI.addMinoInPlayingField(currentMino);
+        gameScreen.addMinoShadowInPlayingField(currentMino);
+        gameScreen.addMinoInPlayingField(currentMino);
 
-        KeyInputController.upPress = false;
     }
     public void handleHoldPress() {
 
@@ -60,8 +59,8 @@ public class InputHandler {
     public void handleSpacePress() {
         Mino currentMino = minoManager.getCurrentMino();
         // Clear UI
-        gameplayUI.removeMinoInPlayingField(currentMino);
-        gameplayUI.clearAllShadowInPlayingField(); // clear all shadow and not just the mino position to prevent bugs
+        gameScreen.removeMinoInPlayingField(currentMino);
+        gameScreen.clearAllShadowInPlayingField(); // clear all shadow and not just the mino position to prevent bugs
 
         //****** while(!bottomCollision) {
         while(!collisionDetector.hasBottomCollision()) {
@@ -75,7 +74,7 @@ public class InputHandler {
         currentMino.deactivate();
 
         // Set UI
-        gameplayUI.addMinoInPlayingField(currentMino);
+        gameScreen.addMinoInPlayingField(currentMino);
 
         gameState.resetAutoDropCounter();
 
@@ -87,24 +86,24 @@ public class InputHandler {
         //if (!bottomCollision) {
         if (!collisionDetector.hasBottomCollision()) {
             // Clear UI
-            gameplayUI.removeMinoInPlayingField(currentMino);
-            gameplayUI.removeMinoShadowInPlayingField(currentMino);
+            gameScreen.removeMinoInPlayingField(currentMino);
+            gameScreen.removeMinoShadowInPlayingField(currentMino);
 
             currentMino.moveDown();
             gameState.resetAutoDropCounter();
 
             // Set UI
-            gameplayUI.addMinoInPlayingField(currentMino);
-            gameplayUI.addMinoShadowInPlayingField(currentMino);
+            gameScreen.addMinoInPlayingField(currentMino);
+            gameScreen.addMinoShadowInPlayingField(currentMino);
         } else {
-            gameplayUI.removeMinoShadowInPlayingField(currentMino); // remember to remove the shadow when "touch down"
+            gameScreen.removeMinoShadowInPlayingField(currentMino); // remember to remove the shadow when "touch down"
         }
     }
     public void handleLeftPress() {
         Mino currentMino = minoManager.getCurrentMino();
         // Clear UI
-        gameplayUI.removeMinoInPlayingField(currentMino);
-        gameplayUI.removeMinoShadowInPlayingField(currentMino);
+        gameScreen.removeMinoInPlayingField(currentMino);
+        gameScreen.removeMinoShadowInPlayingField(currentMino);
 
         // **** if (!leftCollision) {
         if (!collisionDetector.hasLeftCollision()) {
@@ -114,14 +113,14 @@ public class InputHandler {
         }
 
         // Set UI
-        gameplayUI.addMinoInPlayingField(currentMino);
-        gameplayUI.addMinoShadowInPlayingField(currentMino);
+        gameScreen.addMinoInPlayingField(currentMino);
+        gameScreen.addMinoShadowInPlayingField(currentMino);
     }
     public void handleRightPress() {
         Mino currentMino = minoManager.getCurrentMino();
         // Clear UI
-        gameplayUI.removeMinoInPlayingField(currentMino);
-        gameplayUI.removeMinoShadowInPlayingField(currentMino);
+        gameScreen.removeMinoInPlayingField(currentMino);
+        gameScreen.removeMinoShadowInPlayingField(currentMino);
 
         // ****** if (!rightCollision) {
         if (!collisionDetector.hasRightCollision()) {
@@ -131,8 +130,8 @@ public class InputHandler {
         }
 
         // Set UI
-        gameplayUI.addMinoInPlayingField(currentMino);
-        gameplayUI.addMinoShadowInPlayingField(currentMino);
+        gameScreen.addMinoInPlayingField(currentMino);
+        gameScreen.addMinoShadowInPlayingField(currentMino);
     }
 
 

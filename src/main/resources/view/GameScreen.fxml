@@ -17,10 +17,16 @@
                   </font>
                </Label>
             </children></Pane>
-         <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" style="-fx-background-color: white;">
+         <VBox alignment="TOP_CENTER" prefHeight="63.0" prefWidth="170.0" spacing="10.0" style="-fx-background-color: white;">
             <children>
                <Label text="Score" />
                <Label fx:id="score" text="Label" />
+            </children>
+         </VBox>
+         <VBox alignment="TOP_CENTER" prefHeight="59.0" prefWidth="170.0" spacing="10.0" style="-fx-background-color: white;">
+            <children>
+               <Label text="High Score" />
+               <Label fx:id="highScore" text="Label" />
             </children>
          </VBox>
       </children>

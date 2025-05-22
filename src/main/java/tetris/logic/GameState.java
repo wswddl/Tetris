@@ -20,9 +20,8 @@ public class GameState {
     private int gameCounter;
     private int effectCounter;
 
-    private Timeline gameloop;
 
-    public GameState(Timeline gameloop) {
+    public GameState() {
         isDeactivating = false;
         isEffectOn = false;
         isTSpin = false;
@@ -37,7 +36,22 @@ public class GameState {
         gameCounter = 0;
         effectCounter = 0;
 
-        this.gameloop = gameloop;
+    }
+
+    public void resetGameState() {
+        isDeactivating = false;
+        isEffectOn = false;
+        isTSpin = false;
+        isGameOver = false;
+        isPaused = false;
+        isTimesUp = false;
+
+        this.allowSwapMino = true;
+
+        deactivateCounter = 0;
+        autoDropCounter = 0;
+        gameCounter = 0;
+        effectCounter = 0;
     }
 
 
@@ -141,12 +155,7 @@ public class GameState {
         return effectCounter > SPECIAL_EFFECT_DURATION;
     }
 
-    public void playGameLoop() {
-        gameloop.play();
-    }
-    public void pauseGameLoop() {
-        gameloop.pause();
-    }
+
 
 
 

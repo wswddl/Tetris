@@ -3,32 +3,30 @@ package tetris.ui;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
+import tetris.logic.GameController;
+import tetris.util.ButtonHandler;
 
-public class PauseMenu extends UiPart<StackPane> {
+public class PauseMenuScreen extends UiPart<StackPane> {
     private static final String FXML = "PauseMenu.fxml";
-    private boolean isResumeButtonClicked;
-    private GameScreen gameScreen;
+    //private GameController gameController;
+    ButtonHandler resumeButtonHandler;
     @FXML
     private StackPane myStackPane;
     @FXML
     private Button resumeButton;
 
-    public PauseMenu() {
+    public PauseMenuScreen() {
         super(FXML);
-        isResumeButtonClicked = false;
     }
 
-    /**
-     * Checks if the resume button has been clicked and reset the flag.
-     */
-    public boolean isResumeButtonClicked() {
-        boolean isClicked = isResumeButtonClicked;
-        isResumeButtonClicked = false;
-        return isClicked;
+    public void setButtonHandler(ButtonHandler buttonHandler) {
+        this.resumeButtonHandler = buttonHandler;
     }
 
     @FXML
     public void handleResumeButton() {
-
+        resumeButtonHandler.handle();
     }
+
+
 }
