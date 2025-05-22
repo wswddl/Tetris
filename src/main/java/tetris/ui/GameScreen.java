@@ -1,17 +1,13 @@
 package tetris.ui;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import tetris.block.Block;
 import tetris.block.Mino;
 import tetris.block.MinoBlock;
@@ -21,13 +17,11 @@ import java.util.ArrayList;
 import static tetris.util.TetrisConstants.*;
 import static tetris.util.TetrisConstants.PLAYING_FIELD_HEIGHT;
 
-public class GameplayUI extends UiPart<HBox> {
+public class GameScreen extends UiPart<HBox> {
 
     private static final String FXML = "Tetris.fxml";
 
-    private Stage primaryStage;
-    private Scene gameScene;
-    @javafx.fxml.FXML
+    @FXML
     private Pane playingField;
     @FXML
     private Pane nextMinoBox;
@@ -55,7 +49,7 @@ public class GameplayUI extends UiPart<HBox> {
     // Set up UI
     // =================================================
 
-    public GameplayUI() {
+    public GameScreen() {
         super(FXML);
         //config(primaryStage);
         //setIcon(primaryStage);
@@ -140,9 +134,6 @@ public class GameplayUI extends UiPart<HBox> {
         updateScore(0);
 
         drawPlayingFieldGrid();
-    }
-    public Scene getGameScene() {
-        return gameScene;
     }
 
 

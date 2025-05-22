@@ -8,16 +8,18 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import tetris.logic.Controller;
+import tetris.logic.TetrisManager;
+import tetris.logic.GameState;
+import tetris.logic.KeyInputController;
 
 public class MainWindow extends UiPart<StackPane> {
     private static final String FXML = "MainWindow.fxml";
     private Stage primaryStage;
     private Scene mainScene;
-    private Controller controller;
-    private GameplayUI gameplayScreen;
+    private TetrisManager tetrisManager;
+    private GameScreen gameplayScreen;
     //private GameOverUI gameOverScreen;
-    private PauseMenuUI pauseScreen;
+    private PauseMenu pauseMenu;
     private final GaussianBlur blurEffect = new GaussianBlur(10);
     @FXML
     private StackPane gameRoot; // stack different layers (gameplay, pause menu, game over screen)
@@ -63,42 +65,28 @@ public class MainWindow extends UiPart<StackPane> {
     }
     public void fillInnerParts() {
 
-        this.gameplayScreen = new GameplayUI();
+        this.gameplayScreen = new GameScreen();
         this.gameRoot.getChildren().add(gameplayScreen.getRoot());
 
 
-        this.pauseScreen = new PauseMenuUI();
-        //this.gameRoot.getChildren().add(pauseScreen.getRoot());
+        this.pauseMenu = new PauseMenu();
+        //this.gameRoot.getChildren().add(pauseMenu.getRoot());
         //gameplayScreen.getRoot().setEffect(blurEffect);
-        this.gameRoot.getChildren().add(pauseScreen.getRoot());
-        pauseScreen.getRoot().setVisible(false); // initially, pause screen isn't visible
-
-
-
-
-        //double.minW
-        //double minWidth = gameplayScreen.getRoot().prefWidth(-1); // -1 = use preferred width
-        //double minHeight = gameplayScreen.getRoot().prefHeight(-1);
-        // double minWidth = gameRoot.prefWidth(-1);
-        //double minHeight= gameRoot.prefHeight(-1);
-        //primaryStage.setMinWidth((int) minWidth);
-        //primaryStage.setMinHeight((int) minHeight);
+        this.gameRoot.getChildren().add(pauseMenu.getRoot());
+        pauseMenu.getRoot().setVisible(false); // initially, pause screen isn't visible
 
         gameplayScreen.getRoot().prefWidthProperty().bind(getRoot().widthProperty());
         gameplayScreen.getRoot().prefHeightProperty().bind(getRoot().heightProperty());
         //System.out.println("main stack pane width and height " + gameRoot.prefWidth(-1) + " " + gameRoot.prefHeight(-1));
-        pauseScreen.getRoot().prefWidthProperty().bind(getRoot().widthProperty());
-        pauseScreen.getRoot().prefHeightProperty().bind(getRoot().heightProperty());
+        pauseMenu.getRoot().prefWidthProperty().bind(getRoot().widthProperty());
+        pauseMenu.getRoot().prefHeightProperty().bind(getRoot().heightProperty());
 
 
+        //
+        this.tetrisManager = new TetrisManager(gameplayScreen, pauseMenu);
 
-
-        this.controller = new Controller(gameplayScreen, pauseScreen);
-    }
-    public Scene getGameScene() {
-        return mainScene;
-    }
-    public Controller getController() {
-        return controller;
+        // Keyboard input handler
+        GameState gameState = tetrisManager.getGameState();
+        new KeyInputController(mainScene, gameState);
     }
 }

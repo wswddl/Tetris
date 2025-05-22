@@ -1,24 +1,30 @@
 package tetris.logic;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.Pane;
+import javafx.util.Duration;
 import tetris.Bag;
-import tetris.block.Block;
-import tetris.block.Mino;
-import tetris.block.MinoBlock;
-import tetris.block.MinoI;
-import tetris.block.MinoJ;
-import tetris.block.MinoL;
-import tetris.block.MinoO;
-import tetris.block.MinoS;
-import tetris.block.MinoT;
-import tetris.block.MinoZ;
+import tetris.block.*;
 import tetris.ui.GameScreen;
 import tetris.ui.PauseMenu;
 
 import static tetris.util.TetrisConstants.*;
 
-public class Controller {
+public class TetrisManager {
+    private CollisionDetector collisionDetector;
+    private GameplayManager gameplayManager;
+    private PauseController pauseController;
+    private GameScreen ui;
+    private GameScreen gameplayUI;
+    private PauseMenu pauseMenuUI;
+    private GameState gameState;
+    private GameMetrics gameMetrics;
+    private Timeline gameLoop;
+
+    //private MinoManager minoManager;
+    //private InputHandler inputHandler;
 
     // ui
     //@FXML
@@ -28,8 +34,7 @@ public class Controller {
     //@FXML
     private Pane nextMinoBox;
     //private UiManager ui;
-    private GameScreen ui;
-    private PauseMenu pauseMenuUI;
+
 
     // minos
     private MinoBlock[][] inactiveBlocksArray; // only keep track of inactive blocks, not including active blocks
@@ -39,7 +44,6 @@ public class Controller {
     private Mino holdMino;
 
     // Signals for the game logic
-    private boolean leftCollision, rightCollision, bottomCollision;
     private boolean allowSwapMino;
     private boolean isDeactivating;
     private boolean isEffectOn; // effect is on when there is line removal
@@ -56,8 +60,8 @@ public class Controller {
     private final int GAME_DURATION = 2 * 60 * FPS; // 2 minutes gameplay
 
     // game metrics
-    private GameMetrics gameMetrics;
-    
+
+
     // =================================================
     // Initialize the controller
     // =================================================
@@ -66,19 +70,56 @@ public class Controller {
      * Is called by loader.load()
      */
     //public void initialize() {
-    public Controller(GameScreen ui, PauseMenu pauseMenuUI) {
+    public TetrisManager(GameScreen gameplayUI, PauseMenu pauseMenuUI) {
+        setUpGameLoop();
+
         //ui = new UiManager(playingField, nextMinoBox, holdMinoBox);
-        this.ui = ui;
+        this.ui = gameplayUI;
+        this.gameplayUI = gameplayUI;
         this.pauseMenuUI = pauseMenuUI;
 
         this.inactiveBlocksArray = new MinoBlock[NUM_OF_ROW][NUM_OF_COL];
+
+        this.gameState = new GameState(gameLoop);
         this.gameMetrics = new GameMetrics();
 
-        this.fillInBagOfMinos();
-        this.initializeMinos();
-        this.initializeSignals();
-        this.initializeCounters();
+        //this.fillInBagOfMinos();
+        //this.initializeMinos();
+        //this.initializeSignals();
+        //this.collisionDetector = new CollisionDetector(inactiveBlocksArray);
+        //this.initializeCounters();
+
+
+        this.gameplayManager = new GameplayManager(gameState, gameplayUI);
+        this.pauseController = new PauseController(gameplayUI, pauseMenuUI);
+
+
+
     }
+    public GameState getGameState() {
+        return this.gameState;
+    }
+
+    private void setUpGameLoop() {
+        // Create the game loop
+        gameLoop = new Timeline(
+            new KeyFrame(Duration.seconds(1.0 / FPS),
+                e -> {
+                    if (!gameState.isGamePaused() && !gameState.isGameOver()) {
+                        this.update();
+                    }
+                }
+            )
+        );
+        gameLoop.setCycleCount(Timeline.INDEFINITE); // repeat forever
+        gameLoop.play(); // start the loop
+    }
+
+
+
+
+
+
     private void fillInBagOfMinos() {
         this.bagOfMinos = new Bag<Mino>(new MinoI(), new MinoJ(), new MinoL(), new MinoO(),
                 new MinoS(), new MinoT(), new MinoZ());
@@ -100,9 +141,6 @@ public class Controller {
         this.effectCounter = 0;
     }
     private void initializeSignals() {
-        leftCollision = false;
-        rightCollision = false;
-        bottomCollision = false;
         isDeactivating = false;
         isEffectOn = false;
         isTSpin = false;
@@ -146,16 +184,88 @@ public class Controller {
     public void removeMinoFromHoldMinoBox(Mino mino) {
         ui.removeMinoInHoldBox(mino);
     }
-    
+
     // =================================================
     // Update the game
     // =================================================
-    
+
+    public void update() {
+        if (gameState.isGameOver()) {
+            gameLoop.pause();
+            /*
+            if (KeyInputHandler.restartPress) {
+                // reset the game over flag
+                gameState.restartGame();
+                // handle restart game logic
+            }*/
+
+        }
+/*
+        else if (gameState.isGamePaused()) { // game has been paused
+            if (KeyInputHandler.escapePress || KeyInputHandler.resumePress|| pauseMenuUI.isResumeButtonClicked()) {
+                // resume the game
+                gameState.resumeTheGame();
+                // handle resume
+                pauseController.handleResumePress();
+            }
+        }
+*/
+        else if (!gameState.isGamePaused()) { // game isn't paused
+            if (KeyInputController.escapePress) {
+                // pause the game
+                gameState.pauseTheGame();
+                // handle pause
+                pauseController.handlePausePress();
+
+                gameLoop.pause();
+
+            } else {
+                gameplayManager.update();
+            }
+        }
+        KeyInputController.resetPressFlags();
+        KeyInputController.minoAction = null;
+
+/*
+
+        if (!KeyInputHandler.pausePress && !KeyInputHandler.resumePress && !isGameOver) {
+            gameplayController.update();
+        } else if (KeyInputHandler.pausePress && !isGameOver) {
+            KeyInputHandler.ignoreMovement();
+            pauseController.handlePausePress();
+            //TetrisPanel.OST.pause(); handled in pausecontroller
+        } else if (KeyInputHandler.resumePress && !isGameOver) {
+            //TetrisPanel.OST.resume(); handled in pausecontroller
+            // KeyInputHandler.resumePress = false;
+            pauseController.handleResumePress();
+        } else if (isGameOver && KeyInputHandler.restartPress) {
+            // restart();
+        /*} else if (TetrisFunctions.isTimesUp && KeyInputHandler.restartPressForTimesUp) {
+            tf.restart();*//*
+        } else { // gameOver and NO restart
+            KeyInputHandler.ignoreMovement();
+            KeyInputHandler.pausePress = false;
+        }*/
+
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
     /**
      * Gets invoke by {@Code Tetris} gameLoop every time interval.
      * Updates the Minos and other UI components every time interval.
      */
-    public void update() {
+    public void update123() {
         if (!KeyInputController.pausePress && !KeyInputController.resumePress && !isGameOver) {
             updateNormalGameplay();
         } else if (KeyInputController.pausePress && !isGameOver) {
@@ -197,7 +307,7 @@ public class Controller {
     }
 
 
-    
+
     public void updateWhenMinoIsActiveOnly() {
         if (isDeactivating) {
             this.startDeactivatingCurrentMino();
@@ -208,7 +318,8 @@ public class Controller {
             handleUpPress();
         }
 
-        this.checkCurrentMinoMovementCollision();
+        //this.checkCurrentMinoMovementCollision();
+        collisionDetector.checkCurrentMinoMovementCollision(currentMino);
 
         if (KeyInputController.spacePress) {
             handleSpacePress();
@@ -262,12 +373,16 @@ public class Controller {
             // check if the mino is still hitting the bottom after 1 second
             // if still hitting the bottom, deactivate it
             // reset the deactivate counter and boolean
-            this.checkCurrentMinoMovementCollision();
-            if (bottomCollision) {
+
+            //this.checkCurrentMinoMovementCollision();  *******
+            collisionDetector.checkCurrentMinoMovementCollision(currentMino);
+
+            // ********* if (bottomCollision) {
+            if (collisionDetector.hasBottomCollision()) {
                 // Clear the all shadow when touch down (prevent bugs)
                 ui.clearAllShadowInPlayingField();
 
-                currentMino.deactivate(playingField);
+                currentMino.deactivate(playingField); // passing playing field isnt used in deactivate() lol
             }
             resetDeactivation();
         }
@@ -280,7 +395,8 @@ public class Controller {
      * Moves the mino down one block every {@Code AUTO_DROP_INTERVAL}.
      */
     private void autoDropMechanism() {
-        if (bottomCollision) {
+        //***** if (bottomCollision) {
+        if (collisionDetector.hasBottomCollision()) {
             this.isDeactivating = true;
         } else {
             this.autoDropCounter++;
@@ -315,7 +431,7 @@ public class Controller {
             case 4: currentMino.getD1(); break;
         }
         // try to rotate the mino and snap to valid position
-        //************     currentMino.tryRotatingMino(inactiveBlocksArray, this);
+        currentMino.tryRotatingMino(inactiveBlocksArray, this);
         // after rotation, set the shadow position again
         currentMino.setShadowPosition(inactiveBlocksArray);
 
@@ -375,9 +491,13 @@ public class Controller {
         ui.removeMinoInPlayingField(currentMino);
         ui.clearAllShadowInPlayingField(); // clear all shadow and not just the mino position to prevent bugs
 
-        while(!bottomCollision) {
+        //****** while(!bottomCollision) {
+        while(!collisionDetector.hasBottomCollision()) {
+
             currentMino.moveDown();
-            this.checkCurrentMinoMovementCollision();
+
+            // ******* this.checkCurrentMinoMovementCollision();
+            collisionDetector.checkCurrentMinoMovementCollision(currentMino);
         }
         // deactivate immediately
         this.currentMino.deactivate(playingField);
@@ -392,7 +512,8 @@ public class Controller {
         //TetrisPanel.soundEffect.play(12, false); TODO: sound effect for space
     }
     private void handleDownPress() {
-        if (!bottomCollision) {
+        //if (!bottomCollision) {
+        if (!collisionDetector.hasBottomCollision()) {
             // Clear UI
             ui.removeMinoInPlayingField(currentMino);
             ui.removeMinoShadowInPlayingField(currentMino);
@@ -414,7 +535,8 @@ public class Controller {
         ui.removeMinoInPlayingField(currentMino);
         ui.removeMinoShadowInPlayingField(currentMino);
 
-        if (!leftCollision) {
+        // **** if (!leftCollision) {
+        if (!collisionDetector.hasLeftCollision()) {
             currentMino.moveLeft();
             // after moving to the left, set the shadow position again
             currentMino.setShadowPosition(inactiveBlocksArray);
@@ -431,7 +553,8 @@ public class Controller {
         ui.removeMinoInPlayingField(currentMino);
         ui.removeMinoShadowInPlayingField(currentMino);
 
-        if (!rightCollision) {
+        // ****** if (!rightCollision) {
+        if (!collisionDetector.hasRightCollision()) {
             currentMino.moveRight();
             // after moving to the right, set the shadow position again
             currentMino.setShadowPosition(inactiveBlocksArray);
@@ -457,7 +580,7 @@ public class Controller {
         KeyInputController.pausePress = false;
     }
 
-    
+
     // =================================================
     // Removing lines and effects
     // =================================================
@@ -526,77 +649,6 @@ public class Controller {
 
 
     }
-    
-    // =================================================
-    // Collision detection
-    // =================================================
-    
-    /**
-     * Check if the mino collides with the border or any inactive blocks.
-     * <p>A collision means that the mino is "in contact" with the border/inactive blocks. </>
-     */
-    public void checkCurrentMinoMovementCollision() {
-        leftCollision = rightCollision = bottomCollision = false;
-        for (Block block : currentMino.blocks) {
-            // check if the mino collides with the border
-            isBorderCollision(block);
-            // check if the mino collides with inactive blocks
-            isLeftBlocked(block);
-            isBottomBlocked(block);
-            isRightBlocked(block);
-        }
-    }
-    public void isBorderCollision(Block block) {
-        assert block != null;
-
-        int row = block.getRow();
-        int col = block.getCol();
-        if (col <= LEFTMOST_X) {
-            leftCollision = true;
-        }
-        if (col >= RIGHTMOST_X) {
-            rightCollision = true;
-        }
-        if (row >= BOTTOMMOST_Y) {
-            bottomCollision = true;
-        }
-    }
-    /**
-     * Checks if the left side of the block is an inactive block.
-     */
-    public void isLeftBlocked(Block block) {
-        assert block != null;
-
-        int row = block.getRow();
-        int col = block.getCol();
-        if (col <= LEFTMOST_X || inactiveBlocksArray[row][col - 1] != null) {
-            leftCollision = true;
-        }
-    }
-    /**
-     * Checks if the bottom of the block is an inactive block.
-     */
-    public void isBottomBlocked(Block block) {
-        assert block != null;
-
-        int row = block.getRow();
-        int col = block.getCol();
-        if (row >= BOTTOMMOST_Y || inactiveBlocksArray[row + 1][col] != null) {
-            bottomCollision = true;
-        }
-    }
-    /**
-     * Checks if the right side of the block is an inactive block.
-     */
-    public void isRightBlocked(Block block) {
-        assert block != null;
-
-        int row = block.getRow();
-        int col = block.getCol();
-        if (col >= RIGHTMOST_X || inactiveBlocksArray[row][col + 1] != null) {
-            rightCollision = true;
-        }
-    }
 
     // =================================================
     // game over & restart
@@ -637,14 +689,5 @@ public class Controller {
             isTSpin = false;
             effectCounter = 0;
         }
-
-
     }
-    
-
-    
-
-
-
-
 }
