@@ -183,11 +183,11 @@ public class GameController {
 
         FadeTransition fadeOutGameScreen = new FadeTransition(Duration.seconds(1.0), gameScreen.getRoot());
         fadeOutGameScreen.setToValue(0.0);
-        combined.getChildren().add(fadeOutGameScreen);
+        //combined.getChildren().add(fadeOutGameScreen);
 
         FadeTransition fadeOutGameOverScreen = new FadeTransition(Duration.seconds(1.0), gameOverScreen.getRoot());
         fadeOutGameOverScreen.setToValue(0.0);
-        combined.getChildren().add(fadeOutGameOverScreen);
+        //combined.getChildren().add(fadeOutGameOverScreen);
 
         FadeTransition fadeInStartMenuScreen = new FadeTransition(Duration.seconds(1.0), startMenuScreen.getRoot());
         fadeInStartMenuScreen.setFromValue(0.0);
@@ -221,11 +221,11 @@ public class GameController {
 
         FadeTransition fadeOutGameScreen = new FadeTransition(Duration.seconds(1.0), gameScreen.getRoot());
         fadeOutGameScreen.setToValue(0.0);
-        combined.getChildren().add(fadeOutGameScreen);
+        //combined.getChildren().add(fadeOutGameScreen);
 
         FadeTransition fadeOutGameOverScreen = new FadeTransition(Duration.seconds(1.0), pauseMenuScreen.getRoot());
         fadeOutGameOverScreen.setToValue(0.0);
-        combined.getChildren().add(fadeOutGameOverScreen);
+        //combined.getChildren().add(fadeOutGameOverScreen);
 
         FadeTransition fadeInStartMenuScreen = new FadeTransition(Duration.seconds(1.0), startMenuScreen.getRoot());
         fadeInStartMenuScreen.setFromValue(0.0);
@@ -260,7 +260,7 @@ public class GameController {
 
         FadeTransition fadeOutStartMenu = new FadeTransition(Duration.seconds(1.0), startMenuScreen.getRoot());
         fadeOutStartMenu.setToValue(0.0);
-        combined.getChildren().add(fadeOutStartMenu);
+        //combined.getChildren().add(fadeOutStartMenu);
 
         FadeTransition fadeInGameScreen = new FadeTransition(Duration.seconds(1.0), gameScreen.getRoot());
         fadeInGameScreen.setFromValue(0.0);
@@ -276,14 +276,16 @@ public class GameController {
             mainWindow.removeNodesFromRoot(startMenuScreen.getRoot());
 
             gameState.isTransitionEffectsOn = false;
-        });
 
+            // start model only after the animation is finished
+            gameLoop.play();
+        });
+        // setup the model before animation finish !!!
+        gameplayManager.restartGame();
         combined.play();
 
 
-        // start model
-        gameLoop.play();
-        gameplayManager.restartGame();
+
 
     }
 

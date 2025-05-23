@@ -34,6 +34,7 @@ public class MinoManager {
 
         currentMino = bagOfMinos.pickRandomly();
         nextMino = bagOfMinos.pickRandomly();
+        holdMino = null;
 
         addMinoToPlayingField();
         addMinoToNextMinoBox();

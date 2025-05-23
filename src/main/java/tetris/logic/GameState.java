@@ -111,6 +111,8 @@ public class GameState {
         isPaused = false;
         isGameOver = false;
         isTimesUp = false;
+
+        allowSwapMino = true;
     }
 
     public boolean isGamePaused() {

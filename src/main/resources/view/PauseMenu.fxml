@@ -12,7 +12,7 @@
       <HBox alignment="CENTER_RIGHT">
          <children>
             <VBox minWidth="800.0" />
-            <VBox fx:id="vbox" alignment="CENTER_RIGHT" prefHeight="200.0" prefWidth="114.0" spacing="20.0">
+            <VBox fx:id="vbox" alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="114.0" spacing="20.0">
                <children>
                   <Button fx:id="resumeButton" focusTraversable="false" minHeight="100.0" minWidth="800.0" mnemonicParsing="false" onAction="#handleResumeButton" prefWidth="1600.0" styleClass="left-aligned-button" stylesheets="@PauseMenu.css" text="Resume" />
                   <Button fx:id="restartButton" focusTraversable="false" minHeight="100.0" minWidth="800.0" mnemonicParsing="false" onAction="#handleRestartButton" prefWidth="1600.0" styleClass="left-aligned-button" stylesheets="@PauseMenu.css" text="Restart" />

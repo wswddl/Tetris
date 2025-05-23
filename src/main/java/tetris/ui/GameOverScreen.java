@@ -24,6 +24,8 @@ public class GameOverScreen  extends UiPart<VBox> {
     Button restartButton;
     @FXML
     Button exitButton;
+    private TranslateTransition restartButtonHoverAnimation;
+    private TranslateTransition exitButtonHoverAnimation;
 
     public GameOverScreen() {
         super(FXML);
@@ -46,17 +48,19 @@ public class GameOverScreen  extends UiPart<VBox> {
     public void openGameOverScreenEffects(GameState gameState, GameScreen gameScreen) {
         gameScreen.setPauseEffects();
 
+        setButtonOnMouseEntered(gameState);
+
         int fromX = 500;
 
         this.getRoot().setVisible(true);
 
         TranslateTransition slide2 = new TranslateTransition(Duration.seconds(0.1), restartButton);
         slide2.setFromX(fromX);
-        slide2.setByX(-fromX);
+        slide2.setToX(0);
 
         TranslateTransition slide3 = new TranslateTransition(Duration.seconds(0.1), exitButton);
         slide3.setFromX(fromX);
-        slide3.setByX(-fromX);
+        slide3.setToX(0);
 
         FadeTransition fade2 = new FadeTransition(Duration.seconds(0.1), restartButton);
         fade2.setFromValue(0.0);
@@ -83,12 +87,12 @@ public class GameOverScreen  extends UiPart<VBox> {
         int fromX = 500;
 
         TranslateTransition slide2 = new TranslateTransition(Duration.seconds(0.1), restartButton);
-        slide2.setFromX(0);
-        slide2.setByX(fromX); // Move 200px
+        //slide2.setFromX(0);
+        slide2.setToX(fromX); // Move 200px
 
         TranslateTransition slide3 = new TranslateTransition(Duration.seconds(0.1), exitButton);
-        slide3.setFromX(0);
-        slide3.setByX(fromX); // Move 200px
+        //slide3.setFromX(0);
+        slide3.setToX(fromX); // Move 200px
 
         FadeTransition fade2 = new FadeTransition(Duration.seconds(0.1), restartButton);
         fade2.setFromValue(1.0);
@@ -119,12 +123,12 @@ public class GameOverScreen  extends UiPart<VBox> {
         int fromX = 500;
 
         TranslateTransition slide2 = new TranslateTransition(Duration.seconds(1.0), restartButton);
-        slide2.setFromX(0);
-        slide2.setByX(fromX); // Move 200px
+        //slide2.setFromX(0);
+        slide2.setToX(fromX); // Move 200px
 
         TranslateTransition slide3 = new TranslateTransition(Duration.seconds(1.0), exitButton);
-        slide3.setFromX(0);
-        slide3.setByX(fromX); // Move 200px
+        //slide3.setFromX(0);
+        slide3.setToX(fromX); // Move 200px
 
         FadeTransition fade2 = new FadeTransition(Duration.seconds(1.0), restartButton);
         fade2.setFromValue(1.0);
@@ -142,5 +146,52 @@ public class GameOverScreen  extends UiPart<VBox> {
         // Hide root node AFTER animation completes
 
         return combined;
+    }
+
+    private void setButtonOnMouseEntered(GameState gameState) {
+        // restart button
+        restartButton.setOnMouseEntered(e -> {
+            if (!gameState.isTransitionEffectsOn) {
+                if (restartButtonHoverAnimation != null) {
+                    restartButtonHoverAnimation.stop();
+                }
+
+                restartButtonHoverAnimation = new TranslateTransition(Duration.millis(200), restartButton);
+                restartButtonHoverAnimation.setToX(-80);
+                restartButtonHoverAnimation.play();
+            }
+        });
+        restartButton.setOnMouseExited(e -> {
+            if (!gameState.isTransitionEffectsOn) {
+                if (restartButtonHoverAnimation != null) {
+                    restartButtonHoverAnimation.stop();
+                }
+                restartButtonHoverAnimation = new TranslateTransition(Duration.millis(250), restartButton);
+                restartButtonHoverAnimation.setToX(0);
+                restartButtonHoverAnimation.play();
+            }
+        });
+        // exit button
+        exitButton.setOnMouseEntered(e -> {
+            if (!gameState.isTransitionEffectsOn) {
+                if (exitButtonHoverAnimation != null) {
+                    exitButtonHoverAnimation.stop();
+                }
+
+                exitButtonHoverAnimation = new TranslateTransition(Duration.millis(200), exitButton);
+                exitButtonHoverAnimation.setToX(-80);
+                exitButtonHoverAnimation.play();
+            }
+        });
+        exitButton.setOnMouseExited(e -> {
+            if (!gameState.isTransitionEffectsOn) {
+                if (exitButtonHoverAnimation != null) {
+                    exitButtonHoverAnimation.stop();
+                }
+                exitButtonHoverAnimation = new TranslateTransition(Duration.millis(250), exitButton);
+                exitButtonHoverAnimation.setToX(0);
+                exitButtonHoverAnimation.play();
+            }
+        });
     }
 }
