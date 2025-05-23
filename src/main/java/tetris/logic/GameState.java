@@ -108,6 +108,7 @@ public class GameState {
         isGameOver = true;
     }
     public void restartGame() {
+        isPaused = false;
         isGameOver = false;
         isTimesUp = false;
     }

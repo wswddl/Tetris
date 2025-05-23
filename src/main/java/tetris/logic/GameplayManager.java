@@ -15,7 +15,6 @@ public class GameplayManager {
 
     private GameState gameState;
     private GameScreen gameScreen;
-    private GameOverScreen gameOverScreen;
 
     private MinoBlock[][] inactiveBlocksArray;
     private MinoManager minoManager;
@@ -24,13 +23,11 @@ public class GameplayManager {
     private InactiveStateManager inactiveStateManager;
 
     private GameMetrics gameMetrics;
-    private Timeline gameLoop;
 
 
-    public GameplayManager(GameState gameState, GameScreen gameScreen, GameOverScreen gameOverScreen) {
+    public GameplayManager(GameState gameState, GameScreen gameScreen) {
         this.gameState = gameState;
         this.gameScreen = gameScreen;
-        this.gameOverScreen = gameOverScreen;
 
         this.inactiveBlocksArray = new MinoBlock[NUM_OF_ROW][NUM_OF_COL];
         this.minoManager = new MinoManager(gameScreen, gameState, inactiveBlocksArray);
@@ -38,34 +35,11 @@ public class GameplayManager {
         gameMetrics = new GameMetrics();
         activeStateManager = new ActiveStateManager(gameState, gameScreen, minoManager, inactiveBlocksArray);
         inactiveStateManager = new InactiveStateManager(gameState, gameScreen, minoManager, inactiveBlocksArray, gameMetrics);
-        setUpGameLoop();
     }
 
-    private void setUpGameLoop() {
-        // Create the game loop
-        gameLoop = new Timeline(
-            new KeyFrame(Duration.seconds(1.0 / FPS),
-                e -> {
-                    this.update();
-                /*
-                    if (!gameState.isGameOver()) {
-                        this.update();
-                    }*/
-                }
-            )
-        );
-        gameLoop.setCycleCount(Timeline.INDEFINITE); // repeat forever
-        gameLoop.play(); // start the loop
-    }
+
 
     public void update() {
-        if (gameState.isGameOver()) {
-            System.out.println("gameover update");
-            gameLoop.pause();
-            gameScreen.getRoot().setEffect(new GaussianBlur(10));
-            gameOverScreen.getRoot().setVisible(true);
-        }
-
         Mino currentMino = minoManager.getCurrentMino();
 
         if (currentMino.isActive()){
@@ -113,31 +87,18 @@ public class GameplayManager {
     public ActiveStateManager getActiveStateManager() {
         return activeStateManager;
     }
-    public void pauseGameLoop() {
-        gameLoop.pause();
-    }
-    public void resumeGameLoop() {
-        gameLoop.play();
-    }
+
     public void restartGame() {
         gameState.restartGame();
-        gameLoop.play();
-        gameOverScreen.getRoot().setVisible(false);
-        gameScreen.getRoot().setEffect(null);
-
-
         // clear inactive blocks array
         for (int row = 0; row < NUM_OF_ROW; row++) {
             for (int col = 0; col < NUM_OF_COL; col++) {
                 inactiveBlocksArray[row][col] = null;
             }
         }
-
-
         gameScreen.restartGame();
 
-        minoManager.initializeMinos();
-
+        minoManager.restartMinoManager();
 
         gameMetrics.setHighScore(); // set high score first
         gameMetrics.resetScore(); // then reset current score

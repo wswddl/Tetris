@@ -1,30 +1,28 @@
 /* Define the font faces */
-/*
-@font-face {
-    font-family: 'Silkscreen';
-    src: url('fonts/Silkscreen-Regular.ttf');
-    font-weight: normal;
+
+/* Fonts are loaded programmatically in Tetris.java */
+
+.label {
+    -fx-font-family: 'Press Start 2P';
+    -fx-font-size: 24px;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.8), 2, 0.5, 0, 1);
 }
 
-@font-face {
-    font-family: 'Silkscreen';
-    src: url('fonts/Silkscreen-Bold.ttf');
-    font-weight: bold;
-}
-
-.silkscreen-regular {
+.hold-next-label {
     -fx-font-family: 'Silkscreen';
     -fx-font-weight: normal;
-    -fx-font-size: 50px;
+    -fx-font-size: 32px; /* Adjusted from 40px to match design */
     -fx-text-fill: white;
+    -fx-alignment: center; /* Better than layoutX/Y for centering */
 }
 
-.silkscreen-bold {
+.score-label {
     -fx-font-family: 'Silkscreen';
-    -fx-font-weight: bold;
-    -fx-font-size: 50px;
-    -fx-text-fill: #FF5555;
-}*/
+    -fx-font-weight: normal;
+    -fx-font-size: 25px; /* Adjusted from 40px to match design */
+    -fx-text-fill: white;
+}
 
 /* Style for the hold box */
 #holdMinoBox {
@@ -49,11 +47,13 @@
     -fx-border-width: 0px;
 }
 
-/* Style for all labels (Hold/Next text) */
-.label {
-    -fx-font-family: 'Press Start 2P'; /* Retro font */
-    -fx-font-size: 24px;
-    -fx-text-fill: white;
-    -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.8), 2, 0.5, 0, 1);
+#mainLayout {
+    -fx-background-image: url('../images/omori.png');
+    -fx-background-size:1024px 432px;
+    -fx-background-repeat: repeat;
 }
+
+
+
+
 

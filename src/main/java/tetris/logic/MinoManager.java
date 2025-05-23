@@ -25,7 +25,7 @@ public class MinoManager {
         initializeMinos();
 
     }
-    private void fillInBagOfMinos() {
+    public void fillInBagOfMinos() {
         this.bagOfMinos = new Bag<Mino>(new MinoI(), new MinoJ(), new MinoL(), new MinoO(),
                 new MinoS(), new MinoT(), new MinoZ());
     }
@@ -122,6 +122,14 @@ public class MinoManager {
     }
     public boolean isHoldMinoEmpty() {
         return holdMino == null;
+    }
+
+    // =================================================
+    // Restart game
+    // =================================================
+    public void restartMinoManager() {
+        fillInBagOfMinos();
+        initializeMinos();
     }
 
 }

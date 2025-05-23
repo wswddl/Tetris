@@ -88,8 +88,8 @@ public class MainWindow extends UiPart<StackPane> {
     public void setUpGame() {
         this.gameController = new GameController(gameScreen, pauseMenuScreen, gameOverScreen);
         // set button handler
-        pauseMenuScreen.setButtonHandler(gameController::resumeGame);
-        
+        pauseMenuScreen.setResumeRestartButtonHandler(gameController::resumeGame, gameController::restartGameInPauseMenu);
+
         gameOverScreen.setRestartButtonHandler(gameController::restartGame);
 
         GameState gameState = gameController.getGameState();

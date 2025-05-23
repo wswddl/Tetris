@@ -10,32 +10,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="dd1c620e-ac4b-4af9-9371-a4b0c9d8245d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/tetris/logic/GameController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/tetris/ui/GameOverScreen.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/tetris/util/ButtonHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/view/GameOverScreen.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tetris/Tetris.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/Tetris.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/block/Mino.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/block/Mino.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/logic/ActiveStateManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/logic/ActiveStateManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/logic/Controller.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/logic/GameMetrics.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/logic/GameMetrics.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/logic/GameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/logic/GameController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tetris/logic/GameState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/logic/GameState.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tetris/logic/GameplayManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/logic/GameplayManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/logic/InactiveStateManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/logic/InactiveStateManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/logic/InputHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/logic/InputHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/logic/KeyInputController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/logic/KeyInputController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/logic/MinoAction.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tetris/logic/MinoManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/logic/MinoManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/logic/PauseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/logic/PauseController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/logic/TetrisManager.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/ui/ButtonActionHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/ui/GameScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/ui/GameScreen.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/tetris/ui/MainWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/ui/MainWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/ui/PauseMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/ui/PauseMenuScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/ui/UiManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/ui/UiManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/ui/PauseMenuScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/ui/PauseMenuScreen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/fonts/Silkscreen-Bold.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/fonts/Silkscreen-Regular.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/view/GameScreen.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/GameScreen.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/view/PauseMenu.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/PauseMenu.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/view/Tetris.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/GameScreen.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/view/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/GameScreen.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

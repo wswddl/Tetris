@@ -4,29 +4,28 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
-<HBox fx:id="mainLayout" alignment="CENTER" spacing="20.0" stylesheets="@/view/style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"> <!-- fx:controller="tetris.ui.UiManager" -->
-   <VBox maxHeight="600.0" spacing="20">
+<HBox fx:id="mainLayout" alignment="CENTER" spacing="20.0" stylesheets="@/view/GameScreen.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+   <VBox maxHeight="600.0" stylesheets="@GameScreen.css">
       <children>
-         <Pane fx:id="holdMinoBox" prefHeight="170.0" prefWidth="170.0" stylesheets="@style.css">
+         <Pane fx:id="holdMinoBox" prefHeight="170.0" prefWidth="170.0" stylesheets="@GameScreen.css">
             <children>
-               <Label alignment="CENTER" layoutX="59.0" layoutY="14.0" text="Hold" textFill="WHITE">
-                  <font>
-                     <Font size="32.0" />
-                  </font>
-               </Label>
+               <Label alignment="CENTER" layoutX="39.0" layoutY="5.0" styleClass="hold-next-label" text="Hold" />
             </children></Pane>
-         <VBox alignment="TOP_CENTER" prefHeight="63.0" prefWidth="170.0" spacing="10.0" style="-fx-background-color: white;">
+         <VBox alignment="TOP_CENTER" prefHeight="430.0" prefWidth="170.0">
             <children>
-               <Label text="Score" />
-               <Label fx:id="score" text="Label" />
-            </children>
-         </VBox>
-         <VBox alignment="TOP_CENTER" prefHeight="59.0" prefWidth="170.0" spacing="10.0" style="-fx-background-color: white;">
-            <children>
-               <Label text="High Score" />
-               <Label fx:id="highScore" text="Label" />
+               <VBox fx:id="Score" alignment="BOTTOM_RIGHT" prefHeight="192.0" prefWidth="170.0" spacing="5.0" style="-fx-background-color: transparent;">
+                  <children>
+                     <Label alignment="BOTTOM_RIGHT" styleClass="score-label" text="Score" textAlignment="RIGHT" textFill="WHITE" />
+                     <Label fx:id="score" alignment="BOTTOM_RIGHT" prefHeight="41.0" prefWidth="85.0" styleClass="score-label" stylesheets="@/view/GameScreen.css" text="Label" />
+                  </children>
+               </VBox>
+               <VBox alignment="BOTTOM_RIGHT" prefHeight="214.0" prefWidth="170.0" spacing="5.0" style="-fx-background-color: transparent;">
+                  <children>
+                     <Label fx:id="highScoreTitle" alignment="BOTTOM_RIGHT" styleClass="score-label" text="High&#10;Score" textAlignment="RIGHT" />
+                     <Label fx:id="highScore" alignment="BOTTOM_RIGHT" prefWidth="85.0" styleClass="score-label" text="Label" textAlignment="RIGHT" />
+                  </children>
+               </VBox>
             </children>
          </VBox>
       </children>
@@ -37,13 +36,9 @@
    <!-- VBox for Hold and Next boxes stacked vertically -->
    <VBox maxHeight="600.0" spacing="20">
       <!-- Hold Box Pane -->
-      <Pane fx:id="nextMinoBox" prefHeight="170.0" prefWidth="170.0" stylesheets="@style.css">
+      <Pane fx:id="nextMinoBox" prefHeight="170.0" prefWidth="170.0" stylesheets="@GameScreen.css">
          <children>
-            <Label layoutX="60.0" layoutY="14.0" text="Next" textFill="WHITE">
-               <font>
-                  <Font size="32.0" />
-               </font>
-            </Label>
+            <Label alignment="CENTER" layoutX="37.0" layoutY="5.0" styleClass="hold-next-label" text="Next" />
          </children></Pane>
    </VBox>
 </HBox>

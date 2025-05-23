@@ -9,6 +9,8 @@
       <Pane>
          <children>
             <Button fx:id="resumeButton" focusTraversable="false" layoutX="274.0" layoutY="109.0" mnemonicParsing="false" onAction="#handleResumeButton" text="Resume" />
+            <Button fx:id="restartButton" focusTraversable="false" layoutX="274.0" layoutY="188.0" mnemonicParsing="false" onAction="#handleRestartButton" text="Restart" />
+            <Pane fx:id="testPane" layoutX="203.0" layoutY="226.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: black;" />
          </children>
       </Pane>
    </children>

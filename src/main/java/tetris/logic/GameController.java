@@ -1,9 +1,14 @@
 package tetris.logic;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.effect.GaussianBlur;
+import javafx.util.Duration;
 import tetris.ui.GameOverScreen;
 import tetris.ui.GameScreen;
 import tetris.ui.PauseMenuScreen;
+
+import static tetris.util.TetrisConstants.FPS;
 
 public class GameController {
 
@@ -16,6 +21,7 @@ public class GameController {
     private GameOverScreen gameOverScreen;
     // game state
     private GameState gameState;
+    private Timeline gameLoop;
 
 
     // game metrics
@@ -37,8 +43,33 @@ public class GameController {
 
         this.gameState = new GameState();
 
-        this.gameplayManager = new GameplayManager(gameState, gameScreen, gameOverScreen);
+        this.gameplayManager = new GameplayManager(gameState, gameScreen);
+        setUpGameLoop();
     }
+    private void setUpGameLoop() {
+        // Create the game loop
+        gameLoop = new Timeline(
+                new KeyFrame(Duration.seconds(1.0 / FPS),
+                        e -> {
+                            this.update();
+                        }
+                )
+        );
+        gameLoop.setCycleCount(Timeline.INDEFINITE); // repeat forever
+        gameLoop.play(); // start the loop
+    }
+
+    public void update() {
+        if (gameState.isGameOver()) {
+            gameLoop.pause();
+            gameScreen.getRoot().setEffect(new GaussianBlur(10));
+            gameOverScreen.getRoot().setVisible(true);
+        } else {
+            gameplayManager.update();
+        }
+    }
+
+
     public GameState getGameState() {
         return this.gameState;
     }
@@ -46,20 +77,32 @@ public class GameController {
 
     public void pauseGame() {
         gameState.pauseTheGame();
-        gameplayManager.pauseGameLoop();
+        gameLoop.pause();
 
         gameScreen.getRoot().setEffect(new GaussianBlur(10));
         pauseMenuScreen.getRoot().setVisible(true);
     }
     public void resumeGame() {
         gameState.resumeTheGame();
-        gameplayManager.resumeGameLoop();
+        gameLoop.play();
 
         gameScreen.getRoot().setEffect(null); // remove blur
         pauseMenuScreen.getRoot().setVisible(false);
     }
 
     public void restartGame() {
+        gameOverScreen.getRoot().setVisible(false);
+        gameScreen.getRoot().setEffect(null);
+
+        gameLoop.play();
+        gameplayManager.restartGame();
+    }
+
+    public void restartGameInPauseMenu() {
+        pauseMenuScreen.getRoot().setVisible(false);
+        gameScreen.getRoot().setEffect(null);
+
+        gameLoop.play();
         gameplayManager.restartGame();
     }
 
@@ -70,74 +113,6 @@ public class GameController {
     // Update the game
     // =================================================
 
-    public void update() {
-        if (gameState.isGameOver()) {
-            //gameLoop.pause();
-            /*
-            if (KeyInputHandler.restartPress) {
-                // reset the game over flag
-                gameState.restartGame();
-                // handle restart game logic
-            }*/
-
-        }
-/*
-        else if (gameState.isGamePaused()) { // game has been paused
-            if (KeyInputHandler.escapePress || KeyInputHandler.resumePress|| pauseMenuUI.isResumeButtonClicked()) {
-                // resume the game
-                gameState.resumeTheGame();
-                // handle resume
-                pauseController.handleResumePress();
-            }
-        }
-*//*
-        else if (!gameState.isGamePaused()) { // game isn't paused
-            if (KeyInputController.escapePress) {
-                // pause the game
-                gameState.pauseTheGame();
-                // handle pause
-                pauseController.handlePausePress();
-
-                //gameLoop.pause();
-
-            } else {
-                gameplayManager.update();
-            }
-        }
-        KeyInputController.resetPressFlags();
-        KeyInputController.minoAction = null;
-
-/*
-
-        if (!KeyInputHandler.pausePress && !KeyInputHandler.resumePress && !isGameOver) {
-            gameplayController.update();
-        } else if (KeyInputHandler.pausePress && !isGameOver) {
-            KeyInputHandler.ignoreMovement();
-            pauseController.handlePausePress();
-            //TetrisPanel.OST.pause(); handled in pausecontroller
-        } else if (KeyInputHandler.resumePress && !isGameOver) {
-            //TetrisPanel.OST.resume(); handled in pausecontroller
-            // KeyInputHandler.resumePress = false;
-            pauseController.handleResumePress();
-        } else if (isGameOver && KeyInputHandler.restartPress) {
-            // restart();
-        /*} else if (TetrisFunctions.isTimesUp && KeyInputHandler.restartPressForTimesUp) {
-            tf.restart();*//*
-        } else { // gameOver and NO restart
-            KeyInputHandler.ignoreMovement();
-            KeyInputHandler.pausePress = false;
-        }*/
-
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
