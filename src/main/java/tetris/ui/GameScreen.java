@@ -1,13 +1,19 @@
 package tetris.ui;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 import tetris.block.Block;
 import tetris.block.Mino;
 import tetris.block.MinoBlock;
@@ -46,6 +52,8 @@ public class GameScreen extends UiPart<HBox> {
     private ArrayList<Integer> numLinesFallList;
 
     public Parent root;
+
+    public GaussianBlur gaussianBlur = new GaussianBlur(10.0);
 
     // =================================================
     // Set up UI
@@ -367,12 +375,43 @@ public class GameScreen extends UiPart<HBox> {
     }
 
     // =================================================
-    // Restart game
+    // Restart game & Pause menu
     // =================================================
     public void restartGame() {
         blockGC.clearRect(LEFTMOST_PIXEL, TOPMOST_PIXEL, PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
         shadowGC.clearRect(LEFTMOST_PIXEL, TOPMOST_PIXEL, PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
         holdBoxGC.clearRect(LEFTMOST_PIXEL, TOPMOST_PIXEL, HOLD_BOX_HEIGHT_WIDTH, HOLD_BOX_HEIGHT_WIDTH);
         nextBoxGC.clearRect(LEFTMOST_PIXEL, TOPMOST_PIXEL, HOLD_BOX_HEIGHT_WIDTH, HOLD_BOX_HEIGHT_WIDTH);
+    }
+    public void setPauseEffects() {
+
+        Timeline addingBlurAnimation = new Timeline(
+                new KeyFrame(Duration.ZERO, new KeyValue(gaussianBlur.radiusProperty(), 0.0)),
+                new KeyFrame(Duration.seconds(0.8), new KeyValue(gaussianBlur.radiusProperty(), 10.0))
+        );
+
+        addingBlurAnimation.play();
+
+        this.getRoot().setEffect(gaussianBlur);
+    }
+    public void setRemoveEffects() {
+        //this.getRoot().setEffect(null); // remove any blur
+        Timeline removingBlurAnimation = new Timeline(
+                new KeyFrame(Duration.ZERO, new KeyValue(gaussianBlur.radiusProperty(), gaussianBlur.getRadius())),
+                new KeyFrame(Duration.seconds(0.15), new KeyValue(gaussianBlur.radiusProperty(), 0))
+        );
+
+        // Optional: Remove the effect entirely after animation finishes
+        removingBlurAnimation.setOnFinished(e -> {
+            // reset effects
+            this.getRoot().setEffect(null);
+            // reset gausian blur
+            //gaussianBlur.setRadius(10.0);
+
+        });
+
+        removingBlurAnimation.play();
+
+        this.getRoot().setOpacity(1.0); // remove any fading effects
     }
 }

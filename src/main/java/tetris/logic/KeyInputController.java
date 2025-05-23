@@ -72,11 +72,15 @@ public class KeyInputController {
         }
     }*/
     private void keyPressed(KeyEvent ke) {
+        if (gameController.isIgnoreKeyInput()) {
+            return;
+        }
+
         if (gameState.isGameOver()) {
             this.keyPressedWhenGameOver(ke);
         } else if (!gameState.isGamePaused()) {
             this.keyPressedWhenGameIsPlaying(ke);
-        } else {
+        } else if (gameState.isGamePaused()) {
             this.keyPressedWhenGameIsPaused(ke);
         }
     }

@@ -1,7 +1,5 @@
 package tetris.logic;
 
-import javafx.animation.Timeline;
-
 import static tetris.util.TetrisConstants.*;
 
 public class GameState {
@@ -19,6 +17,8 @@ public class GameState {
     private int autoDropCounter;
     private int gameCounter;
     private int effectCounter;
+
+    public boolean isTransitionEffectsOn;
 
 
     public GameState() {

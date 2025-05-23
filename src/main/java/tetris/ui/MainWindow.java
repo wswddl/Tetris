@@ -1,9 +1,9 @@
 package tetris.ui;
 
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -25,6 +25,7 @@ public class MainWindow extends UiPart<StackPane> {
     //private GameOverUI gameOverScreen;
     private PauseMenuScreen pauseMenuScreen;
     private GameOverScreen gameOverScreen;
+    private StartMenuScreen startMenuScreen;
     @FXML
     private StackPane gameRoot; // stack different layers (gameplay, pause menu, game over screen)
 
@@ -52,9 +53,11 @@ public class MainWindow extends UiPart<StackPane> {
             e.printStackTrace();
         }
     }
+
     private void setIcon(Stage primaryStage) {
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/tetris_icon.png")));
     }
+
     public void show() {
         primaryStage.show();
 
@@ -66,18 +69,23 @@ public class MainWindow extends UiPart<StackPane> {
 
         primaryStage.setMaximized(true);
     }
+
     public void fillInnerParts() {
 
         this.gameScreen = new GameScreen();
-        this.gameRoot.getChildren().add(gameScreen.getRoot());
+        //this.gameRoot.getChildren().add(gameScreen.getRoot());
 
         this.pauseMenuScreen = new PauseMenuScreen();
-        this.gameRoot.getChildren().add(pauseMenuScreen.getRoot());
-        pauseMenuScreen.getRoot().setVisible(false); // initially, pause screen isn't visible
+        //this.gameRoot.getChildren().add(pauseMenuScreen.getRoot());
+        //pauseMenuScreen.getRoot().setVisible(false); // initially, pause screen isn't visible
 
         this.gameOverScreen = new GameOverScreen();
-        this.gameRoot.getChildren().add(gameOverScreen.getRoot());
-        gameOverScreen.getRoot().setVisible(false); // initially, game over screen isn't visible
+        //this.gameRoot.getChildren().add(gameOverScreen.getRoot());
+        //gameOverScreen.getRoot().setVisible(false); // initially, game over screen isn't visible
+
+        this.startMenuScreen = new StartMenuScreen();
+        this.gameRoot.getChildren().add(startMenuScreen.getRoot());
+
 
         //gameScreen.getRoot().prefWidthProperty().bind(getRoot().widthProperty());
         //gameScreen.getRoot().prefHeightProperty().bind(getRoot().heightProperty());
@@ -86,14 +94,27 @@ public class MainWindow extends UiPart<StackPane> {
     }
 
     public void setUpGame() {
-        this.gameController = new GameController(gameScreen, pauseMenuScreen, gameOverScreen);
+        this.gameController = new GameController(gameScreen, pauseMenuScreen, gameOverScreen, startMenuScreen, this);
         // set button handler
-        pauseMenuScreen.setResumeRestartButtonHandler(gameController::resumeGame, gameController::restartGameInPauseMenu);
+        pauseMenuScreen.setResumeRestartExitButtonHandler(gameController::resumeGame, gameController::restartGameInPauseMenu, gameController::exitButtonInPauseMenu);
 
-        gameOverScreen.setRestartButtonHandler(gameController::restartGame);
+        gameOverScreen.setRestartExitButtonHandler(gameController::restartGame, gameController::exitButtonInGameOver);
+
+        startMenuScreen.setPlayButtonHandler(gameController::playButtonInStartMenu);
 
         GameState gameState = gameController.getGameState();
         new KeyInputController(mainScene, gameState, gameController);
     }
 
+    public void removeNodesFromRoot(Node... toBeRemovedNodes) {
+        for (Node toBeRemovedNode : toBeRemovedNodes) {
+            gameRoot.getChildren().remove(toBeRemovedNode);
+        }
+    }
+
+    public void addNodesToRoot(Node... toBeAddedNodes) {
+        for (Node toBeAddedNode : toBeAddedNodes) {
+            gameRoot.getChildren().add(toBeAddedNode);
+        }
+    }
 }
