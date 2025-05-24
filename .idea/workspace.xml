@@ -11,7 +11,8 @@
   <component name="ChangeListManager">
     <list default="true" id="dd1c620e-ac4b-4af9-9371-a4b0c9d8245d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tetris/logic/KeyInputController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tetris/logic/KeyInputController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/view/GameOverScreen.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/GameOverScreen.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/view/PauseMenu.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/PauseMenu.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

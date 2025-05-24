@@ -9,6 +9,15 @@
     -fx-text-fill: black;
 }
 
+#restartButton {
+    -fx-background-image: url('../images/restartButtonBackground.png');
+    -fx-background-size:800px 100px;
+}
+#exitButton {
+    -fx-background-image: url('../images/exitButtonBackground.png');
+    -fx-background-size:800px 100px;
+}
+
 .label {
     -fx-font-family: 'Silkscreen';
     -fx-font-weight: normal;
