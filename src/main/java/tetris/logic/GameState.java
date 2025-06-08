@@ -18,6 +18,10 @@ public class GameState {
     private int gameCounter;
     private int effectCounter;
 
+    /**
+     * Ensures that only one transition effect will happen at a given moment.
+     * This prevents "race condition" when two buttons are pressed which causes two effects to happen together.
+     */
     public boolean isTransitionEffectsOn;
 
 

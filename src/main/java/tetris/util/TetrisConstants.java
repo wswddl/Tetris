@@ -59,7 +59,7 @@ public class TetrisConstants {
     // =================================================
     // Colors and Designs
     // =================================================
-    public static final Color PLAYING_FIELD_GRID_LIGHT_GREY = Color.rgb(30, 30, 30);
-    public static final Color PLAYING_FIELD_GRID_GREY = Color.rgb(16, 16, 16);
+    public static final Color PLAYING_FIELD_GRID_LIGHT_GREY = Color.rgb(30, 30, 30, 0.75);
+    public static final Color PLAYING_FIELD_GRID_GREY = Color.rgb(16, 16, 16, 0.75);
 
 }

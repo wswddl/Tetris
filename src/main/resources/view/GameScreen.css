@@ -26,32 +26,33 @@
 
 /* Style for the hold box */
 #holdMinoBox {
-    -fx-background-color: #000000; /* Dark gray instead of pure black */
-    -fx-border-color: #3498db; /* Blue border */
+    -fx-background-color: rgba(0, 0, 0, 0.8); /* Semi transparent hold box so the background image is slightly visible */
+    -fx-border-color: rgba(245, 170, 66, 0.3); /* Yellowish Orange border */
     -fx-border-width: 4px;
     -fx-border-radius: 0px;
 }
 
 /* Style for the next box */
 #nextMinoBox {
-    -fx-background-color: #000000;
-    -fx-border-color: #e74c3c; /* Red border */
+    -fx-background-color: rgba(0, 0, 0, 0.8); /* Semi transparent next box so the background image is slightly visible */
+    -fx-border-color: rgba(66, 164, 245, 0.3); /* Light blue border */
     -fx-border-width: 4px;
     -fx-border-radius: 0px;
 }
 
 /* Style for the playing field */
 #playingField {
-    -fx-background-color: #000000; /* Pure black */
+    -fx-background-color: rgba(0, 0, 0, 0.75); /* Semi transparent playing field so the background image is slightly visible */
     -fx-border-color: #2ecc71; /* Green border */
     -fx-border-width: 0px;
 }
-
+/*
 #mainLayout {
-    -fx-background-image: url('../images/omori.png');
-    -fx-background-size:1024px 432px;
+    -fx-background-image: url('../images/gameplay_backgrounds/1.png');
+    -fx-background-size: 1024px 432px;
     -fx-background-repeat: repeat;
-}
+    /*-fx-background-size: cover;*/
+}*/
 
 
 

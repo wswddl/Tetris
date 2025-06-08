@@ -1,5 +1,6 @@
 package tetris.ui;
 
+import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
@@ -106,12 +107,13 @@ public class GameOverScreen  extends UiPart<VBox> {
         gameOverLabelFadeOut.setFromValue(1.0);
         gameOverLabelFadeOut.setToValue(0.2);
 
-        ParallelTransition combined = new ParallelTransition(slide2, fade2, slide3, fade3, gameOverLabelFadeOut);
+        Animation gameScreenRemoveBlur = gameScreen.setRemoveEffects();
+
+        ParallelTransition combined = new ParallelTransition(slide2, fade2, slide3, fade3, gameOverLabelFadeOut, gameScreenRemoveBlur);
         // Hide root node AFTER animation completes
 
         combined.setOnFinished(e -> {
             this.getRoot().setVisible(false);
-            gameScreen.setRemoveEffects();
 
             gameState.isTransitionEffectsOn = false;
         });

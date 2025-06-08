@@ -1,17 +1,16 @@
 package tetris.ui;
 
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.effect.GaussianBlur;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import tetris.block.Block;
@@ -26,7 +25,11 @@ import static tetris.util.TetrisConstants.PLAYING_FIELD_HEIGHT;
 public class GameScreen extends UiPart<HBox> {
 
     private static final String FXML = "GameScreen.fxml";
+    private static final String backgroundImagePath = "/images/gameplay_backgrounds/";
+    private BackgroundImageSelector backgroundImageSelector;
 
+    @FXML
+    private HBox mainLayout;
     @FXML
     private Pane playingField;
     @FXML
@@ -61,43 +64,20 @@ public class GameScreen extends UiPart<HBox> {
 
     public GameScreen() {
         super(FXML);
-        //config(primaryStage);
-        //setIcon(primaryStage);
+        setInitialBackGroundImage();
         fillInnerParts();
     }
-/*
-    private void config(Stage primaryStage) {
-        try {
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML));
-            loader.setController(this);
-            Parent root = loader.load();
-            Parent root = getRoot();
-
-            this.primaryStage = primaryStage;
-            this.gameScene = new Scene(root);
-            gameScene.setFill(Color.TRANSPARENT);
-            primaryStage.setScene(gameScene);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void setInitialBackGroundImage() {
+        backgroundImageSelector = new BackgroundImageSelector(backgroundImagePath);
+        backgroundImageSelector.setRandomBackgroundImage(getRoot()); // apply background to the root (mainLayout (HBox))
     }
-    private void setIcon(Stage primaryStage) {
-        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/tetris_icon.png")));
+
+    public void setRandomBackGroundImage() {
+        backgroundImageSelector.setRandomBackgroundImage(getRoot()); // apply background to the root (mainLayout (HBox))
     }
-    public void show() {
-        primaryStage.show();
 
-        double minWidth = primaryStage.getWidth();
-        double minHeight = primaryStage.getHeight();
-
-        primaryStage.setMinWidth((int) minWidth);
-        primaryStage.setMinHeight((int) minHeight);
-
-        primaryStage.setMaximized(true);
-    }*/
-    public void fillInnerParts() {
+    private void fillInnerParts() {
 
         // Draw the grid background in the playing field
         Canvas playingFieldCanvas = new Canvas(PLAYING_FIELD_WIDTH, PLAYING_FIELD_HEIGHT);
@@ -394,7 +374,7 @@ public class GameScreen extends UiPart<HBox> {
 
         this.getRoot().setEffect(gaussianBlur);
     }
-    public void setRemoveEffects() {
+    public Animation setRemoveEffects() {
         //this.getRoot().setEffect(null); // remove any blur
         Timeline removingBlurAnimation = new Timeline(
                 new KeyFrame(Duration.ZERO, new KeyValue(gaussianBlur.radiusProperty(), gaussianBlur.getRadius())),
@@ -402,6 +382,7 @@ public class GameScreen extends UiPart<HBox> {
         );
 
         // Optional: Remove the effect entirely after animation finishes
+
         removingBlurAnimation.setOnFinished(e -> {
             // reset effects
             this.getRoot().setEffect(null);
@@ -410,8 +391,10 @@ public class GameScreen extends UiPart<HBox> {
 
         });
 
-        removingBlurAnimation.play();
+        //removingBlurAnimation.play();
 
         this.getRoot().setOpacity(1.0); // remove any fading effects
+
+        return removingBlurAnimation;
     }
 }

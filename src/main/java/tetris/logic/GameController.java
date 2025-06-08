@@ -1,9 +1,6 @@
 package tetris.logic;
 
-import javafx.animation.FadeTransition;
-import javafx.animation.KeyFrame;
-import javafx.animation.ParallelTransition;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.scene.effect.GaussianBlur;
 import javafx.util.Duration;
 import tetris.ui.*;
@@ -110,9 +107,12 @@ public class GameController {
         // gameScreen.getRoot().setEffect(null); // remove blur
         ParallelTransition combined = pauseMenuScreen.closePauseMenuEffects(gameState, gameScreen);
 
+        Animation gameScreenRemoveBlur = gameScreen.setRemoveEffects();
+        combined.getChildren().add(gameScreenRemoveBlur);
+
         combined.setOnFinished(e -> {
             pauseMenuScreen.getRoot().setVisible(false);
-            gameScreen.setRemoveEffects();
+            //gameScreen.setRemoveEffects();
 
             // only resume the game logic after the animation is finished
             gameState.resumeTheGame();
@@ -150,9 +150,13 @@ public class GameController {
         // transition effects
         ParallelTransition combined = pauseMenuScreen.closePauseMenuEffects(gameState, gameScreen);
 
+        Animation gameScreenRemoveBlur = gameScreen.setRemoveEffects();
+
+        combined.getChildren().add(gameScreenRemoveBlur);
+
         combined.setOnFinished(e -> {
             pauseMenuScreen.getRoot().setVisible(false);
-            gameScreen.setRemoveEffects();
+            //gameScreen.setRemoveEffects();
 
             gameState.isTransitionEffectsOn = false;
 
@@ -194,8 +198,10 @@ public class GameController {
         fadeInStartMenuScreen.setToValue(1.0);
         combined.getChildren().add(fadeInStartMenuScreen);
 
+        Animation gameScreenRemoveBlur = gameScreen.setRemoveEffects();
+        combined.getChildren().add(gameScreenRemoveBlur);
+
         combined.setOnFinished(e -> {
-            gameScreen.setRemoveEffects();
 
             // handle nodes
             mainWindow.removeNodesFromRoot(pauseMenuScreen.getRoot(), gameScreen.getRoot(), gameOverScreen.getRoot());
@@ -232,8 +238,11 @@ public class GameController {
         fadeInStartMenuScreen.setToValue(1.0);
         combined.getChildren().add(fadeInStartMenuScreen);
 
+        Animation gameScreenRemoveBlur = gameScreen.setRemoveEffects();
+        combined.getChildren().add(gameScreenRemoveBlur);
+
         combined.setOnFinished(e -> {
-            gameScreen.setRemoveEffects();
+            //gameScreen.setRemoveEffects();
 
             // handle nodes
             mainWindow.removeNodesFromRoot(pauseMenuScreen.getRoot(), gameScreen.getRoot(), gameOverScreen.getRoot());
@@ -249,6 +258,9 @@ public class GameController {
         }
         gameState.isTransitionEffectsOn = true;
         this.isIgnoreKeyInput = false;
+
+        // set new background for gameScreen
+        gameScreen.setRandomBackGroundImage();
 
         // transition effects
         mainWindow.addNodesToRoot(gameScreen.getRoot(), pauseMenuScreen.getRoot(), gameOverScreen.getRoot());
