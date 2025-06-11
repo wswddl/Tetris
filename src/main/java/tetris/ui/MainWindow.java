@@ -25,7 +25,9 @@ public class MainWindow extends UiPart<StackPane> {
     //private GameOverUI gameOverScreen;
     private PauseMenuScreen pauseMenuScreen;
     private GameOverScreen gameOverScreen;
+    private TimesUpScreen timesUpScreen;
     private StartMenuScreen startMenuScreen;
+    private SelectMenuScreen selectMenuScreen;
     @FXML
     private StackPane gameRoot; // stack different layers (gameplay, pause menu, game over screen)
 
@@ -80,11 +82,15 @@ public class MainWindow extends UiPart<StackPane> {
         //pauseMenuScreen.getRoot().setVisible(false); // initially, pause screen isn't visible
 
         this.gameOverScreen = new GameOverScreen();
+        this.timesUpScreen = new TimesUpScreen();
         //this.gameRoot.getChildren().add(gameOverScreen.getRoot());
         //gameOverScreen.getRoot().setVisible(false); // initially, game over screen isn't visible
 
         this.startMenuScreen = new StartMenuScreen();
         this.gameRoot.getChildren().add(startMenuScreen.getRoot());
+
+        this.selectMenuScreen = new SelectMenuScreen();
+        //this.gameRoot.getChildren().add(selectMenuScreen.getRoot());
 
 
         //gameScreen.getRoot().prefWidthProperty().bind(getRoot().widthProperty());
@@ -94,13 +100,17 @@ public class MainWindow extends UiPart<StackPane> {
     }
 
     public void setUpGame() {
-        this.gameController = new GameController(gameScreen, pauseMenuScreen, gameOverScreen, startMenuScreen, this);
+        this.gameController = new GameController(gameScreen, pauseMenuScreen, gameOverScreen, timesUpScreen,
+                startMenuScreen, selectMenuScreen, this);
         // set button handler
         pauseMenuScreen.setResumeRestartExitButtonHandler(gameController::resumeGame, gameController::restartGameInPauseMenu, gameController::exitButtonInPauseMenu);
 
-        gameOverScreen.setRestartExitButtonHandler(gameController::restartGame, gameController::exitButtonInGameOver);
+        gameOverScreen.setRestartExitButtonHandler(gameController::restartGameInGameOver, gameController::exitButtonInGameOver);
+        timesUpScreen.setRestartExitButtonHandler(gameController::restartGameInTimesUp, gameController::exitButtonInGameOver);
 
-        startMenuScreen.setPlayButtonHandler(gameController::playButtonInStartMenu);
+        startMenuScreen.setStartButtonHandler(gameController::startButtonInStartMenu);
+
+        selectMenuScreen.setRelaxBlitzExitHandler(gameController::relaxButton, gameController::blitzButton, gameController::exitButtonInSelectMenu);
 
         GameState gameState = gameController.getGameState();
         new KeyInputController(mainScene, gameState, gameController);

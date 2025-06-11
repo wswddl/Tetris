@@ -24,6 +24,13 @@
     -fx-text-fill: white;
 }
 
+.time-label {
+    -fx-font-family: 'Silkscreen';
+    -fx-font-weight: normal;
+    -fx-font-size: 50px; /* Adjusted from 40px to match design */
+    -fx-text-fill: white;
+}
+
 /* Style for the hold box */
 #holdMinoBox {
     -fx-background-color: rgba(0, 0, 0, 0.8); /* Semi transparent hold box so the background image is slightly visible */
@@ -51,9 +58,13 @@
     -fx-background-image: url('../images/gameplay_backgrounds/1.png');
     -fx-background-size: 1024px 432px;
     -fx-background-repeat: repeat;
-    /*-fx-background-size: cover;*/
+    /*-fx-background-size: cover;
 }*/
 
+.progress-bar > .bar {
+    -fx-background-insets: 0 0 0 0;
+    -fx-padding: 0;
+}
 
 
 

@@ -47,7 +47,7 @@ public class GameOverScreen  extends UiPart<VBox> {
     }
 
     public void openGameOverScreenEffects(GameState gameState, GameScreen gameScreen) {
-        gameScreen.setPauseEffects();
+        gameScreen.setBlurEffects();
 
         setButtonOnMouseEntered(gameState);
 
@@ -87,23 +87,23 @@ public class GameOverScreen  extends UiPart<VBox> {
     public void closeGameOverScreenEffects(GameState gameState, GameScreen gameScreen) {
         int fromX = 500;
 
-        TranslateTransition slide2 = new TranslateTransition(Duration.seconds(0.1), restartButton);
+        TranslateTransition slide2 = new TranslateTransition(Duration.seconds(0.2), restartButton);
         //slide2.setFromX(0);
         slide2.setToX(fromX); // Move 200px
 
-        TranslateTransition slide3 = new TranslateTransition(Duration.seconds(0.1), exitButton);
+        TranslateTransition slide3 = new TranslateTransition(Duration.seconds(0.2), exitButton);
         //slide3.setFromX(0);
         slide3.setToX(fromX); // Move 200px
 
-        FadeTransition fade2 = new FadeTransition(Duration.seconds(0.1), restartButton);
+        FadeTransition fade2 = new FadeTransition(Duration.seconds(0.2), restartButton);
         fade2.setFromValue(1.0);
         fade2.setToValue(0.2);
 
-        FadeTransition fade3 = new FadeTransition(Duration.seconds(0.1), exitButton);
+        FadeTransition fade3 = new FadeTransition(Duration.seconds(0.2), exitButton);
         fade3.setFromValue(1.0);
         fade3.setToValue(0.2);
 
-        FadeTransition gameOverLabelFadeOut = new FadeTransition(Duration.seconds(0.1), gameOverLabel);
+        FadeTransition gameOverLabelFadeOut = new FadeTransition(Duration.seconds(0.2), gameOverLabel);
         gameOverLabelFadeOut.setFromValue(1.0);
         gameOverLabelFadeOut.setToValue(0.2);
 
@@ -124,23 +124,23 @@ public class GameOverScreen  extends UiPart<VBox> {
     public ParallelTransition exitGameOverScreenEffects(GameState gameState) {
         int fromX = 500;
 
-        TranslateTransition slide2 = new TranslateTransition(Duration.seconds(1.0), restartButton);
+        TranslateTransition slide2 = new TranslateTransition(Duration.seconds(0.3), restartButton);
         //slide2.setFromX(0);
         slide2.setToX(fromX); // Move 200px
 
-        TranslateTransition slide3 = new TranslateTransition(Duration.seconds(1.0), exitButton);
+        TranslateTransition slide3 = new TranslateTransition(Duration.seconds(0.3), exitButton);
         //slide3.setFromX(0);
         slide3.setToX(fromX); // Move 200px
 
-        FadeTransition fade2 = new FadeTransition(Duration.seconds(1.0), restartButton);
+        FadeTransition fade2 = new FadeTransition(Duration.seconds(0.3), restartButton);
         fade2.setFromValue(1.0);
         fade2.setToValue(0.2);
 
-        FadeTransition fade3 = new FadeTransition(Duration.seconds(1.0), exitButton);
+        FadeTransition fade3 = new FadeTransition(Duration.seconds(0.3), exitButton);
         fade3.setFromValue(1.0);
         fade3.setToValue(0.2);
 
-        FadeTransition gameOverLabelFadeOut = new FadeTransition(Duration.seconds(1.0), gameOverLabel);
+        FadeTransition gameOverLabelFadeOut = new FadeTransition(Duration.seconds(0.3), gameOverLabel);
         gameOverLabelFadeOut.setFromValue(1.0);
         gameOverLabelFadeOut.setToValue(0.2);
 

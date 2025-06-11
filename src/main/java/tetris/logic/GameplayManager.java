@@ -1,12 +1,7 @@
 package tetris.logic;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.scene.effect.GaussianBlur;
-import javafx.util.Duration;
 import tetris.block.Mino;
 import tetris.block.MinoBlock;
-import tetris.ui.GameOverScreen;
 import tetris.ui.GameScreen;
 
 import static tetris.util.TetrisConstants.*;

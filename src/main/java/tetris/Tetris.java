@@ -16,20 +16,16 @@ public class Tetris extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
         try {
-
             this.mainWindow = new MainWindow(primaryStage);
             mainWindow.show();
             mainWindow.fillInnerParts();
             mainWindow.setUpGame();
 
-
             loadFonts();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     /**

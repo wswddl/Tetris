@@ -1,5 +1,7 @@
 package tetris.logic;
 
+import tetris.util.GameMode;
+
 import static tetris.util.TetrisConstants.*;
 
 public class GameState {
@@ -9,14 +11,17 @@ public class GameState {
     private boolean isTSpin;
     private boolean isGameOver;
     private boolean isPaused;
-    private boolean isTimesUp;
 
 
     // game counter
     private int deactivateCounter;
     private int autoDropCounter;
-    private int gameCounter;
+    //private int gameCounter;
     private int effectCounter;
+
+    // game modes and goals
+    private GameMode gameMode;
+    private TimeManager timeManager;
 
     /**
      * Ensures that only one transition effect will happen at a given moment.
@@ -25,38 +30,24 @@ public class GameState {
     public boolean isTransitionEffectsOn;
 
 
-    public GameState() {
+    public GameState(TimeManager timeManager) {
+        this.timeManager = timeManager;
+
         isDeactivating = false;
         isEffectOn = false;
         isTSpin = false;
         isGameOver = false;
         isPaused = false;
-        isTimesUp = false;
 
         this.allowSwapMino = true;
 
         deactivateCounter = 0;
         autoDropCounter = 0;
-        gameCounter = 0;
+        //gameCounter = 0;
         effectCounter = 0;
 
     }
 
-    public void resetGameState() {
-        isDeactivating = false;
-        isEffectOn = false;
-        isTSpin = false;
-        isGameOver = false;
-        isPaused = false;
-        isTimesUp = false;
-
-        this.allowSwapMino = true;
-
-        deactivateCounter = 0;
-        autoDropCounter = 0;
-        gameCounter = 0;
-        effectCounter = 0;
-    }
 
 
     // =================================================
@@ -100,10 +91,7 @@ public class GameState {
         isTSpin = true;
     }
     public boolean isTimesUp() {
-        return isTimesUp;
-    }
-    public void setTimesUp() {
-        isTimesUp = true;
+        return gameMode == GameMode.BLITZ && timeManager.isTimesUp();
     }
     public boolean isGameOver() {
         return isGameOver;
@@ -112,9 +100,11 @@ public class GameState {
         isGameOver = true;
     }
     public void restartGame() {
+        //gameCounter = 0;
+        timeManager.resetCounter();
+
         isPaused = false;
         isGameOver = false;
-        isTimesUp = false;
 
         allowSwapMino = true;
     }
@@ -135,7 +125,8 @@ public class GameState {
     // =================================================
 
     public void incrementCounter() {
-        gameCounter++;
+        //gameCounter++;
+        timeManager.incrementCounter();
     }
     public void incrementDeactivationCounter() {
         deactivateCounter++;
@@ -163,7 +154,11 @@ public class GameState {
     }
 
 
+    // game modes
 
+    public void setGameMode(GameMode gameMode) {
+        this.gameMode = gameMode;
+    }
 
 
 

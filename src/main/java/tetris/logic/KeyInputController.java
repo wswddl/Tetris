@@ -117,9 +117,11 @@ public class KeyInputController {
                 }
 
                 if (gameState.isGameOver()) {
-                    onlyPressKeyHandler(KeyCode.R, gameController::restartGame);
+                    onlyPressKeyHandler(KeyCode.R, gameController::restartGameInGameOver);
                     //gameState.restartGame();
                     //gameState.playGameLoop(););
+                } else if (gameState.isTimesUp()) {
+                    onlyPressKeyHandler(KeyCode.R, gameController::restartGameInTimesUp);
                 } else if (gameState.isGamePaused()) {
                     // only handle once if both esc & R are pressed
                     if (pressedKeys.contains(KeyCode.ESCAPE)) {

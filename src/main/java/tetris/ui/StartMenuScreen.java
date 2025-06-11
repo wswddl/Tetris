@@ -13,7 +13,7 @@ import tetris.util.ButtonHandler;
 
 public class StartMenuScreen extends UiPart<AnchorPane> {
     private static final String FXML = "StartMenu.fxml";
-    private ButtonHandler playButtonHandler;
+    private ButtonHandler startButtonHandler;
     @FXML
     private Button playButton;
 
@@ -21,15 +21,11 @@ public class StartMenuScreen extends UiPart<AnchorPane> {
         super(FXML);
     }
 
-    public void setPlayButtonHandler(ButtonHandler playButtonHandler) {
-        this.playButtonHandler = playButtonHandler;
+    public void setStartButtonHandler(ButtonHandler startButtonHandler) {
+        this.startButtonHandler = startButtonHandler;
     }
     @FXML
-    public void handlePlayButton() {
-        playButtonHandler.handle();
-    }
-
-    public ParallelTransition closeStartMenuEffects(GameState gameState) {
-        return new ParallelTransition();
+    public void handleStartButton() {
+        startButtonHandler.handle();
     }
 }

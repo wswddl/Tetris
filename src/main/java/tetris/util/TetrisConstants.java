@@ -55,6 +55,7 @@ public class TetrisConstants {
     public static final int BLOCK_FADING_DURATION = 7; // in millisecond, around 8 frames when FPS is 120
     public static final int BLOCK_FALLING_DURATION = 8; // in millisecond, around 8 frames when FPS is 120
     public static final int T_SPIN_DURATION = 30;
+    public static final int TWO_MINUTE_DURATION = FPS * 120;
 
     // =================================================
     // Colors and Designs

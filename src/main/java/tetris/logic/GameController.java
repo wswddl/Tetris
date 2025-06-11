@@ -4,6 +4,7 @@ import javafx.animation.*;
 import javafx.scene.effect.GaussianBlur;
 import javafx.util.Duration;
 import tetris.ui.*;
+import tetris.util.GameMode;
 
 import static tetris.util.TetrisConstants.FPS;
 
@@ -17,10 +18,16 @@ public class GameController {
     private GameScreen gameScreen;
     private PauseMenuScreen pauseMenuScreen;
     private GameOverScreen gameOverScreen;
+    private TimesUpScreen timesUpScreen;
     private StartMenuScreen startMenuScreen;
+    private SelectMenuScreen selectMenuScreen;
     // game state
+    private TimeManager timeManager;
     private GameState gameState;
-    private Timeline gameLoop;
+    private Timeline currentGameLoop;
+    private Timeline relaxGameLoop;
+    private Timeline sprintGameLoop;
+    private Timeline blitzGameLoop;
 
     private boolean isIgnoreKeyInput;
 
@@ -38,16 +45,20 @@ public class GameController {
      */
     //public void initialize() {
     public GameController(GameScreen gameScreen, PauseMenuScreen pauseMenuScreen, GameOverScreen gameOverScreen,
-                          StartMenuScreen startMenuScreen, MainWindow mainWindow) {
-        //ui = new UiManager(playingField, nextMinoBox, holdMinoBox);
+                          TimesUpScreen timesUpScreen, StartMenuScreen startMenuScreen,
+                          SelectMenuScreen selectMenuScreen, MainWindow mainWindow) {
+
         this.gameScreen = gameScreen;
         this.pauseMenuScreen = pauseMenuScreen;
         this.gameOverScreen = gameOverScreen;
+        this.timesUpScreen = timesUpScreen;
         this.startMenuScreen = startMenuScreen;
+        this.selectMenuScreen = selectMenuScreen;
 
         this.mainWindow = mainWindow;
 
-        this.gameState = new GameState();
+        this.timeManager = new TimeManager();
+        this.gameState = new GameState(timeManager);
 
         this.gameplayManager = new GameplayManager(gameState, gameScreen);
         setUpGameLoop();
@@ -56,25 +67,63 @@ public class GameController {
     }
     private void setUpGameLoop() {
         // Create the game loop
-        gameLoop = new Timeline(
+        relaxGameLoop = new Timeline(
                 new KeyFrame(Duration.seconds(1.0 / FPS),
                         e -> {
-                            this.update();
+                            this.relaxUpdate();
                         }
                 )
         );
-        gameLoop.setCycleCount(Timeline.INDEFINITE); // repeat forever
+        relaxGameLoop.setCycleCount(Timeline.INDEFINITE); // repeat forever
+/*
+        sprintGameLoop = new Timeline(
+                new KeyFrame(Duration.seconds(1.0 / FPS),
+                        e -> {
+                            this.sprintUpdate();
+                        }
+                )
+        );
+        sprintGameLoop.setCycleCount(Timeline.INDEFINITE); // repeat forever
+*/
+        blitzGameLoop = new Timeline(
+                new KeyFrame(Duration.seconds(1.0 / FPS),
+                        e -> {
+                            this.blitzUpdate();
+                        }
+                )
+        );
+        blitzGameLoop.setCycleCount(Timeline.INDEFINITE); // repeat forever
+
         // dont start yet until play button!!!! gameLoop.play(); // start the loop
     }
 
-    public void update() {
+    public void relaxUpdate() {
+        assert relaxGameLoop == currentGameLoop;
+
         if (gameState.isGameOver()) {
-            gameLoop.pause();
+            relaxGameLoop.pause();
 
             gameOverScreen.openGameOverScreenEffects(gameState, gameScreen);
-            //gameScreen.getRoot().setEffect(new GaussianBlur(10));
-            //gameOverScreen.getRoot().setVisible(true);
         } else {
+            gameplayManager.update();
+        }
+    }
+
+    public void blitzUpdate() {
+        assert blitzGameLoop == currentGameLoop;
+
+        if (timeManager.isTimesUp()) {
+            blitzGameLoop.pause();
+
+            // blitz times up screen open up TODO
+            timesUpScreen.openTimesUpScreenEffects(gameState, gameScreen);
+        }
+        if (gameState.isGameOver()) {
+            blitzGameLoop.pause();
+
+            gameOverScreen.openGameOverScreenEffects(gameState, gameScreen);
+        } else {
+            gameScreen.updateTime(timeManager.getCurrentCounter());
             gameplayManager.update();
         }
     }
@@ -84,7 +133,6 @@ public class GameController {
         return this.gameState;
     }
 
-
     public void pauseGame() {
         if (gameState.isTransitionEffectsOn) {
             return;
@@ -92,7 +140,7 @@ public class GameController {
         gameState.isTransitionEffectsOn = true;
 
         gameState.pauseTheGame();
-        gameLoop.pause();
+        currentGameLoop.pause();
 
         pauseMenuScreen.openPauseMenuEffects(gameState, gameScreen);
         //gameScreen.getRoot().setEffect(new GaussianBlur(10));
@@ -116,7 +164,7 @@ public class GameController {
 
             // only resume the game logic after the animation is finished
             gameState.resumeTheGame();
-            gameLoop.play();
+            currentGameLoop.play();
 
             gameState.isTransitionEffectsOn = false;
         });
@@ -125,7 +173,7 @@ public class GameController {
         //pauseMenuScreen.getRoot().setVisible(false);
     }
 
-    public void restartGame() {
+    public void restartGameInGameOver() {
         if (gameState.isTransitionEffectsOn) {
             return;
         }
@@ -133,11 +181,23 @@ public class GameController {
 
         // transition effects
         gameOverScreen.closeGameOverScreenEffects(gameState, gameScreen);
-        //gameOverScreen.getRoot().setVisible(false);
-        //gameScreen.getRoot().setEffect(null);
 
         // restart model
-        gameLoop.play();
+        currentGameLoop.play();
+        gameplayManager.restartGame();
+    }
+
+    public void restartGameInTimesUp() {
+        if (gameState.isTransitionEffectsOn) {
+            return;
+        }
+        gameState.isTransitionEffectsOn = true;
+
+        // transition effects
+        timesUpScreen.closeTimesUpScreenEffects(gameState, gameScreen);
+
+        // restart model
+        currentGameLoop.play();
         gameplayManager.restartGame();
     }
 
@@ -162,13 +222,11 @@ public class GameController {
 
             // restart model
             // only start the game after animation is finished
-            gameLoop.play();
+            currentGameLoop.play();
             gameplayManager.restartGame();
         });
 
         combined.play();
-        //pauseMenuScreen.getRoot().setVisible(false);
-        //gameScreen.getRoot().setEffect(null);
 
 
     }
@@ -181,22 +239,14 @@ public class GameController {
         this.isIgnoreKeyInput = false;
 
         // transition effects
-        mainWindow.addNodesToRoot(startMenuScreen.getRoot());
+        mainWindow.addNodesToRoot(selectMenuScreen.getRoot());
 
         ParallelTransition combined = gameOverScreen.exitGameOverScreenEffects(gameState);
 
-        FadeTransition fadeOutGameScreen = new FadeTransition(Duration.seconds(1.0), gameScreen.getRoot());
-        fadeOutGameScreen.setToValue(0.0);
-        //combined.getChildren().add(fadeOutGameScreen);
-
-        FadeTransition fadeOutGameOverScreen = new FadeTransition(Duration.seconds(1.0), gameOverScreen.getRoot());
-        fadeOutGameOverScreen.setToValue(0.0);
-        //combined.getChildren().add(fadeOutGameOverScreen);
-
-        FadeTransition fadeInStartMenuScreen = new FadeTransition(Duration.seconds(1.0), startMenuScreen.getRoot());
-        fadeInStartMenuScreen.setFromValue(0.0);
-        fadeInStartMenuScreen.setToValue(1.0);
-        combined.getChildren().add(fadeInStartMenuScreen);
+        FadeTransition fadeInSelectMenuScreen = new FadeTransition(Duration.seconds(0.3), selectMenuScreen.getRoot());
+        fadeInSelectMenuScreen.setFromValue(0.0);
+        fadeInSelectMenuScreen.setToValue(1.0);
+        combined.getChildren().add(fadeInSelectMenuScreen);
 
         Animation gameScreenRemoveBlur = gameScreen.setRemoveEffects();
         combined.getChildren().add(gameScreenRemoveBlur);
@@ -204,7 +254,41 @@ public class GameController {
         combined.setOnFinished(e -> {
 
             // handle nodes
-            mainWindow.removeNodesFromRoot(pauseMenuScreen.getRoot(), gameScreen.getRoot(), gameOverScreen.getRoot());
+            mainWindow.removeNodesFromRoot(pauseMenuScreen.getRoot(), gameScreen.getRoot(),
+                                           gameOverScreen.getRoot(), timesUpScreen.getRoot());
+
+            gameState.isTransitionEffectsOn = false;
+        });
+
+        combined.play();
+
+    }
+    public void exitButtonInTimesUp() {
+        // synchronization flags
+        if (gameState.isTransitionEffectsOn) {
+            return;
+        }
+        gameState.isTransitionEffectsOn = true;
+        this.isIgnoreKeyInput = false;
+
+        // transition effects
+        mainWindow.addNodesToRoot(selectMenuScreen.getRoot());
+
+        ParallelTransition combined = timesUpScreen.exitTimesUpScreenEffects(gameState);
+
+        FadeTransition fadeInSelectMenuScreen = new FadeTransition(Duration.seconds(0.3), selectMenuScreen.getRoot());
+        fadeInSelectMenuScreen.setFromValue(0.0);
+        fadeInSelectMenuScreen.setToValue(1.0);
+        combined.getChildren().add(fadeInSelectMenuScreen);
+
+        Animation gameScreenRemoveBlur = gameScreen.setRemoveEffects();
+        combined.getChildren().add(gameScreenRemoveBlur);
+
+        combined.setOnFinished(e -> {
+
+            // handle nodes
+            mainWindow.removeNodesFromRoot(pauseMenuScreen.getRoot(), gameScreen.getRoot(),
+                    gameOverScreen.getRoot(), timesUpScreen.getRoot());
 
             gameState.isTransitionEffectsOn = false;
         });
@@ -221,85 +305,136 @@ public class GameController {
         this.isIgnoreKeyInput = true;
 
         // transition effects
-        mainWindow.addNodesToRoot(startMenuScreen.getRoot());
+        mainWindow.addNodesToRoot(selectMenuScreen.getRoot());
 
         ParallelTransition combined = pauseMenuScreen.exitPauseMenuEffects(gameState);
 
-        FadeTransition fadeOutGameScreen = new FadeTransition(Duration.seconds(1.0), gameScreen.getRoot());
-        fadeOutGameScreen.setToValue(0.0);
-        //combined.getChildren().add(fadeOutGameScreen);
-
-        FadeTransition fadeOutGameOverScreen = new FadeTransition(Duration.seconds(1.0), pauseMenuScreen.getRoot());
-        fadeOutGameOverScreen.setToValue(0.0);
-        //combined.getChildren().add(fadeOutGameOverScreen);
-
-        FadeTransition fadeInStartMenuScreen = new FadeTransition(Duration.seconds(1.0), startMenuScreen.getRoot());
-        fadeInStartMenuScreen.setFromValue(0.0);
-        fadeInStartMenuScreen.setToValue(1.0);
-        combined.getChildren().add(fadeInStartMenuScreen);
+        FadeTransition fadeInSelectMenuScreen = new FadeTransition(Duration.seconds(0.3), selectMenuScreen.getRoot());
+        fadeInSelectMenuScreen.setFromValue(0.0);
+        fadeInSelectMenuScreen.setToValue(1.0);
+        combined.getChildren().add(fadeInSelectMenuScreen);
 
         Animation gameScreenRemoveBlur = gameScreen.setRemoveEffects();
         combined.getChildren().add(gameScreenRemoveBlur);
 
         combined.setOnFinished(e -> {
-            //gameScreen.setRemoveEffects();
-
             // handle nodes
-            mainWindow.removeNodesFromRoot(pauseMenuScreen.getRoot(), gameScreen.getRoot(), gameOverScreen.getRoot());
+            mainWindow.removeNodesFromRoot(pauseMenuScreen.getRoot(), gameScreen.getRoot(),
+                                           gameOverScreen.getRoot(), timesUpScreen.getRoot());
 
             gameState.isTransitionEffectsOn = false;
         });
 
         combined.play();
     }
-    public void playButtonInStartMenu() {
-        if (gameState.isTransitionEffectsOn) {
-            return;
-        }
+
+    public void exitButtonInSelectMenu() {
+        // NOTE: no check of "is transition effects on" so it feels more responsive
+        this.isIgnoreKeyInput = true;
+
+        // transition effects
+        mainWindow.addNodesToRoot(startMenuScreen.getRoot());
+
+        FadeTransition fadeInStartMenuScreen = new FadeTransition(Duration.seconds(0.3), startMenuScreen.getRoot());
+        fadeInStartMenuScreen.setFromValue(0.0);
+        fadeInStartMenuScreen.setToValue(1.0);
+
+
+        fadeInStartMenuScreen.setOnFinished(e -> {
+            // handle nodes
+            mainWindow.removeNodesFromRoot(selectMenuScreen.getRoot());
+        });
+
+        fadeInStartMenuScreen.play();
+    }
+
+    public void startButtonInStartMenu() {
+        // NOTE: no check of "is transition effects on" so it feels more responsive
+        this.isIgnoreKeyInput = true; // don't allow key input
+
+        // transition effects
+        mainWindow.addNodesToRoot(selectMenuScreen.getRoot());
+
+        FadeTransition fadeInSelectMenu = new FadeTransition(Duration.seconds(0.3), selectMenuScreen.getRoot());
+        fadeInSelectMenu.setFromValue(0.0);
+        fadeInSelectMenu.setToValue(1.0);
+
+        fadeInSelectMenu.setOnFinished(e -> {
+            mainWindow.removeNodesFromRoot(startMenuScreen.getRoot());
+        });
+        fadeInSelectMenu.play();
+    }
+
+    public void relaxButton() {
+        // set timer in gameScreen to invisible
+        gameScreen.setTimerVisibility(false);
+
+        currentGameLoop = relaxGameLoop;
+        gameState.setGameMode(GameMode.RELAX);
+        startGame();
+    }
+    public void blitzButton() {
+        // set timer in gameScreen to visible
+        gameScreen.setTimerVisibility(true);
+
+        currentGameLoop = blitzGameLoop;
+        gameState.setGameMode(GameMode.BLITZ);
+        startGame();
+    }
+
+    public void startGame() {
+        // NOTE: no check of "is transition effects on" so it feels more responsive
+        //       but do set "is transition effects on" flag to true to prevent other transition effects
+        //       from popping in (e.g. can't pause when starting game screen)
         gameState.isTransitionEffectsOn = true;
-        this.isIgnoreKeyInput = false;
+        this.isIgnoreKeyInput = false; // allow key input when game start
 
         // set new background for gameScreen
         gameScreen.setRandomBackGroundImage();
 
         // transition effects
-        mainWindow.addNodesToRoot(gameScreen.getRoot(), pauseMenuScreen.getRoot(), gameOverScreen.getRoot());
+        mainWindow.addNodesToRoot(gameScreen.getRoot(), pauseMenuScreen.getRoot(),
+                                  gameOverScreen.getRoot(), timesUpScreen.getRoot());
+
         gameScreen.getRoot().setEffect(null); // clear the blur effects just in case.
         pauseMenuScreen.getRoot().setVisible(false);
         gameOverScreen.getRoot().setVisible(false);
-
-        ParallelTransition combined = startMenuScreen.closeStartMenuEffects(gameState);
-
-        FadeTransition fadeOutStartMenu = new FadeTransition(Duration.seconds(1.0), startMenuScreen.getRoot());
-        fadeOutStartMenu.setToValue(0.0);
-        //combined.getChildren().add(fadeOutStartMenu);
+        timesUpScreen.getRoot().setVisible(false);
 
         FadeTransition fadeInGameScreen = new FadeTransition(Duration.seconds(1.0), gameScreen.getRoot());
         fadeInGameScreen.setFromValue(0.0);
         fadeInGameScreen.setToValue(1.0);
-        combined.getChildren().add(fadeInGameScreen);
 
         pauseMenuScreen.getRoot().setOpacity(1.0);
         gameOverScreen.getRoot().setOpacity(1.0);
 
-        combined.setOnFinished(e -> {
-            //startMenuScreen.getRoot().setOpacity(1.0); // reset opacity after fading effect
+        fadeInGameScreen.setOnFinished(e -> {
             // handle nodes
-            mainWindow.removeNodesFromRoot(startMenuScreen.getRoot());
+            mainWindow.removeNodesFromRoot(selectMenuScreen.getRoot());
 
             gameState.isTransitionEffectsOn = false;
 
-            // start model only after the animation is finished
-            gameLoop.play();
+            currentGameLoop.play();
         });
-        // setup the model before animation finish !!!
+        // set up the model & timer ui before animation finish !!!
         gameplayManager.restartGame();
-        combined.play();
+        gameScreen.updateTime(timeManager.getCurrentCounter());
 
-
-
+        fadeInGameScreen.play();
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

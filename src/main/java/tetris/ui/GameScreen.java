@@ -9,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -17,19 +18,20 @@ import tetris.block.Block;
 import tetris.block.Mino;
 import tetris.block.MinoBlock;
 
+import javax.swing.*;
 import java.util.ArrayList;
 
 import static tetris.util.TetrisConstants.*;
 import static tetris.util.TetrisConstants.PLAYING_FIELD_HEIGHT;
 
-public class GameScreen extends UiPart<HBox> {
+public class GameScreen extends UiPart<VBox> {
 
     private static final String FXML = "GameScreen.fxml";
     private static final String backgroundImagePath = "/images/gameplay_backgrounds/";
     private BackgroundImageSelector backgroundImageSelector;
 
     @FXML
-    private HBox mainLayout;
+    private VBox mainLayout;
     @FXML
     private Pane playingField;
     @FXML
@@ -40,6 +42,10 @@ public class GameScreen extends UiPart<HBox> {
     private Label score;
     @FXML
     private Label highScore;
+    @FXML
+    private Label timer;
+    @FXML
+    private ProgressBar timerBar;
 
     // Graphic contexts
     private GraphicsContext playingFieldGC; // Draw the grid background in the playing field
@@ -363,7 +369,7 @@ public class GameScreen extends UiPart<HBox> {
         holdBoxGC.clearRect(LEFTMOST_PIXEL, TOPMOST_PIXEL, HOLD_BOX_HEIGHT_WIDTH, HOLD_BOX_HEIGHT_WIDTH);
         nextBoxGC.clearRect(LEFTMOST_PIXEL, TOPMOST_PIXEL, HOLD_BOX_HEIGHT_WIDTH, HOLD_BOX_HEIGHT_WIDTH);
     }
-    public void setPauseEffects() {
+    public void setBlurEffects() {
 
         Timeline addingBlurAnimation = new Timeline(
                 new KeyFrame(Duration.ZERO, new KeyValue(gaussianBlur.radiusProperty(), 0.0)),
@@ -386,9 +392,6 @@ public class GameScreen extends UiPart<HBox> {
         removingBlurAnimation.setOnFinished(e -> {
             // reset effects
             this.getRoot().setEffect(null);
-            // reset gausian blur
-            //gaussianBlur.setRadius(10.0);
-
         });
 
         //removingBlurAnimation.play();
@@ -396,5 +399,21 @@ public class GameScreen extends UiPart<HBox> {
         this.getRoot().setOpacity(1.0); // remove any fading effects
 
         return removingBlurAnimation;
+    }
+
+    public void setTimerVisibility(boolean isVisible) {
+        timer.setVisible(isVisible);
+        timerBar.setVisible(isVisible);
+    }
+    public void updateTime(int currentCounter) {
+        int numOfSecondsLeft = 120 - currentCounter / FPS;
+        int minute = numOfSecondsLeft / 60;
+        int second = numOfSecondsLeft % 60;
+        String minuteString = String.format("%01d", minute);
+        String secondString = String.format("%02d", second);
+        timer.setText(minuteString + ":" + secondString);
+
+        double progress = 1.0 - 1.0 * currentCounter / (TWO_MINUTE_DURATION); // 2 minutes
+        timerBar.setProgress(progress);
     }
 }
