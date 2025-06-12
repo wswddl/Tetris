@@ -3,6 +3,7 @@ package tetris.logic;
 import tetris.block.Mino;
 import tetris.block.MinoBlock;
 import tetris.ui.GameScreen;
+import tetris.util.GameMode;
 
 import static tetris.util.TetrisConstants.*;
 
@@ -95,9 +96,10 @@ public class GameplayManager {
 
         minoManager.restartMinoManager();
 
-        gameMetrics.setHighScore(); // set high score first
+        GameMode gameMode = gameState.getGameMode();
+        gameMetrics.setHighScore(gameMode); // set high score first
         gameMetrics.resetScore(); // then reset current score
         gameScreen.updateScore(gameMetrics.getScore());
-        gameScreen.updateHighScore(gameMetrics.getHighScore());
+        gameScreen.updateHighScore(gameMetrics.getHighScore(gameMode));
     }
 }

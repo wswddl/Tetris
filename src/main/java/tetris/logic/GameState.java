@@ -159,6 +159,9 @@ public class GameState {
     public void setGameMode(GameMode gameMode) {
         this.gameMode = gameMode;
     }
+    public GameMode getGameMode() {
+        return gameMode;
+    }
 
 
 

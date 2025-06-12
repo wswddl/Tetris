@@ -10,7 +10,7 @@ import static tetris.util.TetrisConstants.TWO_MINUTE_DURATION;
 public class TimeManager {
     private GameScreen gameScreen;
     private int counter;
-    private int blitzDuration = 3 * FPS;// TWO_MINUTE_DURATION;
+    private int blitzDuration = TWO_MINUTE_DURATION;// TWO_MINUTE_DURATION;
     public void incrementCounter() {
         counter++;
 

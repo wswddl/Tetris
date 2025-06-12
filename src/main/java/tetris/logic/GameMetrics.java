@@ -1,16 +1,22 @@
 package tetris.logic;
 
+import tetris.util.GameMode;
+
 public class GameMetrics {
     private final int BASIC_SCORE = 10;
     private int score;
-    private int highScore;
+    private int relaxHighScore;
+    private int blitzHighScore;
+    private int sprintHighScore;
     private int level;
     private int combo;
 
     public GameMetrics() {
         this.score = 0;
         this.level = 1;
-        this.highScore = 0;
+        this.relaxHighScore = 0;
+        this.blitzHighScore = 0;
+        this.sprintHighScore = 0;
         this.combo = 0;
     }
 
@@ -41,12 +47,29 @@ public class GameMetrics {
     public void resetScore() {
         score = 0;
     }
-    public int getHighScore() {
-        return highScore;
-    }
-    public void setHighScore() {
-        if (score > highScore) {
-            highScore = score;
+    public int getHighScore(GameMode gameMode) {
+        if (gameMode == GameMode.RELAX) {
+            return relaxHighScore;
+        } else if (gameMode == GameMode.BLITZ) {
+            return blitzHighScore;
+        } else {
+            return sprintHighScore;
         }
+    }
+    public void setHighScore(GameMode gameMode) {
+        if (gameMode == GameMode.RELAX) {
+            if (score > relaxHighScore) {
+                relaxHighScore = score;
+            }
+        } else if (gameMode == GameMode.BLITZ) {
+            if (score > blitzHighScore) {
+                blitzHighScore = score;
+            }
+        } else {
+            if (score > sprintHighScore) {
+                sprintHighScore = score;
+            }
+        }
+
     }
 }
